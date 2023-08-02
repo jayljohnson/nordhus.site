@@ -1,0 +1,3 @@
+- liquid hand soap
+- hand sanitizer
+- toilette paper or wipes
