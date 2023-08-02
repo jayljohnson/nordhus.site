@@ -1,7 +1,7 @@
 This post describes a very simple way to create a simple website with a custom domain name and free hosting with github pages.
 
 ## Steps
-These steps wcan be completed on any web browser without using command line tools.
+These steps can be completed on any web browser.  Command line tools are not required.
 
 1. Buy a domain name.  In this example we'll use namecheap.com
 2. Set up a new github public repo
@@ -18,6 +18,6 @@ This current article was also written from a phone browser using the github bros
 
 Markdown is superior to html for browser-based editing.  It takes way fewer keystrokes to do the same thing.
 
-I am happy with the results.  From here, the next steps I'll probably do are:
+I am happy with the results.  From here, the next steps I'll probably take are:
 - Check out the GitHub repo to my laptop for easier editing
 - Look into [using jekyll for nicer formatting](https://docs.github.com/en/pages/setting-up-a-github-pages-site-with-jekyll/about-github-pages-and-jekyll)
