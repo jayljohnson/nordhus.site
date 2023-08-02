@@ -1,4 +1,5 @@
-# Welcome
+# nordhus.site
+Personal website of Jay Johnson
 
 ## Blog Posts
 [2023-08-01: Travel Packing](blog/2023-08-01-travel-packing.md)
