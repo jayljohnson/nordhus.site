@@ -1,5 +1,5 @@
 # Creating a static website with a custom domain and free hosting
-This post describes a simple way to create a basic website with a custom domain name and free hosting with github pa
+This post describes a simple way to create a basic website with a custom domain name and free hosting with github pages.
 
 ## Steps
 These steps can be completed on any web browser.  Command line tools are not required.
