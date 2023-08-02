@@ -7,7 +7,7 @@ These steps can be completed on any web browser.  Command line tools are not req
 2. Set up a new github public repo
 3. Add a file named `index.md` to the repo root path.  The file can contain any text like `hello world`
 4. Edit the repo settings and enable github pages, enter the custom domain name, and require https
-5. Go back to the domain name in namecheap.com and configure the advanced dns settings.  [link to namecheap article](https://www.namecheap.com/support/knowledgebase/article.aspx/9645/2208/how-do-i-link-my-domain-to-github-pages/) 
+5. Go back to the domain name in namecheap.com and configure the advanced dns settings.  [link to namecheap article](https://www.namecheap.com/support/knowledgebase/article.aspx/9645/2208/how-do-i-link-my-domain-to-github-pages/){:target=”_blank”}
 6. Use any browser to try reaching the website.  Try it with both http:// and https://, and with and without a `www` prefix in the domain name.  if there are errors wait 10 minutes and try again.
 7. Edit the `index.md` file to make some changes and see them show up on the website.  It can take a few minutes for the changes to appear because Github pages use a [content delivery network](https://en.m.wikipedia.org/wiki/Content_delivery_network) (CDN) that caches the page.
 
