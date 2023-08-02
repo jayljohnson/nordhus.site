@@ -1,4 +1,3 @@
-# nordhus.site
 Personal website of Jay Johnson
 
 ## Blog Posts
