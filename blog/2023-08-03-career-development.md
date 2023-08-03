@@ -1,6 +1,8 @@
 # Career Development
 > Dont run away from something, run to something
-* career and life advice from a mentor *
+
+*- career and life advice from a mentor*
+
 
 I've noticed a pattern with how I handle career development.  
 
