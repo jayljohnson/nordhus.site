@@ -8,7 +8,7 @@ I've noticed patterns with how I handle career development.
 
 When I felt stagnant in my last role, I became more open to finding other roles.  I replied back to recruiter cold messages for more info.  I searched job boards for interesting companies that were hiring.  I took interviews.  Eventually, I got an offer and accepted it.
 
-What I didn't do a great job of was looking for ways to make my current role better.  Where was that stagnant feeling coming from?  I had a supportive manager, and was working on a project that "moved the needle" for our organization.  On the surface, my career prospects looked great.  I found out after i gave my 2-week notice that I was on the cusp of a promotion going through to a senior role.
+What I didn't do a great job of was looking for ways to make my current role better.  Where was that stagnant feeling coming from?  I had a supportive manager, and was working on a project that "moved the needle" for our organization.  On the surface, my career prospects looked great.  I found out after I gave my 2-week notice that I was on the cusp of a promotion going through to become a senior data engineer.
 
 I think I was missing a values alignment.  The project that brought me close to promotion also served to divest from a product that was built by people I had worked closely with in the past.   Leaders that had mentored and supported me in my career.  I had emotional investments in that product and team.  Human connections.  Work friendships.  They built orchestration tooling that our team relied on.  It felt I was betraying them to be the only team using that product, while leading the project to migrate off of it and onto something new.
 
