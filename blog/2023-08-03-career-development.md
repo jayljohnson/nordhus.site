@@ -28,9 +28,8 @@ Did I bring any unresolved baggage from my old role into my new one?
 
 # Conclusions
 
-Where do I want to be a few years from now?  I'll face many new challenging and conflicting situations like this one.  I hope to be able to handle them better and with less cognitive dissonance.  
-To catch that stagnant feeling early and really understand it.
+Where do I want to be a few years from now?  I'll face many new challenging and conflicting situations like this one.  I hope to be able to handle them better and with less cognitive dissonance.    To catch that stagnant feeling early and really understand it.
 
-Do I want to be an individual contribtor or a manager in a few years?  I'm not sure, and I feel it depends a lot on the company.  I think I'll be better prepared for either if I can better prepare myself for these types of scenarios in any role.
+Do I want to be an individual contribtor or a manager in a few years?  I'm not sure, and I feel it depends a lot on the company.  I'll be better prepared for either if I can better prepare myself for these types of scenarios in any role.
 
-Soft skills are the hardest and most impactful skills to learn.  Career development is multifaceted.
+Soft skills are the hardest and most impactful skills to learn.  Career development is multifaceted.  There is no single path.
