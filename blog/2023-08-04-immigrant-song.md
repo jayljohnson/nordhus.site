@@ -11,4 +11,4 @@ Over a few generations, they made their way to Minnesota, and my paternal grandf
 
 > Valhalla, I am coming
 
-I got into a geneology rabbit hole recently and came to appreciate how my place in life was shaped by a stream of immigrants from dozens of now countries.  They left home for many reasons, and many of them probably never saw their motherland again.  The US is a nation of immigrants and it's important to remeber those roots.
+I got into a geneology rabbit hole recently and came to appreciate how my place in life was shaped by a stream of immigrants from about a dozen now countries.  They left home for many reasons, and many of them probably never saw their motherland again.  The US is a nation of immigrants and it's important to remeber those roots.
