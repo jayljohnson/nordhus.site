@@ -20,4 +20,4 @@ From my experience, meetings or group forums like messaging and emails are usual
 
 > Boiling the ocean
 
-It's really hard at first to define the scope of a new problem space.  And sometimes tempting to go big and fix related problems at once.  Gathering feedback helps to refund the problem and narrow down the scope.  Breaking a big problem down into smaller, digestable pieces is a better approach.  The "don't do" list is equally important as the "to do" list.
+It's really hard at first to define the scope of a new problem space.  And sometimes it's tempting to go big and fix related problems at once.  Gathering feedback helps to refine the problem and narrow down the scope.  Breaking a big problem down into smaller, digestable pieces is a better approach.  The "don't do" list is equally important as the "to do" list.
