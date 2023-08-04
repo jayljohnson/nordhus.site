@@ -1,3 +1,5 @@
+# Soliciting Feedback
+
 Amazon really tries to embody its [leadership principles](https://www.amazon.jobs/content/en/our-workplace/leadership-principles). It can feel a bit cult-like.  That is by design as a way to preserve company culture while experiencing some of the most extreme scaling ever seen.
 
 One leadership principal stands out:
