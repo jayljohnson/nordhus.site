@@ -1,6 +1,8 @@
 Personal website of Jay Johnson
 
 ## Blog Posts
+[2023-08-04: Immigrant Song](blog/2023-08-04-immigrant-song.md)
+
 [2023-08-04: Soliciting Feedback](blog/2023-08-04-soliciting-feedback.md)
 
 [2023-08-03: Why Write?](blog/2023-08-03-why-write.md)
