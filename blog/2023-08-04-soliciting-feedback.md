@@ -12,9 +12,9 @@ The point is not to "be" right.  Reading past the first line, the real gem here 
 
 That should be the first line.  It's about counterbalancing our biases and checking our egos.
 
-My former manager gave me this feedback as parting advice just before he transferred to a different team.  He explained that its one of the hardest leadership principles to get right and most people miss the point.  He also left me with two book recommendations that have helped me check my own biases:
-- Thinking Fast and Slow
-- To Sell Is Human
+My former manager gave me this feedback as parting advice just before he transferred to a different team.  He explained that it's one of the hardest leadership principles to get right and most people miss the point.  He also left me with two book recommendations that have helped me check my own biases:
+- Kahneman, D. *Thinking, Fast and Slow*
+- Pink, D. *To Sell Is Human*
 
 From my experience, meetings or group forums like messaging and emails are usually the wrong places to seek feedback on a new topic or problem.  One-on-one conversations are much more productive.  Then after meeting individually, incorporating the feedback into writing, and refining my thinking, it is a better time to meet as a group to align on next steps.
 
