@@ -5,7 +5,7 @@
 
 *from Immigrant Song, by Led Zeppelin.  Page/Plant*
 
-When my Norwegian ancestors immigrated to the US, they left with the surname Nordhus.  After they went through immigration processing their surname was changed to Johnson.
+When my Norwegian ancestors immigrated to the US, they left with the surname Nordhus.  When they went through immigration processing their surname was changed to Johnson.
 
 Over a few generations, they made their way to Minnesota, and my paternal grandfather moved the family to Alaska where I was eventually born.  I'm a fan of Led Zeppelin and the lyrics above resonated with me because they describe the place where I grew up.  I didnt realize until a couple decades after hearing that song that for the first time that it is about Norse culture and mythology.
 
