@@ -1,5 +1,8 @@
 Personal website of Jay Johnson
 
+## Contact
+[linkedin](https://www.linkedin.com/in/jayljohnson/)
+
 ## Blog Posts
 [2023-08-04: Immigrant Song](blog/2023-08-04-immigrant-song.md)
 
