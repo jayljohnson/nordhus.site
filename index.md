@@ -4,6 +4,8 @@ Personal website of Jay Johnson
 [linkedin](https://www.linkedin.com/in/jayljohnson/)
 
 ## Blog Posts
+[2023-08-25: Know your limits by failing](blog/2023-08-25-falling.md)
+
 [2023-08-04: Immigrant Song](blog/2023-08-04-immigrant-song.md)
 
 [2023-08-04: Soliciting Feedback](blog/2023-08-04-soliciting-feedback.md)
@@ -15,5 +17,3 @@ Personal website of Jay Johnson
 [2023-08-02: Creating a barebones custom website with free hosting](blog/2023-08-02-barebones-website-with-custom-domain.md)
 
 [2023-08-01: Travel Packing](blog/2023-08-01-travel-packing.md)
-
-[2023-08-25: Know your limits by failing](blog/2023-08-25-falling.md)
