@@ -13,4 +13,4 @@ I'm a fan of Led Zeppelin and the lyrics above resonated with me because they de
 
 > Valhalla, I am coming
 
-I recently got into a geneology rabbit hole, and came to appreciate how my place in life was shaped by a stream of immigrants from about a dozen now countries.  They left home for many reasons, and many of them probably never saw their motherland again.  The U.S. is a nation of immigrants and it's important to remeber those roots.
+I recently got into a geneology rabbit hole, and came to appreciate how my place in life was shaped by a stream of immigrants from about a dozen now countries.  They left home for many reasons, and many of them probably never saw their motherland again.  The U.S. is a nation of immigrants and it's important to remeber those roots.  We live on Native land.
