@@ -4,6 +4,8 @@ Personal website of Jay Johnson
 [linkedin](https://www.linkedin.com/in/jayljohnson/)
 
 ## Blog Posts
+[2025-07-26: From Cluttered Chaos to Functional Storage](blog/2025-07-26-shed-organization.md) 
+
 [2023-08-25: Know your limits by failing](blog/2023-08-25-falling.md)
 
 [2023-08-04: Immigrant Song](blog/2023-08-04-immigrant-song.md)
