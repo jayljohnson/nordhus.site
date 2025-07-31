@@ -1,1 +1,10 @@
+title: Jay Johnson
+description: Personal website and blog
+url: "https://nordhus.site"
+markdown: kramdown
+permalink: /blog/:title/
 
+# Build settings
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap

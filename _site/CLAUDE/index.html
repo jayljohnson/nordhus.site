@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLAUDE.md - Jay Johnson</title>
+    <meta name="description" content="Personal website and blog">
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1, h2, h3 { color: #2c3e50; }
+        a { color: #3498db; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .post-meta { color: #7f8c8d; font-size: 0.9em; }
+        img { max-width: 100%; height: auto; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><a href="/">Jay Johnson</a></h1>
+    </header>
+    
+    <main>
+        <h1 id="claudemd">CLAUDE.md</h1>
+
+<p>This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.</p>
+
+<h2 id="project-overview">Project Overview</h2>
+
+<p>This is a personal website (nordhus.site) built as a static Jekyll site hosted on GitHub Pages. The site features a minimal design with a blog section containing personal writing and project documentation.</p>
+
+<h2 id="site-architecture">Site Architecture</h2>
+
+<h3 id="structure">Structure</h3>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">index.md</code> - Main landing page with contact info and blog post links</li>
+  <li><code class="language-plaintext highlighter-rouge">blog/</code> - Individual blog posts in markdown format with date-prefixed filenames</li>
+  <li><code class="language-plaintext highlighter-rouge">docs/assets/images/</code> - Image assets organized by project/date folders</li>
+  <li><code class="language-plaintext highlighter-rouge">_config.yml</code> - Jekyll configuration (currently minimal/empty)</li>
+  <li><code class="language-plaintext highlighter-rouge">CNAME</code> - Custom domain configuration for nordhus.site</li>
+</ul>
+
+<h3 id="content-organization">Content Organization</h3>
+<ul>
+  <li>Blog posts follow naming convention: <code class="language-plaintext highlighter-rouge">YYYY-MM-DD-descriptive-title.md</code></li>
+  <li>Images are organized in dated project folders under <code class="language-plaintext highlighter-rouge">docs/assets/images/</code></li>
+  <li>Recent posts include project documentation with detailed photos (shed organization, window repair)</li>
+</ul>
+
+<h2 id="development-workflow">Development Workflow</h2>
+
+<h3 id="content-creation">Content Creation</h3>
+<ul>
+  <li>Create new blog posts in <code class="language-plaintext highlighter-rouge">blog/</code> directory following date naming convention</li>
+  <li>Add images to appropriate subfolder in <code class="language-plaintext highlighter-rouge">docs/assets/images/</code></li>
+  <li>Update <code class="language-plaintext highlighter-rouge">index.md</code> to include new blog post links in chronological order (newest first)</li>
+</ul>
+
+<h3 id="deployment">Deployment</h3>
+<ul>
+  <li>GitHub Pages automatically builds and deploys the site on push to main branch</li>
+  <li>No build commands needed - GitHub handles Jekyll processing</li>
+  <li>Changes typically take a few minutes to appear due to CDN caching</li>
+</ul>
+
+<h3 id="branch-strategy">Branch Strategy</h3>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">main</code> - Production branch, auto-deployed to nordhus.site</li>
+  <li>Feature branches for new content (e.g., <code class="language-plaintext highlighter-rouge">2025-07-26-window-repair-photos</code>)</li>
+  <li>Use pull requests for merging feature branches</li>
+</ul>
+
+<h2 id="file-patterns">File Patterns</h2>
+
+<h3 id="blog-posts">Blog Posts</h3>
+<ul>
+  <li>Always include descriptive title and date</li>
+  <li>Use markdown formatting</li>
+  <li>Include relevant images with proper paths to <code class="language-plaintext highlighter-rouge">docs/assets/images/</code></li>
+  <li>Maintain consistent front matter if needed</li>
+</ul>
+
+<h3 id="image-management">Image Management</h3>
+<ul>
+  <li>Store images in date/project-specific folders</li>
+  <li>Use descriptive filenames from camera (e.g., <code class="language-plaintext highlighter-rouge">IMG20250726132239.jpg</code>)</li>
+  <li>Organize by project theme for easy reference</li>
+</ul>
+
+<h2 id="local-development">Local Development</h2>
+
+<h3 id="preview-changes-locally">Preview Changes Locally</h3>
+<p>Use the Makefile commands for easy local development:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Start local server (recommended)</span>
+make serve
+
+<span class="c"># Alternative commands</span>
+make <span class="nb">help</span>          <span class="c"># Show all available commands</span>
+make build         <span class="c"># Build site only</span>
+make clean         <span class="c"># Clean build artifacts</span>
+</code></pre></div></div>
+
+<p>The server will be available at <code class="language-plaintext highlighter-rouge">http://localhost:4000</code> with live reload enabled.</p>
+
+<h3 id="development-dependencies">Development Dependencies</h3>
+<ul>
+  <li>Docker (for containerized Jekyll)</li>
+  <li>Gemfile and Dockerfile provided for consistent environment</li>
+  <li>GitHub Pages compatible gem versions</li>
+</ul>
+
+<h2 id="domain-and-hosting">Domain and Hosting</h2>
+<ul>
+  <li>Custom domain: nordhus.site (configured via CNAME file)</li>
+  <li>Hosted on GitHub Pages with automatic Jekyll processing</li>
+  <li>DNS configured through domain registrar to point to GitHub Pages</li>
+</ul>
+
+    </main>
+    
+    <footer>
+        <p><a href="https://www.linkedin.com/in/jayljohnson/">LinkedIn</a></p>
+    </footer>
+</body>
+</html>

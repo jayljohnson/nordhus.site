@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creating a static website with a custom domain and free hosting - Jay Johnson</title>
+    <meta name="description" content="A simple way to create a basic website with a custom domain name and free hosting with GitHub Pages.">
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1, h2, h3 { color: #2c3e50; }
+        a { color: #3498db; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .post-meta { color: #7f8c8d; font-size: 0.9em; }
+        img { max-width: 100%; height: auto; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><a href="/">Jay Johnson</a></h1>
+    </header>
+    
+    <main>
+        <article>
+    <header>
+        <h1>Creating a static website with a custom domain and free hosting</h1>
+        <p class="post-meta">August 02, 2023</p>
+    </header>
+    
+    <h1 id="creating-a-static-website-with-a-custom-domain-and-free-hosting">Creating a static website with a custom domain and free hosting</h1>
+<p>This post describes a simple way to create a basic website with a custom domain name and free hosting with github pages.</p>
+
+<h2 id="steps">Steps</h2>
+<p>These steps can be completed on any web browser.  Command line tools are not required.</p>
+
+<ol>
+  <li>Buy a domain name.  In this example I used <a href="namecheap.com">namecheap.com</a>.</li>
+  <li>Set up a new github public repository (repo)</li>
+  <li>Add a file named <code class="language-plaintext highlighter-rouge">index.md</code> to the repo root path.  The file can contain any text like <code class="language-plaintext highlighter-rouge">hello world</code></li>
+  <li>Edit the repo settings enter the custom domain name.  Then go to the <code class="language-plaintext highlighter-rouge">pages</code> tab and enable github pages.</li>
+  <li>Go back to the domain name in <a href="namecheap.com">namecheap.com</a> and configure the advanced dns settings.  See <a href="https://www.namecheap.com/support/knowledgebase/article.aspx/9645/2208/how-do-i-link-my-domain-to-github-pages/">this namecheap article</a> for details.</li>
+  <li>Use any browser to try reaching the new website.  Try it with both <code class="language-plaintext highlighter-rouge">http://</code> and <code class="language-plaintext highlighter-rouge">https://</code>, and with and without a <code class="language-plaintext highlighter-rouge">www</code> prefix in the domain name.  If there are errors wait 10 minutes and try again.  DNS changes take some time to propagate.</li>
+  <li>Edit the <code class="language-plaintext highlighter-rouge">index.md</code> file to make some changes and see them show up on the website.  It can take a few minutes for the changes to appear because Github pages use a <a href="https://en.m.wikipedia.org/wiki/Content_delivery_network">content delivery network</a> (CDN) that caches the page.</li>
+</ol>
+
+<h2 id="conclusions">Conclusions</h2>
+<ol>
+  <li>It took about an hour to complete these steps from a mobile device browser and create a functioning website.  I did most of this experiment while stuck in traffic as a car passenger.  I did it to scratch a personal itch and see if it could be done in a low tech way.  From a computer with an actual keyboard it could be done a lot more efficiently.  A lot of the time was spent choosing a domain name.</li>
+  <li>This current article was also written from a phone browser using the github broswer-based text editor.  It did the job though the ergonomics are not the best on my mobile device.  I simply don’t have access to a laptop right now.</li>
+  <li>Markdown is superior to html for browser-based editing.  It takes way fewer keystrokes to do the same thing.</li>
+</ol>
+
+<p>I am happy with the results.  From here, the next steps I may take are:</p>
+<ul>
+  <li>Check out the GitHub repo to my laptop for easier writing from a text editor</li>
+  <li>Look into <a href="https://docs.github.com/en/pages/setting-up-a-github-pages-site-with-jekyll/about-github-pages-and-jekyll">using jekyll for nicer formatting</a></li>
+</ul>
+
+<p>For now I’ll focus on writing and consider this “good enough” for that purpose.</p>
+
+    
+    <footer>
+        <p><a href="/">← Back to home</a></p>
+    </footer>
+</article>
+    </main>
+    
+    <footer>
+        <p><a href="https://www.linkedin.com/in/jayljohnson/">LinkedIn</a></p>
+    </footer>
+</body>
+</html>
