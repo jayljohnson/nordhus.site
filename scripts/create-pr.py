@@ -54,44 +54,61 @@ def main():
         if script_files:
             impact_summary.append(f"**Tooling**: {len(script_files)} scripts - Development productivity improvements")
         
-        body = f"""## Impact Summary
+        # Generate dynamic description based on changes
+        description_parts = []
+        
+        if jekyll_files:
+            layout_changes = [f for f in jekyll_files if '_layouts/' in f]
+            post_changes = [f for f in jekyll_files if '_posts/' in f]
+            config_changes = [f for f in jekyll_files if '_config.yml' in f or 'index.md' in f]
+            
+            if layout_changes:
+                description_parts.append(f"• Updated {len(layout_changes)} layout template(s) for improved functionality")
+            if post_changes:
+                description_parts.append(f"• Modified {len(post_changes)} blog post(s) with content improvements")
+            if config_changes:
+                description_parts.append(f"• Enhanced site configuration and main pages")
+        
+        if docker_files:
+            description_parts.append("• Improved Docker development environment")
+        if makefile_changes:
+            description_parts.append("• Enhanced build automation and developer workflows")
+        if script_files:
+            description_parts.append(f"• Updated {len(script_files)} development script(s)")
+        
+        # Analyze commit messages for better context
+        commit_themes = []
+        for commit in commits:
+            commit_lower = commit.lower()
+            if 'seo' in commit_lower or 'meta' in commit_lower or 'schema' in commit_lower:
+                commit_themes.append('SEO optimization')
+            elif 'dark' in commit_lower or 'theme' in commit_lower:
+                commit_themes.append('UI/UX improvements')
+            elif 'excerpt' in commit_lower:
+                commit_themes.append('Content enhancement')
+            elif 'json-ld' in commit_lower or 'structured' in commit_lower:
+                commit_themes.append('Search engine optimization')
+        
+        commit_themes = list(set(commit_themes))  # Remove duplicates
+        
+        body = f"""## Summary
 
-{chr(10).join(impact_summary)}
+{chr(10).join(description_parts) if description_parts else 'Various improvements and updates to the site.'}
 
-## Workflow Transformation
+## Changes Made
 
-### Before: Manual Everything (30-45 minutes)
-- ✋ Create `.md` file in `blog/` directory (~2 min)
-- ✋ Write content with manual formatting (~20-30 min)
-- ✋ Manually update `index.md` with new post link (~2 min)
-- ⏳ Push to GitHub and wait for Pages deployment (~5-10 min)
-- 🔄 Fix formatting issues and repeat cycle (~5+ min)
+{chr(10).join([f'• {theme}' for theme in commit_themes]) if commit_themes else ''}
 
-### After: Automated Jekyll (2-3 minutes)
-- ⚡ Run `make serve` (auto-opens browser, instant preview)
-- ⚡ Create `_posts/YYYY-MM-DD-title.md` with front matter
-- ⚡ Write with live reload and consistent styling
-- ⚡ Commit and push when ready (index updates automatically)
+## Files Modified
+{file_list}
 
-**Result: 15x faster blog publishing workflow**
+## Commits
+{commit_list}
 
-## Key Improvements
-- **Time Savings**: 30-45 min → 2-3 min per post (93% reduction)
-- **Feedback Loop**: 5-10 min deploy wait → Instant local preview
-- **Error Prevention**: Automated index updates eliminate manual mistakes
-- **Professional Quality**: Consistent styling and layouts without extra effort
-- **Developer Experience**: One-command development environment
-
-## Technical Changes
+## Technical Details
 ```
 {stats}
 ```
-
-## Quality Assurance
-- [ ] Local development tested (`make serve`)
-- [ ] Blog post creation workflow verified
-- [ ] All automation commands functional
-- [ ] Documentation reflects new process
 
 🤖 Generated with [Claude Code](https://claude.ai/code)
 
@@ -102,21 +119,16 @@ Co-Authored-By: Claude <noreply@anthropic.com>"""
         
         if len(full_url) > 8000:  # GitHub URL limit
             # Create shorter version focusing on impact
-            short_body = f"""## Impact Summary
+            short_body = f"""## Summary
 
-{chr(10).join(impact_summary)}
+{chr(10).join(description_parts) if description_parts else 'Various improvements and updates to the site.'}
 
-## Workflow Transformation
-**Before**: 30-45 min manual blog publishing with deploy delays
-**After**: 2-3 min automated workflow with instant preview
+## Changes Made
 
-**Result: 15x faster blog publishing (93% time reduction)**
+{chr(10).join([f'• {theme}' for theme in commit_themes]) if commit_themes else ''}
 
-## Key Improvements
-- **Time Savings**: 30-45 min → 2-3 min per post
-- **Feedback Loop**: 5-10 min deploy wait → Instant local preview
-- **Error Prevention**: Automated index updates eliminate manual mistakes
-- **Developer Experience**: One-command development environment
+## Files Modified ({len(files)})
+{chr(10).join(files[:5])}{'...' if len(files) > 5 else ''}
 
 🤖 Generated with [Claude Code](https://claude.ai/code)
 
