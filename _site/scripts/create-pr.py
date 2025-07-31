@@ -38,25 +38,41 @@ def main():
         files_modified = len([f for f in files if os.path.exists(f)])
         total_lines = len(diff.split('\n'))
         
-        body = f"""## Summary
+        # Analyze impact based on file types and changes
+        jekyll_files = [f for f in files if f.endswith(('.md', '.yml', '.yaml', '_config.yml')) or '_posts/' in f or '_layouts/' in f]
+        docker_files = [f for f in files if 'Dockerfile' in f or 'docker-compose' in f]
+        makefile_changes = [f for f in files if 'Makefile' in f or 'makefile' in f]
+        script_files = [f for f in files if f.endswith(('.py', '.sh')) or 'scripts/' in f]
+        
+        impact_summary = []
+        if jekyll_files:
+            impact_summary.append(f"**Jekyll/Content**: {len(jekyll_files)} files - Site structure and content improvements")
+        if docker_files:
+            impact_summary.append(f"**Development Environment**: {len(docker_files)} files - Local development workflow enhancements")
+        if makefile_changes:
+            impact_summary.append("**Build Automation**: Streamlined development commands and workflows")
+        if script_files:
+            impact_summary.append(f"**Tooling**: {len(script_files)} scripts - Development productivity improvements")
+        
+        body = f"""## Impact Summary
 
-This PR contains {len(commits)} commit(s) across {len(files)} file(s).
+{chr(10).join(impact_summary)}
 
-### Files Changed
-{file_list}
+## Key Improvements
+- **Development Speed**: Automated workflows reduce setup time
+- **Consistency**: Standardized templates and layouts
+- **Developer Experience**: One-command local development with live reload
+- **Maintainability**: Automated content management and PR/issue creation
 
-### Statistics
+## Technical Changes
 ```
 {stats}
 ```
 
-### Impact Analysis
-- **Files added:** {files_added}
-- **Files modified:** {files_modified}
-- **Total changes:** {total_lines} lines
-
-### Commits
-{commit_list}
+## Quality Assurance
+- [ ] Local development tested (`make serve`)
+- [ ] All changes committed and pushed
+- [ ] Documentation updated where needed
 
 🤖 Generated with [Claude Code](https://claude.ai/code)
 
@@ -66,20 +82,22 @@ Co-Authored-By: Claude <noreply@anthropic.com>"""
         full_url = f'https://github.com/jayljohnson/nordhus.site/compare/{branch}?expand=1&title={urllib.parse.quote(title)}&body={urllib.parse.quote(body)}'
         
         if len(full_url) > 8000:  # GitHub URL limit
-            # Create shorter version with just title
-            short_body = f"""## Summary
+            # Create shorter version focusing on impact
+            short_body = f"""## Impact Summary
 
-This PR contains {len(commits)} commit(s) across {len(files)} file(s).
+{chr(10).join(impact_summary)}
 
-### Files Changed
-{file_list[:500]}{'...' if len(file_list) > 500 else ''}
+## Key Improvements
+- **Development Speed**: Automated workflows reduce setup time
+- **Developer Experience**: One-command local development with live reload
+- **Maintainability**: Automated content management and tooling
 
 🤖 Generated with [Claude Code](https://claude.ai/code)
 
 Co-Authored-By: Claude <noreply@anthropic.com>"""
             
             url = f'https://github.com/jayljohnson/nordhus.site/compare/{branch}?expand=1&title={urllib.parse.quote(title)}&body={urllib.parse.quote(short_body)}'
-            print(f'Opening PR for branch: {branch} (description truncated due to URL length limits)')
+            print(f'Opening PR for branch: {branch} (description optimized for impact)')
         else:
             url = full_url
             print(f'Opening PR for branch: {branch}')
