@@ -62,10 +62,28 @@ This PR contains {len(commits)} commit(s) across {len(files)} file(s).
 
 Co-Authored-By: Claude <noreply@anthropic.com>"""
         
-        # Create GitHub URL
-        url = f'https://github.com/jayljohnson/nordhus.site/compare/{branch}?expand=1&title={urllib.parse.quote(title)}&body={urllib.parse.quote(body)}'
+        # Create GitHub URL - check length and handle accordingly
+        full_url = f'https://github.com/jayljohnson/nordhus.site/compare/{branch}?expand=1&title={urllib.parse.quote(title)}&body={urllib.parse.quote(body)}'
         
-        print(f'Opening PR for branch: {branch}')
+        if len(full_url) > 8000:  # GitHub URL limit
+            # Create shorter version with just title
+            short_body = f"""## Summary
+
+This PR contains {len(commits)} commit(s) across {len(files)} file(s).
+
+### Files Changed
+{file_list[:500]}{'...' if len(file_list) > 500 else ''}
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>"""
+            
+            url = f'https://github.com/jayljohnson/nordhus.site/compare/{branch}?expand=1&title={urllib.parse.quote(title)}&body={urllib.parse.quote(short_body)}'
+            print(f'Opening PR for branch: {branch} (description truncated due to URL length limits)')
+        else:
+            url = full_url
+            print(f'Opening PR for branch: {branch}')
+        
         webbrowser.open(url)
         
     except subprocess.CalledProcessError as e:
