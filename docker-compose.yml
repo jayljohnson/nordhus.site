@@ -12,6 +12,8 @@ services:
       # Exclude gems directory to use container's gems
       - /srv/jekyll/vendor
       - /srv/jekyll/.bundle
+      # Cache Jekyll build artifacts
+      - /srv/jekyll/.jekyll-cache
     environment:
       - JEKYLL_ENV=development
     stdin_open: true
