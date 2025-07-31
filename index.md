@@ -1,6 +1,7 @@
 ---
 layout: default
-title: Home
+title: Jay Johnson - Software Professional & Writer
+description: Personal website and blog of Jay Johnson, featuring posts on technology, home projects, career development, and personal experiences.
 ---
 
 <script type="application/ld+json">
@@ -21,7 +22,7 @@ title: Home
 }
 </script>
 
-Personal website of Jay Johnson.
+Software professional and writer sharing insights on technology, home projects, and personal experiences.
 
 *Views expressed here are my own.*
 

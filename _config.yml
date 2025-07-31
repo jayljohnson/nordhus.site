@@ -8,3 +8,23 @@ permalink: /blog/:title/
 plugins:
   - jekyll-feed
   - jekyll-sitemap
+
+# Development optimizations
+incremental: true
+livereload: true
+
+# Exclude files from processing to speed up builds
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+  - .tmp/
+  - Makefile
+  - Dockerfile
+  - docker-compose.yml
+  - README.md
+  - scripts/

@@ -30,6 +30,7 @@ serve: build-image
 		-v "$(PWD)":/srv/jekyll:cached \
 		-v /srv/jekyll/vendor \
 		-v /srv/jekyll/.bundle \
+		-v /srv/jekyll/.jekyll-cache \
 		$(IMAGE_NAME)
 
 # Serve using docker-compose (recommended for development)

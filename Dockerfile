@@ -11,4 +11,4 @@ RUN bundle install
 EXPOSE 4000
 
 # Default command to serve the site
-CMD ["bundle", "exec", "jekyll", "serve", "--host", "0.0.0.0", "--livereload", "--force_polling"]
+CMD ["bundle", "exec", "jekyll", "serve", "--host", "0.0.0.0", "--livereload", "--force_polling", "--incremental", "--skip-initial-build"]
