@@ -1,0 +1,540 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="http://0.0.0.0:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://0.0.0.0:4000/" rel="alternate" type="text/html" /><updated>2025-07-31T02:19:14-05:00</updated><id>http://0.0.0.0:4000/feed.xml</id><title type="html">Jay Johnson</title><subtitle>Personal website and blog</subtitle><entry><title type="html">From Manual Markdown to Automated Jekyll: Streamlining Blog Development</title><link href="http://0.0.0.0:4000/blog/streamlining-jekyll-development/" rel="alternate" type="text/html" title="From Manual Markdown to Automated Jekyll: Streamlining Blog Development" /><published>2025-07-31T00:00:00-05:00</published><updated>2025-07-31T00:00:00-05:00</updated><id>http://0.0.0.0:4000/blog/streamlining-jekyll-development</id><content type="html" xml:base="http://0.0.0.0:4000/blog/streamlining-jekyll-development/"><![CDATA[<p><em>How I transformed my static site development workflow from 30+ minutes of manual work to a 2-minute automated process using Jekyll, Docker, and Make.</em></p>
+
+<h2 id="the-problem-manual-everything">The Problem: Manual Everything</h2>
+
+<p>My personal website started as the simplest possible setup: raw Markdown files in a <code class="language-plaintext highlighter-rouge">blog/</code> directory with manual index updates. While this got me writing quickly, the development workflow had become painful:</p>
+
+<p><strong>Previous Process (30-45 minutes):</strong></p>
+<ol>
+  <li>Create new <code class="language-plaintext highlighter-rouge">.md</code> file in <code class="language-plaintext highlighter-rouge">blog/</code> directory (~2 minutes)</li>
+  <li>Write content with proper formatting (~20-30 minutes)</li>
+  <li>Manually update <code class="language-plaintext highlighter-rouge">index.md</code> with new post link (~2 minutes)</li>
+  <li>Test changes by pushing to GitHub and waiting for Pages deployment (~5-10 minutes)</li>
+  <li>Fix any formatting issues and repeat cycle (~5+ minutes)</li>
+</ol>
+
+<p>The biggest pain points were:</p>
+<ul>
+  <li><strong>No local preview</strong> - Had to push to see changes</li>
+  <li><strong>Manual index maintenance</strong> - Easy to forget or mess up</li>
+  <li><strong>Inconsistent styling</strong> - No templates or layouts</li>
+  <li><strong>Slow feedback loop</strong> - GitHub Pages deployment delays</li>
+</ul>
+
+<h2 id="the-solution-modern-jekyll-workflow">The Solution: Modern Jekyll Workflow</h2>
+
+<p>Working with Claude Code, I implemented a complete development workflow overhaul that maintains the simplicity I loved while adding professional tooling.</p>
+
+<h3 id="key-improvements">Key Improvements</h3>
+
+<p><strong>1. Proper Jekyll Structure</strong></p>
+<ul>
+  <li>Moved posts to <code class="language-plaintext highlighter-rouge">_posts/</code> directory with proper naming</li>
+  <li>Added front matter to all posts for metadata</li>
+  <li>Created <code class="language-plaintext highlighter-rouge">_layouts/</code> with consistent templates</li>
+  <li>Automated post listing with Jekyll’s post loop</li>
+</ul>
+
+<p><strong>2. Local Development Environment</strong></p>
+<ul>
+  <li>Docker-based Jekyll setup for consistency</li>
+  <li>Custom Dockerfile with pre-installed dependencies</li>
+  <li>Make commands for one-click development</li>
+  <li>Live reload for instant preview</li>
+</ul>
+
+<p><strong>3. Streamlined Commands</strong></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>make serve        <span class="c"># Start local server + open browser</span>
+make build        <span class="c"># Build site</span>
+make create-issue <span class="c"># GitHub issue creation</span>
+</code></pre></div></div>
+
+<h3 id="new-process-2-3-minutes">New Process (2-3 minutes)</h3>
+
+<p><strong>Creating a new post now:</strong></p>
+<ol>
+  <li>Run <code class="language-plaintext highlighter-rouge">make serve</code> (starts local server, opens browser automatically)</li>
+  <li>Create <code class="language-plaintext highlighter-rouge">_posts/YYYY-MM-DD-title.md</code> with front matter</li>
+  <li>Write content with instant preview</li>
+  <li>Commit and push when ready</li>
+</ol>
+
+<p>That’s it. The index updates automatically, styling is consistent, and I can see changes instantly.</p>
+
+<h2 id="technical-implementation">Technical Implementation</h2>
+
+<p>The transformation involved several key components:</p>
+
+<p><strong>Jekyll Configuration:</strong></p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">_config.yml</code> with GitHub Pages compatibility</li>
+  <li>Automated post discovery and listing</li>
+  <li>Proper permalink structure</li>
+</ul>
+
+<p><strong>Docker Setup:</strong></p>
+<ul>
+  <li>Custom image with dependencies pre-installed</li>
+  <li>Volume mounting for live file editing</li>
+  <li>Optimized layer caching to avoid repeated installs</li>
+</ul>
+
+<p><strong>Makefile Automation:</strong></p>
+<ul>
+  <li>One-command local development</li>
+  <li>Browser auto-opening</li>
+  <li>GitHub integration helpers</li>
+</ul>
+
+<p><strong>Content Migration:</strong></p>
+<ul>
+  <li>Moved 9 blog posts from <code class="language-plaintext highlighter-rouge">blog/</code> to <code class="language-plaintext highlighter-rouge">_posts/</code></li>
+  <li>Added proper front matter to all posts</li>
+  <li>Removed duplicate titles (layout handles display)</li>
+</ul>
+
+<h2 id="results-15x-faster-iteration">Results: 15x Faster Iteration</h2>
+
+<p>The workflow improvements created dramatic time savings:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Task</th>
+      <th>Before</th>
+      <th>After</th>
+      <th>Improvement</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Start development</td>
+      <td>Push to GitHub (~5-10 min)</td>
+      <td><code class="language-plaintext highlighter-rouge">make serve</code> (~30 sec)</td>
+      <td><strong>10-20x faster</strong></td>
+    </tr>
+    <tr>
+      <td>See changes</td>
+      <td>Wait for deployment (~5-10 min)</td>
+      <td>Instant with live reload</td>
+      <td><strong>Immediate</strong></td>
+    </tr>
+    <tr>
+      <td>Add new post</td>
+      <td>Manual index update (~2 min)</td>
+      <td>Automatic</td>
+      <td><strong>Eliminated</strong></td>
+    </tr>
+    <tr>
+      <td>Fix styling issues</td>
+      <td>Multiple deploy cycles (~15+ min)</td>
+      <td>Instant local preview</td>
+      <td><strong>15x+ faster</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Total time to publish:</strong> Down from 30-45 minutes to 2-3 minutes.</p>
+
+<h2 id="key-learnings">Key Learnings</h2>
+
+<ol>
+  <li>
+    <p><strong>Start simple, evolve thoughtfully</strong> - The basic Markdown approach got me writing, then I added tooling when pain points became clear.</p>
+  </li>
+  <li>
+    <p><strong>Local development is essential</strong> - The feedback loop improvement alone was worth the setup effort.</p>
+  </li>
+  <li>
+    <p><strong>Automation eliminates errors</strong> - No more forgetting to update the index or inconsistent formatting.</p>
+  </li>
+  <li>
+    <p><strong>Docker makes environments predictable</strong> - Same Jekyll version as GitHub Pages, works everywhere.</p>
+  </li>
+  <li>
+    <p><strong>Make is still relevant</strong> - Simple, universal, and perfect for project-specific commands.</p>
+  </li>
+</ol>
+
+<h2 id="the-meta-moment">The Meta Moment</h2>
+
+<p>This blog post itself demonstrates the new workflow in action. I created it in under 3 minutes:</p>
+<ul>
+  <li>Ran <code class="language-plaintext highlighter-rouge">make serve</code></li>
+  <li>Created the file with proper front matter</li>
+  <li>Wrote while previewing changes locally</li>
+  <li>No manual index updates needed</li>
+</ul>
+
+<p>The conversation that led to these improvements is preserved in the <a href="../docs/assets/transcripts/2025-07-31-jekyll-improvements-conversation.html">full transcript</a> - a detailed record of the iterative development process with Claude Code.</p>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<p>The foundation is now solid for consistent blogging with minimal friction. Future improvements might include:</p>
+<ul>
+  <li>CLI tool modernization (tracked in <a href="https://github.com/jayljohnson/nordhus.site/issues">GitHub issue</a>)</li>
+  <li>Content categories and tags</li>
+  <li>RSS feed optimization</li>
+  <li>Search functionality</li>
+</ul>
+
+<p>Sometimes the best way to improve your writing is to eliminate everything that makes writing harder.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[How I transformed my static site development workflow from 30+ minutes of manual work to a 2-minute automated process using Jekyll, Docker, and Make.]]></summary></entry><entry><title type="html">From Cluttered Chaos to Functional Storage</title><link href="http://0.0.0.0:4000/blog/shed-organization/" rel="alternate" type="text/html" title="From Cluttered Chaos to Functional Storage" /><published>2025-07-26T00:00:00-05:00</published><updated>2025-07-26T00:00:00-05:00</updated><id>http://0.0.0.0:4000/blog/shed-organization</id><content type="html" xml:base="http://0.0.0.0:4000/blog/shed-organization/"><![CDATA[<p><em>How I transformed my unusable shed into organized space on a Saturday.</em></p>
+
+<p>The transformation was dramatic. What had been an unusable, cluttered space where you couldn’t even walk became a clean and organized shed perfect for storing outdoor gear. Garden supplies, tools, and equipment all found their proper homes, with clear walkways and easy access to everything.</p>
+
+<p>But getting there required a complete teardown and rebuild of how I approached shed organization.</p>
+
+<h2 id="the-reality-check">The Reality Check</h2>
+
+<p>It happened again. The shed’s floor space was completely overtaken by clutter, leaving nowhere left to walk. Garden supplies, outdoor toys, dimensional lumber scraps, lawn tools, and outdoor chemicals had taken over every inch. The shed had become an unusable mess, and organizing it was long overdue.</p>
+
+<p>For some time, we’d wanted to add shelving to make it easier to keep the space organized. But to do that, we needed the shed to be completely empty first—which meant facing the full scope of the problem.</p>
+
+<h2 id="the-strategic-approach">The Strategic Approach</h2>
+
+<p>This wasn’t going to be a quick afternoon project. I knew from experience that trying to make “keep or toss” decisions while emptying the space would slow me down too much. So Mariana and I agreed to defer all purging decisions until after the shelves were built and everything was put back in its place.</p>
+
+<p><strong>Game Plan:</strong></p>
+<ul>
+  <li>Empty the shed completely</li>
+  <li>Build shelving system using scrap lumber</li>
+  <li>Add vertical storage solutions</li>
+  <li>Reorganize everything with purpose</li>
+  <li>Purge what doesn’t fit or belong</li>
+</ul>
+
+<p>This approach meant we could see what we actually had and what we no longer needed, while ensuring our main goal of adding functional storage would be accomplished in one day.</p>
+
+<hr />
+
+<h2 id="project-specs--materials">Project Specs &amp; Materials</h2>
+
+<p><strong>Time Investment:</strong> 8 hours total</p>
+<ul>
+  <li>1.5 hours: Emptying and cleaning</li>
+  <li>3.5 hours: Shelf construction</li>
+  <li>3 hours: Installing wall hooks and organizing</li>
+</ul>
+
+<p><strong>Materials Used:</strong></p>
+<ul>
+  <li>Assorted 2x4 lumber scraps (approximately 40 linear feet)</li>
+  <li>Leftover MDF sheets for shelf surfaces</li>
+  <li>3” construction screws for the lumber</li>
+  <li>1.25” fencing screws for the surface</li>
+  <li>Wall hooks for vertical storage</li>
+  <li>Impact driver, circular saw</li>
+</ul>
+
+<p><strong>Total Cost:</strong> $0 (used existing materials)</p>
+
+<hr />
+
+<h2 id="phase-1-empty-and-assess">Phase 1: Empty and Assess</h2>
+
+<p>Before any building could begin, Mariana and I removed everything from the shed and gave the floors a good sweep. It was tempting to start sorting through items, but we stuck to our plan and just focused on creating a clean workspace.  All nails that were being used to hang things were removed.</p>
+
+<p><strong>What I learned:</strong> Keep decision making light while we clear. Emptying first and organizing later feels faster and more effective than trying to do both simultaneously. I started a “purge pile” for obvious discards, but didn’t dwell on borderline decisions—those could wait.</p>
+
+<h2 id="phase-2-design-the-storage-system">Phase 2: Design the Storage System</h2>
+
+<p>The ideal location for new shelves was under the existing workbench. I’ve kept most of my “good” wood scraps over the years, so I had plenty of 2x4s to choose from for the project.</p>
+
+<p><strong>My Design Criteria:</strong></p>
+<ul>
+  <li>Use 2x4s around the shelf perimeter for strength</li>
+  <li>Attach end supports directly to wall framing</li>
+  <li>Add middle legs for extra support</li>
+  <li>Position outward facing lumber with the narrow edge facing out for more space</li>
+  <li>Locate the shelf midway between floor and workbench and have enough clearance on the floor for coolers.</li>
+</ul>
+
+<p><strong>What I learned:</strong> Plan for imperfection. Like many shed structures, my walls and floors aren’t perfectly square or level. I worked around this by taking measurements that would make the front edge of the shelf the same depth as my workbench. Using a 4-foot level, I marked the floor where the front edge would sit, then used that as the basis for all other measurements. This prevented frustration and gave me better results.</p>
+
+<h2 id="phase-3-construction-sequence">Phase 3: Construction Sequence</h2>
+
+<p>I planned the joints so the screw heads would be hidden from view, and used construction screws with an impact wrench for strong, quick assembly.</p>
+
+<p><strong>My Assembly Steps:</strong></p>
+<ol>
+  <li>Started with a 2x4 across the back wall</li>
+  <li>Built the back corner frame</li>
+  <li>Repeated the design for the front corner</li>
+  <li>Closed off the middle span with one final 2x4</li>
+  <li>Ripped leftover MDF board for the shelf surfaces</li>
+  <li>Screwed the MDF into the completed frame</li>
+</ol>
+
+<p>For the wall joints, I positioned the 2x4 supports one board length lower so the front edge could rest flat on top—a detail that made the whole structure more stable while maximizing the usable space.</p>
+
+<p><strong>Something I learned:</strong> I built it in smaller sections rather than trying to measure and cut everything up-front.  I didn’t have any drawings or plans to follow so I found this approach suitable.  It avoided the “analysis paralysis” problem that plagues many of my DIY projects.</p>
+
+<h2 id="phase-4-vertical-storage-solutions">Phase 4: Vertical Storage Solutions</h2>
+
+<p>Beyond the main shelving, I added wall hooks to hang ladders and a small kayak. These vertical storage solutions freed up even more floor space and kept frequently used items easily accessible.</p>
+
+<p><strong>What struck me:</strong> Wall hooks and overhead storage turned out to be just as valuable as shelving for maximizing space efficiency. I hadn’t fully appreciated how much could hang versus what needed to sit on shelves.  Both ladders fit on one set of hooks!</p>
+
+<h2 id="phase-5-strategic-organization">Phase 5: Strategic Organization</h2>
+
+<p>The new shelving system provides ample storage while maintaining clear walkways and easy access to everything. When it came time to put things back, it became immediately obvious which items we no longer needed—exactly as we’d planned.</p>
+
+<p>I managed to get all the important items put away before dinner time, leaving just the final organization touches for the next day.</p>
+
+<h2 id="key-lessons-for-future-projects">Key Lessons for Future Projects</h2>
+
+<p><strong>Work with what you have.</strong> Using scrap lumber and existing materials kept costs at zero while creating a sturdy, functional solution. Sometimes the best projects come from creatively using what’s already in your workshop.</p>
+
+<p><strong>Tool organization matters.</strong> Most of my projects happen on nights or weekends, when I’m already tired. I often spend too much time looking for tools instead of using them. A toolbelt and organized tool bags make a huge difference in productivity.</p>
+
+<p><strong>Plan for cleanup time.</strong> Finishing earlier and planning more time for organizing and putting tools away would be wiser. A disorganized start to the next project makes it much harder to get momentum going.</p>
+
+<h2 id="the-bottom-line">The Bottom Line</h2>
+
+<p>This project reinforced that organization requires both physical solutions and process discipline. The shelving created the structure needed for long-term organization, but the methodical approach—empty first, build second, organize third—made the difference between a weekend project and a month-long ordeal.</p>
+
+<p>The shed is now a functional space that actually serves its purpose. Garden tools have designated spots, seasonal items are easily accessible, and there’s room to walk around and work. Most importantly, everything has a place, which makes it much easier to keep organized going forward.</p>
+
+<p><strong>Next up:</strong> The garage needs similar attention, and we’re planning pegboard for the garden hand tools. But for now, I’m enjoying having one completely organized outbuilding—and the satisfaction of building exactly what we needed with materials that were already on hand.</p>
+
+<h2 id="photo-gallery">Photo Gallery</h2>
+
+<p>The workbench after clearing out the shed and gathering tools
+<img src="/docs/assets/images/2025-07-26-shed-organization/IMG20250726132239.jpg" alt="IMG20250726132239.jpg" /></p>
+
+<p>Added the back support along the wall
+<img src="/docs/assets/images/2025-07-26-shed-organization/IMG20250726132251.jpg" alt="IMG20250726132251.jpg" /></p>
+
+<p>Attached the first end support to the studs, spaced by 1.5” to account for the front support flipped flat
+<img src="/docs/assets/images/2025-07-26-shed-organization/IMG20250726133553.jpg" alt="IMG20250726133553.jpg" /></p>
+
+<p>Checking for plumb
+<img src="/docs/assets/images/2025-07-26-shed-organization/IMG20250726133634.jpg" alt="IMG20250726133634.jpg" /></p>
+
+<p>About to screw the leg to the first front support
+<img src="/docs/assets/images/2025-07-26-shed-organization/IMG20250726135424.jpg" alt="IMG20250726135424.jpg" /></p>
+
+<p>Front support dry fitted, and checking for plumb
+<img src="/docs/assets/images/2025-07-26-shed-organization/IMG20250726140034.jpg" alt="IMG20250726140034.jpg" /></p>
+
+<p>level enough!
+<img src="/docs/assets/images/2025-07-26-shed-organization/IMG20250726140633.jpg" alt="IMG20250726140633.jpg" /></p>
+
+<p>First section done!
+<img src="/docs/assets/images/2025-07-26-shed-organization/IMG20250726141408.jpg" alt="IMG20250726141408.jpg" /></p>
+
+<p>Dry fitting the remaining front edges
+<img src="/docs/assets/images/2025-07-26-shed-organization/IMG20250726141705.jpg" alt="IMG20250726141705.jpg" /></p>
+
+<p>More dry fitting
+<img src="/docs/assets/images/2025-07-26-shed-organization/IMG20250726141718.jpg" alt="IMG20250726141718.jpg" /></p>
+
+<p>Other side is looking level
+<img src="/docs/assets/images/2025-07-26-shed-organization/IMG20250726141922.jpg" alt="IMG20250726141922.jpg" /></p>
+
+<p>Double checking alignment with the workbench
+<img src="/docs/assets/images/2025-07-26-shed-organization/IMG20250726142840.jpg" alt="IMG20250726142840.jpg" /></p>
+
+<p>Framing done!
+<img src="/docs/assets/images/2025-07-26-shed-organization/IMG20250726144728.jpg" alt="IMG20250726144728.jpg" /></p>
+
+<p>First shelf surface added
+<img src="/docs/assets/images/2025-07-26-shed-organization/IMG20250726150328.jpg" alt="IMG20250726150328.jpg" /></p>
+
+<p>Done!  Starting to put things away.
+<img src="/docs/assets/images/2025-07-26-shed-organization/IMG20250726162433.jpg" alt="IMG20250726162433.jpg" /></p>]]></content><author><name></name></author><summary type="html"><![CDATA[How I transformed my unusable shed into organized space on a Saturday.]]></summary></entry><entry><title type="html">If you’re not falling, you’re not trying hard enough</title><link href="http://0.0.0.0:4000/blog/falling/" rel="alternate" type="text/html" title="If you’re not falling, you’re not trying hard enough" /><published>2023-08-25T00:00:00-05:00</published><updated>2023-08-25T00:00:00-05:00</updated><id>http://0.0.0.0:4000/blog/falling</id><content type="html" xml:base="http://0.0.0.0:4000/blog/falling/"><![CDATA[<p>In ice hockey, the ability to turn quickly at speed is a huge advantage.  Turns present an opportunity to drive a play or react to an opponent, and in either case the acceleration out of a turn gives an advantage to the skater.</p>
+
+<p>A drill we used to do was “circles” where we’d line up in the corner of the boards, and starting from the defensive zone faceoff circle, we would go at top speed around the top edge of all five faceoff circles.</p>
+
+<p>The point was to keep the center of gravity low and work on cross-over skating.  The lower you are to the ice, the sturdier you are.  And when skating at top speed you must have a low center of gravity to hold the edge.</p>
+
+<h1 id="falling-versus-failure">Falling versus Failure</h1>
+<p>I share this story with my kids because it’s a good metaphore for life.  It’s okay to fall, especially if you are giving it all you have.  Falling does not mean someone is a failure.  Failure is okay because it’s a learning opportunity.</p>
+
+<p>We are not defined by our mistakes.  We are defined by what we do next.  That takes humility and self awareness.  That’s the real skill to learn.</p>
+
+<h1 id="we-only-know-our-limits-when-we-try-to-push-past-them">We only know our limits when we try to push past them</h1>
+
+<p>Getting back up quickly and focusing on the next play is usually a good path forward.  And when falling happens in the same spot on the ice or the same body position, it tells you where to up your game, and where your blind spots are.</p>
+
+<p>There are things inside of my control, like:</p>
+<ul>
+  <li>Are my skates sharpened?</li>
+  <li>Are my laces tied correctly?</li>
+  <li>Did I sleep well?</li>
+  <li>Are my legs tired?</li>
+</ul>
+
+<p>Don’t let those become excuses.  Failures are the best teacher and are often overlooked because it’s uncomfortable to see my own flaws.  The important thing to know is that my flaws don’t mean I am flawed.</p>
+
+<p>Know your limits by trying to push past them, and grow where you find the gaps.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Know your limits by failing - lessons from ice hockey applied to life.]]></summary></entry><entry><title type="html">Sunrise - draft</title><link href="http://0.0.0.0:4000/blog/sunrise-draft/" rel="alternate" type="text/html" title="Sunrise - draft" /><published>2023-08-06T00:00:00-05:00</published><updated>2023-08-06T00:00:00-05:00</updated><id>http://0.0.0.0:4000/blog/sunrise-draft</id><content type="html" xml:base="http://0.0.0.0:4000/blog/sunrise-draft/"><![CDATA[<p><img src="/docs/assets/images/IMG_20230806_062907539_HDR~2.jpg" alt="Test" /></p>]]></content><author><name></name></author><summary type="html"><![CDATA[A draft post with a sunrise photograph]]></summary></entry><entry><title type="html">Soliciting Feedback</title><link href="http://0.0.0.0:4000/blog/soliciting-feedback/" rel="alternate" type="text/html" title="Soliciting Feedback" /><published>2023-08-04T00:00:00-05:00</published><updated>2023-08-04T00:00:00-05:00</updated><id>http://0.0.0.0:4000/blog/soliciting-feedback</id><content type="html" xml:base="http://0.0.0.0:4000/blog/soliciting-feedback/"><![CDATA[<p>Amazon really tries to embody its <a href="https://www.amazon.jobs/content/our-workplace/leadership-principles">leadership principles</a>. It can feel a bit cult-like.  That is by design as a way to preserve company culture while experiencing some of the most extreme scaling ever seen.</p>
+
+<p>One leadership principal stands out:</p>
+
+<blockquote>
+  <p>Are right, a lot</p>
+</blockquote>
+
+<p>The point is not to “be” right.  Reading past the first line, the real gem here is:</p>
+
+<blockquote>
+  <p>They seek diverse perspectives and work to disconfirm their beliefs</p>
+</blockquote>
+
+<p>That should be the first line.  It’s about counterbalancing our biases and checking our egos.</p>
+
+<p>My former manager gave me this feedback as parting advice just before he transferred to a different team.  He explained that it’s one of the hardest leadership principles to get right and most people miss the point.  He also left me with two book recommendations that have helped me check my own biases:</p>
+<ul>
+  <li>Kahneman, D. <em>Thinking, Fast and Slow</em></li>
+  <li>Pink, D. <em>To Sell Is Human</em></li>
+</ul>
+
+<p>From my experience, meetings or group forums like messaging and emails are usually the wrong places to seek feedback on a new topic or problem.  One-on-one conversations are much more productive.  Then after meeting individually, incorporating the feedback into writing, and refining my thinking, it is a better time to meet as a group to align on next steps.</p>
+
+<blockquote>
+  <p>Boiling the ocean</p>
+</blockquote>
+
+<p>It’s really hard at first to define the scope of a new problem space.  And sometimes it’s tempting to go big and fix related problems at once.  Gathering feedback helps to refine the problem and narrow down the scope.  Breaking a big problem down into smaller, digestable pieces is a better approach.  The “don’t do” list is equally important as the “to do” list.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Reflections on Amazon's leadership principle 'Are right, a lot' and the importance of seeking diverse perspectives to disconfirm beliefs]]></summary></entry><entry><title type="html">Immigrant Song</title><link href="http://0.0.0.0:4000/blog/immigrant-song/" rel="alternate" type="text/html" title="Immigrant Song" /><published>2023-08-04T00:00:00-05:00</published><updated>2023-08-04T00:00:00-05:00</updated><id>http://0.0.0.0:4000/blog/immigrant-song</id><content type="html" xml:base="http://0.0.0.0:4000/blog/immigrant-song/"><![CDATA[<blockquote>
+  <p>We come from the land of the ice and snow
+From the midnight sun where the hot springs flow</p>
+</blockquote>
+
+<p><em>from Immigrant Song, by Led Zeppelin.  Page/Plant</em></p>
+
+<p>When my Norwegian ancestors immigrated to the US, they left with the surname Nordhus.  When they went through immigration processing their surname was changed to Johnson.  I picked the name Nordhus for my personal blog as an appreciation of those roots.  Johnson is the <a href="https://www.thoughtco.com/most-common-us-surnames-1422656">2nd most common surname in the U.S</a>.</p>
+
+<p>Over a few generations, they made their way to Minnesota, and my paternal grandfather moved the family to Alaska where my father was born.  I was later born there too.</p>
+
+<p>I’m a fan of Led Zeppelin and the lyrics above resonated with me because they describe parts of the place where I grew up.  The midnight sun was wonderful to play in as a kid.  A couple decades after hearing that song that for the first time, I read the lyrics and realized that it is actually about Norse culture and mythology.</p>
+
+<blockquote>
+  <p>Valhalla, I am coming</p>
+</blockquote>
+
+<p>I recently got into a geneology rabbit hole, and came to appreciate how my place in life was shaped by a stream of immigrants from about a dozen now countries.  They left home for many reasons, and many of them probably never saw their motherland again.  The U.S. is a nation of immigrants and it’s important to remeber those roots.  We live on Native land.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Personal reflections on Norwegian ancestry, family immigration history, and the connection to Led Zeppelin's Immigrant Song]]></summary></entry><entry><title type="html">Why Write?</title><link href="http://0.0.0.0:4000/blog/why-write/" rel="alternate" type="text/html" title="Why Write?" /><published>2023-08-03T00:00:00-05:00</published><updated>2023-08-03T00:00:00-05:00</updated><id>http://0.0.0.0:4000/blog/why-write</id><content type="html" xml:base="http://0.0.0.0:4000/blog/why-write/"><![CDATA[<p>There are many reasons to write.  My current motivations include:</p>
+<ul>
+  <li>To get ideas out of my head, and help organize my thoughts</li>
+  <li>To get better at writing</li>
+  <li>To improve on sharing the right level of context for the right audience</li>
+</ul>
+
+<h2 id="processing-ideas-and-organizing-thoughts">Processing ideas and organizing thoughts</h2>
+<p>Many times, ideas that sound great in my head are hard for me to verbally communicate with others.<br />
+Writing gives me a chance to process those thoughts and refine something that might be half baked.  Is it worth sharing?  When is the right time to share?  Is it something that could surprise someone or catch them off guard?</p>
+
+<h2 id="improving-writing-skills">Improving writing skills</h2>
+<p>Writing is like anything else.  It gets better with practice.</p>
+
+<p>I haven’t ever had a consistent habit of writing and hope to build one.  I’ve tried blogging about technical hobby projects in the past and a lot of those projects were in a half-baked state.  I learned a lot from the projects themselves, but when I read my writing a year later it didnt age well.  That inspired me to start a new blogging website with a broad, generalized scope where I can write about anything.</p>
+
+<h2 id="understanding-the-audience">Understanding the Audience</h2>
+
+<h3 id="personal-writing">Personal writing</h3>
+<p>These blog posts are written for an audience of one.  Myself.</p>
+
+<p>I have no expectations for others to read or like what I write about.  There is freedom to explore and that gives me space to write without fear of judgement.</p>
+
+<p>If my writing resonates with others, I’ll take that as a signal that my writing is coming from a place of authenticity.  I tend to be a people pleaser and often seek validation from others.  That hasn’t served me well, and usually isn’t authentic either.  I hope to improve on that.</p>
+
+<p>If I can write for myself, clearly articulate my thoughts, and come back a day later and understand my own writing, I will call that a success.</p>
+
+<h3 id="business-writing">Business writing</h3>
+<p>In a work setting, my writing can involve an audience of many different stakeholders:</p>
+<ul>
+  <li>individual contributors, managers, managers of managers, executives</li>
+  <li>project or program managers</li>
+  <li>software engineers</li>
+  <li>data analysts and data scientists</li>
+  <li>attorneys</li>
+  <li>customer success teams</li>
+  <li>business development and sales operations</li>
+  <li>external vendors</li>
+</ul>
+
+<p>It is difficult, maybe impossible, to write one document that serves all stakeholders with the right level of context.
+Within a single document, the context needs to start very high level so that all readers can understand the purpose of the document, the problem it describes, the business impact of resolving the problem, and the risks of doing nothing.</p>
+
+<p>When framing the problem, avoid technical details and jargon.  Write as if it’s the first time anyone is learning about the problem.  A challenge I’ve burned myself with many times is forgetting that something that feels common sense to me came from days, weeks, or even months or years of context gathering.  It’s usually safer to assume that the audience knows nothing about the problem and start from there.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Personal reflections on motivations for writing - organizing thoughts, improving skills, and understanding different audiences]]></summary></entry><entry><title type="html">Career Development</title><link href="http://0.0.0.0:4000/blog/career-development/" rel="alternate" type="text/html" title="Career Development" /><published>2023-08-03T00:00:00-05:00</published><updated>2023-08-03T00:00:00-05:00</updated><id>http://0.0.0.0:4000/blog/career-development</id><content type="html" xml:base="http://0.0.0.0:4000/blog/career-development/"><![CDATA[<blockquote>
+  <p>Dont run away from something, run to something</p>
+</blockquote>
+
+<p><em>- career and life advice from a mentor</em></p>
+
+<p>I’ve noticed patterns with how I handle career development.</p>
+
+<p>When I felt stagnant in my last role, I became more open to finding other roles.  I replied back to recruiter cold messages for more info.  I searched job boards for interesting companies that were hiring.  I took interviews.  Eventually, I got an offer and accepted it.</p>
+
+<p>What I didn’t do a great job of was looking for ways to make my current role better.  Where was that stagnant feeling coming from?  I had a supportive manager, and was working on a project that “moved the needle” for our organization.  On the surface, my career prospects looked great.  I found out after I gave my 2-week notice that I was on the cusp of a promotion going through to become a senior data engineer.</p>
+
+<p>I think I was missing a values alignment.  The project that brought me close to promotion also served to divest from a product that was built by people I had worked closely with in the past.   Leaders that had mentored and supported me in my career.  I had emotional investments in that product and team.  Human connections.  Work friendships.  They built orchestration tooling that our team relied on.  It felt I was betraying them to be the only team using that product, while leading the project to migrate off of it and onto something new.</p>
+
+<p>The decision was made to stop investing in that product and move away from it.  The data pipeline our team ran on that platform had grown very complex and hard to maintain at the the scale it had grown into.  There were options to extend the product features to better support our team needs, but my management chain did not have the political will to do that work.  I had to stop questioning the decision and direction in order to stay in that role.  I had to be a team player and march together with our small group of engineers who were piloting the new tooling together with a high impact project.  So I stopped questioning it openly while seeds of doubt remained in my mind.  The project was successful and marching ahead full steam with more and more engineers contributing to the new orchestration platform and codebase.</p>
+
+<p>I didn’t talk to those mentors about my conflicted take on the project.  I avoided confronting the issues that had me feeling conflicted.  I chose to disconnect myself from the interpersonal, emotional, and tactical aspects of work. 
+I was experiencing cognitive dissonance about the work and my role in it.  It felt like I was out of options to deal with it.  So I focused on the tactical aspect of building the new platform, without resolving the others.</p>
+
+<p>Stagnation was a term I had somehow anchored on.  It implies standing still.  Feeling stuck, even anxious.  There was motion all around me, and I was moving forward too.  But part of me was still stuck in the past and wondering about the present and future.</p>
+
+<p>Deciding when to stay the course and when to move on is hard.  Back to my job change, I wasn’t seeking out a new job yet I was at an inflection point where I was open to change.  Opportunity found me and I gave up some real money and upward mobility to take it.  I decided that the money and status wasn’t worth staying.  It was in the middle of pandemic lockdowns and I got offered a permanently remote job with a good base salary, with a company that was helping people who were struggling with the pandemic, myself included.  That was important to me and the work felt more impactful and interesting.</p>
+
+<p>Did I run from problems in my old role?
+Did I run to something new?
+Was there some of both?
+Did I bring any unresolved baggage from my old role into my new one?</p>
+
+<h1 id="conclusions">Conclusions</h1>
+
+<p>Where do I want to be a few years from now?  I’ll face many new challenging and conflicting situations like this one.  I hope to be able to handle them better and with less cognitive dissonance.    To catch that stagnant feeling early and really understand it.</p>
+
+<p>Do I want to be an individual contribtor or a manager in a few years?  I’m not sure, and I feel it depends a lot on the company.  I’ll be better prepared for either if I can better prepare myself for these types of scenarios in any role.</p>
+
+<p>Soft skills are the hardest and most impactful skills to learn.  Career development is multifaceted.  There is no single path.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Reflections on career transitions, cognitive dissonance at work, and learning to run toward opportunities rather than away from problems]]></summary></entry><entry><title type="html">Creating a static website with a custom domain and free hosting</title><link href="http://0.0.0.0:4000/blog/barebones-website-with-custom-domain/" rel="alternate" type="text/html" title="Creating a static website with a custom domain and free hosting" /><published>2023-08-02T00:00:00-05:00</published><updated>2023-08-02T00:00:00-05:00</updated><id>http://0.0.0.0:4000/blog/barebones-website-with-custom-domain</id><content type="html" xml:base="http://0.0.0.0:4000/blog/barebones-website-with-custom-domain/"><![CDATA[<h1 id="creating-a-static-website-with-a-custom-domain-and-free-hosting">Creating a static website with a custom domain and free hosting</h1>
+<p>This post describes a simple way to create a basic website with a custom domain name and free hosting with github pages.</p>
+
+<h2 id="steps">Steps</h2>
+<p>These steps can be completed on any web browser.  Command line tools are not required.</p>
+
+<ol>
+  <li>Buy a domain name.  In this example I used <a href="namecheap.com">namecheap.com</a>.</li>
+  <li>Set up a new github public repository (repo)</li>
+  <li>Add a file named <code class="language-plaintext highlighter-rouge">index.md</code> to the repo root path.  The file can contain any text like <code class="language-plaintext highlighter-rouge">hello world</code></li>
+  <li>Edit the repo settings enter the custom domain name.  Then go to the <code class="language-plaintext highlighter-rouge">pages</code> tab and enable github pages.</li>
+  <li>Go back to the domain name in <a href="namecheap.com">namecheap.com</a> and configure the advanced dns settings.  See <a href="https://www.namecheap.com/support/knowledgebase/article.aspx/9645/2208/how-do-i-link-my-domain-to-github-pages/">this namecheap article</a> for details.</li>
+  <li>Use any browser to try reaching the new website.  Try it with both <code class="language-plaintext highlighter-rouge">http://</code> and <code class="language-plaintext highlighter-rouge">https://</code>, and with and without a <code class="language-plaintext highlighter-rouge">www</code> prefix in the domain name.  If there are errors wait 10 minutes and try again.  DNS changes take some time to propagate.</li>
+  <li>Edit the <code class="language-plaintext highlighter-rouge">index.md</code> file to make some changes and see them show up on the website.  It can take a few minutes for the changes to appear because Github pages use a <a href="https://en.m.wikipedia.org/wiki/Content_delivery_network">content delivery network</a> (CDN) that caches the page.</li>
+</ol>
+
+<h2 id="conclusions">Conclusions</h2>
+<ol>
+  <li>It took about an hour to complete these steps from a mobile device browser and create a functioning website.  I did most of this experiment while stuck in traffic as a car passenger.  I did it to scratch a personal itch and see if it could be done in a low tech way.  From a computer with an actual keyboard it could be done a lot more efficiently.  A lot of the time was spent choosing a domain name.</li>
+  <li>This current article was also written from a phone browser using the github broswer-based text editor.  It did the job though the ergonomics are not the best on my mobile device.  I simply don’t have access to a laptop right now.</li>
+  <li>Markdown is superior to html for browser-based editing.  It takes way fewer keystrokes to do the same thing.</li>
+</ol>
+
+<p>I am happy with the results.  From here, the next steps I may take are:</p>
+<ul>
+  <li>Check out the GitHub repo to my laptop for easier writing from a text editor</li>
+  <li>Look into <a href="https://docs.github.com/en/pages/setting-up-a-github-pages-site-with-jekyll/about-github-pages-and-jekyll">using jekyll for nicer formatting</a></li>
+</ul>
+
+<p>For now I’ll focus on writing and consider this “good enough” for that purpose.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[A simple way to create a basic website with a custom domain name and free hosting with GitHub Pages.]]></summary></entry><entry><title type="html">Travel Packing Essentials</title><link href="http://0.0.0.0:4000/blog/travel-packing/" rel="alternate" type="text/html" title="Travel Packing Essentials" /><published>2023-08-01T00:00:00-05:00</published><updated>2023-08-01T00:00:00-05:00</updated><id>http://0.0.0.0:4000/blog/travel-packing</id><content type="html" xml:base="http://0.0.0.0:4000/blog/travel-packing/"><![CDATA[<h2 id="essentials-for-travel">Essentials for travel</h2>
+<p>Things to pack for travel in Latin America, or really anywhere.</p>
+
+<p>This is a working list that will be updated over time.</p>
+
+<h3 id="toiletries">Toiletries</h3>
+<p>Not every public bathroom has these things</p>
+<ul>
+  <li>liquid hand soap</li>
+  <li>hand sanitizer</li>
+  <li>toilette paper or wipes</li>
+</ul>
+
+<h3 id="medication-and-suppliments">Medication and suppliments</h3>
+<p>Travelers diarrhea is awful and very real</p>
+<ul>
+  <li>Immodium or other anti-diarrhea medication.  Because, it can happen at the worst possible time.</li>
+  <li>Probiotic supplement to help restore gut health</li>
+  <li>Electrolyte powder for rehydration.  Coconut water can work in a pinch, preferably green (young) coconuts which have less fat content.</li>
+</ul>]]></content><author><name></name></author><summary type="html"><![CDATA[A practical guide to essential items for travel, focusing on toiletries and medications for Latin America and beyond]]></summary></entry></feed>

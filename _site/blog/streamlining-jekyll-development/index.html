@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>From Manual Markdown to Automated Jekyll: Streamlining Blog Development - Jay Johnson</title>
+    <meta name="description" content="How I transformed my static site development workflow from 30+ minutes of manual work to a 2-minute automated process using Jekyll, Docker, and Make.">
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1, h2, h3 { color: #2c3e50; }
+        a { color: #3498db; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .post-meta { color: #7f8c8d; font-size: 0.9em; }
+        img { max-width: 100%; height: auto; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><a href="/">Jay Johnson</a></h1>
+    </header>
+    
+    <main>
+        <article>
+    <header>
+        <h1>From Manual Markdown to Automated Jekyll: Streamlining Blog Development</h1>
+        <p class="post-meta">July 31, 2025</p>
+    </header>
+    
+    <p><em>How I transformed my static site development workflow from 30+ minutes of manual work to a 2-minute automated process using Jekyll, Docker, and Make.</em></p>
+
+<h2 id="the-problem-manual-everything">The Problem: Manual Everything</h2>
+
+<p>My personal website started as the simplest possible setup: raw Markdown files in a <code class="language-plaintext highlighter-rouge">blog/</code> directory with manual index updates. While this got me writing quickly, the development workflow had become painful:</p>
+
+<p><strong>Previous Process (30-45 minutes):</strong></p>
+<ol>
+  <li>Create new <code class="language-plaintext highlighter-rouge">.md</code> file in <code class="language-plaintext highlighter-rouge">blog/</code> directory (~2 minutes)</li>
+  <li>Write content with proper formatting (~20-30 minutes)</li>
+  <li>Manually update <code class="language-plaintext highlighter-rouge">index.md</code> with new post link (~2 minutes)</li>
+  <li>Test changes by pushing to GitHub and waiting for Pages deployment (~5-10 minutes)</li>
+  <li>Fix any formatting issues and repeat cycle (~5+ minutes)</li>
+</ol>
+
+<p>The biggest pain points were:</p>
+<ul>
+  <li><strong>No local preview</strong> - Had to push to see changes</li>
+  <li><strong>Manual index maintenance</strong> - Easy to forget or mess up</li>
+  <li><strong>Inconsistent styling</strong> - No templates or layouts</li>
+  <li><strong>Slow feedback loop</strong> - GitHub Pages deployment delays</li>
+</ul>
+
+<h2 id="the-solution-modern-jekyll-workflow">The Solution: Modern Jekyll Workflow</h2>
+
+<p>Working with Claude Code, I implemented a complete development workflow overhaul that maintains the simplicity I loved while adding professional tooling.</p>
+
+<h3 id="key-improvements">Key Improvements</h3>
+
+<p><strong>1. Proper Jekyll Structure</strong></p>
+<ul>
+  <li>Moved posts to <code class="language-plaintext highlighter-rouge">_posts/</code> directory with proper naming</li>
+  <li>Added front matter to all posts for metadata</li>
+  <li>Created <code class="language-plaintext highlighter-rouge">_layouts/</code> with consistent templates</li>
+  <li>Automated post listing with Jekyll’s post loop</li>
+</ul>
+
+<p><strong>2. Local Development Environment</strong></p>
+<ul>
+  <li>Docker-based Jekyll setup for consistency</li>
+  <li>Custom Dockerfile with pre-installed dependencies</li>
+  <li>Make commands for one-click development</li>
+  <li>Live reload for instant preview</li>
+</ul>
+
+<p><strong>3. Streamlined Commands</strong></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>make serve        <span class="c"># Start local server + open browser</span>
+make build        <span class="c"># Build site</span>
+make create-issue <span class="c"># GitHub issue creation</span>
+</code></pre></div></div>
+
+<h3 id="new-process-2-3-minutes">New Process (2-3 minutes)</h3>
+
+<p><strong>Creating a new post now:</strong></p>
+<ol>
+  <li>Run <code class="language-plaintext highlighter-rouge">make serve</code> (starts local server, opens browser automatically)</li>
+  <li>Create <code class="language-plaintext highlighter-rouge">_posts/YYYY-MM-DD-title.md</code> with front matter</li>
+  <li>Write content with instant preview</li>
+  <li>Commit and push when ready</li>
+</ol>
+
+<p>That’s it. The index updates automatically, styling is consistent, and I can see changes instantly.</p>
+
+<h2 id="technical-implementation">Technical Implementation</h2>
+
+<p>The transformation involved several key components:</p>
+
+<p><strong>Jekyll Configuration:</strong></p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">_config.yml</code> with GitHub Pages compatibility</li>
+  <li>Automated post discovery and listing</li>
+  <li>Proper permalink structure</li>
+</ul>
+
+<p><strong>Docker Setup:</strong></p>
+<ul>
+  <li>Custom image with dependencies pre-installed</li>
+  <li>Volume mounting for live file editing</li>
+  <li>Optimized layer caching to avoid repeated installs</li>
+</ul>
+
+<p><strong>Makefile Automation:</strong></p>
+<ul>
+  <li>One-command local development</li>
+  <li>Browser auto-opening</li>
+  <li>GitHub integration helpers</li>
+</ul>
+
+<p><strong>Content Migration:</strong></p>
+<ul>
+  <li>Moved 9 blog posts from <code class="language-plaintext highlighter-rouge">blog/</code> to <code class="language-plaintext highlighter-rouge">_posts/</code></li>
+  <li>Added proper front matter to all posts</li>
+  <li>Removed duplicate titles (layout handles display)</li>
+</ul>
+
+<h2 id="results-15x-faster-iteration">Results: 15x Faster Iteration</h2>
+
+<p>The workflow improvements created dramatic time savings:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Task</th>
+      <th>Before</th>
+      <th>After</th>
+      <th>Improvement</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Start development</td>
+      <td>Push to GitHub (~5-10 min)</td>
+      <td><code class="language-plaintext highlighter-rouge">make serve</code> (~30 sec)</td>
+      <td><strong>10-20x faster</strong></td>
+    </tr>
+    <tr>
+      <td>See changes</td>
+      <td>Wait for deployment (~5-10 min)</td>
+      <td>Instant with live reload</td>
+      <td><strong>Immediate</strong></td>
+    </tr>
+    <tr>
+      <td>Add new post</td>
+      <td>Manual index update (~2 min)</td>
+      <td>Automatic</td>
+      <td><strong>Eliminated</strong></td>
+    </tr>
+    <tr>
+      <td>Fix styling issues</td>
+      <td>Multiple deploy cycles (~15+ min)</td>
+      <td>Instant local preview</td>
+      <td><strong>15x+ faster</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Total time to publish:</strong> Down from 30-45 minutes to 2-3 minutes.</p>
+
+<h2 id="key-learnings">Key Learnings</h2>
+
+<ol>
+  <li>
+    <p><strong>Start simple, evolve thoughtfully</strong> - The basic Markdown approach got me writing, then I added tooling when pain points became clear.</p>
+  </li>
+  <li>
+    <p><strong>Local development is essential</strong> - The feedback loop improvement alone was worth the setup effort.</p>
+  </li>
+  <li>
+    <p><strong>Automation eliminates errors</strong> - No more forgetting to update the index or inconsistent formatting.</p>
+  </li>
+  <li>
+    <p><strong>Docker makes environments predictable</strong> - Same Jekyll version as GitHub Pages, works everywhere.</p>
+  </li>
+  <li>
+    <p><strong>Make is still relevant</strong> - Simple, universal, and perfect for project-specific commands.</p>
+  </li>
+</ol>
+
+<h2 id="the-meta-moment">The Meta Moment</h2>
+
+<p>This blog post itself demonstrates the new workflow in action. I created it in under 3 minutes:</p>
+<ul>
+  <li>Ran <code class="language-plaintext highlighter-rouge">make serve</code></li>
+  <li>Created the file with proper front matter</li>
+  <li>Wrote while previewing changes locally</li>
+  <li>No manual index updates needed</li>
+</ul>
+
+<p>The conversation that led to these improvements is preserved in the <a href="../docs/assets/transcripts/2025-07-31-jekyll-improvements-conversation.html">full transcript</a> - a detailed record of the iterative development process with Claude Code.</p>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<p>The foundation is now solid for consistent blogging with minimal friction. Future improvements might include:</p>
+<ul>
+  <li>CLI tool modernization (tracked in <a href="https://github.com/jayljohnson/nordhus.site/issues">GitHub issue</a>)</li>
+  <li>Content categories and tags</li>
+  <li>RSS feed optimization</li>
+  <li>Search functionality</li>
+</ul>
+
+<p>Sometimes the best way to improve your writing is to eliminate everything that makes writing harder.</p>
+
+    
+    <footer>
+        <p><a href="/">← Back to home</a></p>
+    </footer>
+</article>
+    </main>
+    
+    <footer>
+        <p><a href="https://www.linkedin.com/in/jayljohnson/">LinkedIn</a></p>
+    </footer>
+</body>
+</html>
