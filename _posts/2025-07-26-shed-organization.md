@@ -2,7 +2,7 @@
 layout: post
 title: "From Cluttered Chaos to Functional Storage"
 date: 2025-07-26
-excerpt: "How I transformed my unusable shed into organized space on a Saturday."
+excerpt: "Transforming a cluttered, unusable shed into an organized storage space with clear walkways and proper homes for tools, garden supplies, and outdoor equipment."
 ---
 
 *How I transformed my unusable shed into organized space on a Saturday.*
