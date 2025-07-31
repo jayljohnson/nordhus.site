@@ -4,9 +4,48 @@ import urllib.parse
 import webbrowser
 import os
 import sys
+import re
 
 def main():
     try:
+        # Check if we have a pre-generated content file
+        generated_content_file = sys.argv[1] if len(sys.argv) > 1 else None
+        
+        if generated_content_file and os.path.exists(generated_content_file):
+            # Use pre-generated content
+            with open(generated_content_file, 'r') as f:
+                content = f.read()
+            
+            # Parse the content for title and description
+            title_match = re.search(r'TITLE:\s*(.+)', content)
+            desc_match = re.search(r'DESCRIPTION:\s*(.+?)(?=\n\n|\Z)', content, re.DOTALL)
+            
+            if title_match and desc_match:
+                title = title_match.group(1).strip()
+                description = desc_match.group(1).strip()
+                
+                # Get current branch
+                branch = subprocess.check_output(['git', 'branch', '--show-current']).decode().strip()
+                
+                # Add Claude Code attribution
+                body = f"""{description}
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>"""
+                
+                # Create GitHub URL
+                url = f'https://github.com/jayljohnson/nordhus.site/compare/{branch}?expand=1&title={urllib.parse.quote(title)}&body={urllib.parse.quote(body)}'
+                
+                print(f'Opening PR for branch: {branch} (AI-generated content)')
+                webbrowser.open(url)
+                return
+            else:
+                print("Error: Could not parse TITLE and DESCRIPTION from generated content")
+                print("Content should be formatted as:")
+                print("TITLE: Your PR Title")
+                print("DESCRIPTION: Your PR description...")
+                sys.exit(1)
         # Get current branch
         branch = subprocess.check_output(['git', 'branch', '--show-current']).decode().strip()
         
