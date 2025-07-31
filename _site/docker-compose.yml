@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  jekyll:
+    build: .
+    ports:
+      - "4000:4000"
+      - "35729:35729"  # LiveReload port
+    volumes:
+      # Mount source files for live editing
+      - .:/srv/jekyll:cached
+      # Exclude gems directory to use container's gems
+      - /srv/jekyll/vendor
+      - /srv/jekyll/.bundle
+    environment:
+      - JEKYLL_ENV=development
+    stdin_open: true
+    tty: true
