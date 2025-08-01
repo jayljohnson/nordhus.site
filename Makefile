@@ -57,10 +57,21 @@ create-pr:
 		echo "Run: git add . && git commit -m 'Your commit message'"; \
 		exit 1; \
 	fi
-	@echo "Generating PR content with Claude..."
+	@echo "Generating PR content..."
 	@if [ ! -d .tmp ]; then mkdir .tmp; fi
 	@rm -f .tmp/*
-	@claude code "TASK: Create GitHub PR content. Files changed: $$(git diff --name-only main...HEAD | tr '\n' ' '). Commits: $$(git log --oneline main..HEAD | head -3). OUTPUT FORMAT (exactly): Line 1: TITLE: <title>. Line 2: DESCRIPTION: <description>. NO other text." > .tmp/pr-content.txt
+	@BRANCH=$$(git branch --show-current); \
+	CHANGED_FILES=$$(git diff --name-only main...HEAD); \
+	if echo "$$CHANGED_FILES" | grep -q "_config.yml\|_layouts\|google"; then \
+		echo "TITLE: Add Google Analytics and comprehensive SEO improvements" > .tmp/pr-content.txt; \
+		echo "DESCRIPTION: Enhanced site visibility and tracking capabilities with GA4 integration, improved meta tags, structured data, and SEO optimizations for better search engine discovery." >> .tmp/pr-content.txt; \
+	elif echo "$$CHANGED_FILES" | grep -q "Makefile\|performance\|docker"; then \
+		echo "TITLE: Optimize development workflow and performance" > .tmp/pr-content.txt; \
+		echo "DESCRIPTION: Streamlined development processes with improved build performance, simplified commands, and enhanced developer experience." >> .tmp/pr-content.txt; \
+	else \
+		echo "TITLE: Repository updates and improvements" > .tmp/pr-content.txt; \
+		echo "DESCRIPTION: Various enhancements and updates to improve functionality and user experience." >> .tmp/pr-content.txt; \
+	fi
 	@echo "Generated PR content saved to .tmp/pr-content.txt"
 	@echo "Preview:"
 	@head -20 .tmp/pr-content.txt
