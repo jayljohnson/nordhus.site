@@ -59,10 +59,7 @@ create-pr:
 	fi
 	@echo "Generating PR content with Claude..."
 	@if [ ! -d .tmp ]; then mkdir .tmp; fi
-	@echo "Files changed: $$(git diff --name-only main...HEAD | wc -l) files" > .tmp/git-summary.txt
-	@echo "Branch: $$(git branch --show-current)" >> .tmp/git-summary.txt
-	@echo "Recent commits:" >> .tmp/git-summary.txt
-	@git log --oneline main..HEAD >> .tmp/git-summary.txt
+	@rm -f .tmp/*
 	@claude code "TASK: Create GitHub PR content. Files changed: $$(git diff --name-only main...HEAD | tr '\n' ' '). Commits: $$(git log --oneline main..HEAD | head -3). OUTPUT FORMAT (exactly): Line 1: TITLE: <title>. Line 2: DESCRIPTION: <description>. NO other text." > .tmp/pr-content.txt
 	@echo "Generated PR content saved to .tmp/pr-content.txt"
 	@echo "Preview:"
