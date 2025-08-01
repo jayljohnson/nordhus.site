@@ -61,17 +61,17 @@ generate-pr-content:
 	@echo "Generating PR content..."
 	@if [ ! -d .tmp ]; then mkdir .tmp; fi
 	@rm -f .tmp/*
+	@echo "Analyzing git changes to generate PR content..."
 	@BRANCH=$$(git branch --show-current); \
-	CHANGED_FILES=$$(git diff --name-only main...HEAD); \
-	if echo "$$CHANGED_FILES" | grep -q "_config.yml\|_layouts\|google"; then \
-		echo "TITLE: Add Google Analytics and comprehensive SEO improvements" > .tmp/pr-content.txt; \
-		echo "DESCRIPTION: Enhanced site visibility and tracking capabilities with GA4 integration, improved meta tags, structured data, and SEO optimizations for better search engine discovery." >> .tmp/pr-content.txt; \
-	elif echo "$$CHANGED_FILES" | grep -q "Makefile\|performance\|docker"; then \
-		echo "TITLE: Optimize development workflow and performance" > .tmp/pr-content.txt; \
-		echo "DESCRIPTION: Streamlined development processes with improved build performance, simplified commands, and enhanced developer experience." >> .tmp/pr-content.txt; \
+	COMMITS=$$(git log --oneline main..HEAD | head -3); \
+	FILES=$$(git diff --name-only main...HEAD | tr '\n' ' '); \
+	if command -v claude >/dev/null 2>&1; then \
+		echo "Using Claude CLI to generate PR content..."; \
+		claude "Create a GitHub PR title and description for branch $$BRANCH. Files changed: $$FILES. Recent commits: $$COMMITS. Format: First line 'TITLE: <title>', second line 'DESCRIPTION: <description>'. Focus on functional impact, not technical details." > .tmp/pr-content.txt; \
 	else \
-		echo "TITLE: Repository updates and improvements" > .tmp/pr-content.txt; \
-		echo "DESCRIPTION: Various enhancements and updates to improve functionality and user experience." >> .tmp/pr-content.txt; \
+		echo "Claude CLI not found, using fallback..."; \
+		echo "TITLE: Updates from $$BRANCH branch" > .tmp/pr-content.txt; \
+		echo "DESCRIPTION: Functional improvements based on recent commits and file changes." >> .tmp/pr-content.txt; \
 	fi
 	@echo "Generated PR content saved to .tmp/pr-content.txt"
 	@echo "Preview:"
