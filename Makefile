@@ -83,7 +83,9 @@ create-pr:
 	@git diff --stat main...HEAD >> .tmp/pr-context.md 2>&1 || echo "No diff available" >> .tmp/pr-context.md
 	@echo "\`\`\`" >> .tmp/pr-context.md
 	@echo "Generating PR content..."
-	@claude code "Based on the git changes in .tmp/pr-context.md, write a GitHub PR title and description. Format as 'TITLE: <title>' followed by 'DESCRIPTION: <description>'. Focus on performance improvements, code simplification, and quantitative impact. Include up to 5 bullet points with specific metrics where possible." > .tmp/pr-content.txt
+	@echo "TITLE: Optimize Jekyll performance and simplify development workflow" > .tmp/pr-content.txt
+	@echo -n "DESCRIPTION: " >> .tmp/pr-content.txt
+	@cat .tmp/pr-context.md >> .tmp/pr-content.txt
 	@echo "Generated PR content saved to .tmp/pr-content.txt"
 	@echo "Preview:"
 	@cat .tmp/pr-content.txt
