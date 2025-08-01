@@ -24,7 +24,10 @@ layout: default
   "mainEntityOfPage": {
     "@type": "WebPage",
     "@id": "{{ site.url }}{{ page.url }}"
-  }
+  },
+  "keywords": "{% if page.tags %}{{ page.tags | join: ', ' }}{% else %}blog, technology, projects, {{ page.title | downcase | replace: ' ', ', ' }}{% endif %}",
+  "wordCount": {{ content | strip_html | number_of_words }},
+  "inLanguage": "en-US"
 }
 </script>
 

@@ -1,5 +1,5 @@
 title: Jay Johnson
-description: Personal website and blog
+description: Personal blog featuring technology projects, home improvement guides, and technical insights. Documenting hands-on projects and software development experiences.
 url: "https://nordhus.site"
 markdown: kramdown
 permalink: /blog/:title/
@@ -8,6 +8,9 @@ permalink: /blog/:title/
 plugins:
   - jekyll-feed
   - jekyll-sitemap
+
+# Analytics
+google_analytics: G-5KRKCPHCGX
 
 # Production-safe defaults
 
