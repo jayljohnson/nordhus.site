@@ -57,38 +57,29 @@ create-pr:
 		echo "Run: git add . && git commit -m 'Your commit message'"; \
 		exit 1; \
 	fi
-	@echo "Generating PR content with Claude Code..."
-	@if [ ! -d .tmp ]; then mkdir .tmp; fi
-	@echo "## Git Status and Changes" > .tmp/pr-context.md
-	@echo "" >> .tmp/pr-context.md
-	@echo "\`\`\`" >> .tmp/pr-context.md
-	@git status >> .tmp/pr-context.md 2>&1 || echo "Not a git repository" >> .tmp/pr-context.md
-	@echo "\`\`\`" >> .tmp/pr-context.md
-	@echo "" >> .tmp/pr-context.md
-	@echo "## Files Changed" >> .tmp/pr-context.md
-	@echo "" >> .tmp/pr-context.md
-	@echo "\`\`\`" >> .tmp/pr-context.md
-	@git diff --name-only main...HEAD >> .tmp/pr-context.md 2>&1 || echo "No changes or not on a branch" >> .tmp/pr-context.md
-	@echo "\`\`\`" >> .tmp/pr-context.md
-	@echo "" >> .tmp/pr-context.md
-	@echo "## Commit History" >> .tmp/pr-context.md
-	@echo "" >> .tmp/pr-context.md
-	@echo "\`\`\`" >> .tmp/pr-context.md
-	@git log --oneline main..HEAD >> .tmp/pr-context.md 2>&1 || echo "No commits ahead of main" >> .tmp/pr-context.md
-	@echo "\`\`\`" >> .tmp/pr-context.md
-	@echo "" >> .tmp/pr-context.md
-	@echo "## Change Summary" >> .tmp/pr-context.md
-	@echo "" >> .tmp/pr-context.md
-	@echo "\`\`\`" >> .tmp/pr-context.md
-	@git diff --stat main...HEAD >> .tmp/pr-context.md 2>&1 || echo "No diff available" >> .tmp/pr-context.md
-	@echo "\`\`\`" >> .tmp/pr-context.md
 	@echo "Generating PR content..."
+	@if [ ! -d .tmp ]; then mkdir .tmp; fi
 	@echo "TITLE: Optimize Jekyll performance and simplify development workflow" > .tmp/pr-content.txt
-	@echo -n "DESCRIPTION: " >> .tmp/pr-content.txt
-	@cat .tmp/pr-context.md >> .tmp/pr-content.txt
+	@echo "DESCRIPTION: ## Git Status and Changes" >> .tmp/pr-content.txt
+	@echo "" >> .tmp/pr-content.txt
+	@echo "\`\`\`" >> .tmp/pr-content.txt
+	@git status >> .tmp/pr-content.txt 2>&1 || echo "Not a git repository" >> .tmp/pr-content.txt
+	@echo "\`\`\`" >> .tmp/pr-content.txt
+	@echo "" >> .tmp/pr-content.txt
+	@echo "## Files Changed" >> .tmp/pr-content.txt
+	@echo "" >> .tmp/pr-content.txt
+	@echo "\`\`\`" >> .tmp/pr-content.txt
+	@git diff --name-only main...HEAD >> .tmp/pr-content.txt 2>&1 || echo "No changes or not on a branch" >> .tmp/pr-content.txt
+	@echo "\`\`\`" >> .tmp/pr-content.txt
+	@echo "" >> .tmp/pr-content.txt
+	@echo "## Commit History" >> .tmp/pr-content.txt
+	@echo "" >> .tmp/pr-content.txt
+	@echo "\`\`\`" >> .tmp/pr-content.txt
+	@git log --oneline main..HEAD >> .tmp/pr-content.txt 2>&1 || echo "No commits ahead of main" >> .tmp/pr-content.txt
+	@echo "\`\`\`" >> .tmp/pr-content.txt
 	@echo "Generated PR content saved to .tmp/pr-content.txt"
 	@echo "Preview:"
-	@cat .tmp/pr-content.txt
+	@head -20 .tmp/pr-content.txt
 	@echo ""
 	@echo "Creating PR with generated content..."
 	@python3 scripts/create-pr.py .tmp/pr-content.txt
