@@ -57,28 +57,13 @@ create-pr:
 		echo "Run: git add . && git commit -m 'Your commit message'"; \
 		exit 1; \
 	fi
-	@echo "Generating PR content based on git changes..."
+	@echo "Generating PR content with Claude..."
 	@if [ ! -d .tmp ]; then mkdir .tmp; fi
-	@echo "## Git Status and Changes" > .tmp/pr-context.md
-	@echo "" >> .tmp/pr-context.md
-	@echo "\`\`\`" >> .tmp/pr-context.md
-	@git status >> .tmp/pr-context.md 2>&1 || echo "Not a git repository" >> .tmp/pr-context.md
-	@echo "\`\`\`" >> .tmp/pr-context.md
-	@echo "" >> .tmp/pr-context.md
-	@echo "## Files Changed" >> .tmp/pr-context.md
-	@echo "" >> .tmp/pr-context.md
-	@echo "\`\`\`" >> .tmp/pr-context.md
-	@git diff --name-only main...HEAD >> .tmp/pr-context.md 2>&1 || echo "No changes or not on a branch" >> .tmp/pr-context.md
-	@echo "\`\`\`" >> .tmp/pr-context.md
-	@echo "" >> .tmp/pr-context.md
-	@echo "## Commit History" >> .tmp/pr-context.md
-	@echo "" >> .tmp/pr-context.md
-	@echo "\`\`\`" >> .tmp/pr-context.md
-	@git log --oneline main..HEAD >> .tmp/pr-context.md 2>&1 || echo "No commits ahead of main" >> .tmp/pr-context.md
-	@echo "\`\`\`" >> .tmp/pr-context.md
-	@echo "Analyzing changes and generating PR content..."
-	@claude code "Based on the git changes in .tmp/pr-context.md, create a GitHub PR title and description. Focus on functional benefits, not technical details. Format as 'TITLE: <title>' followed by 'DESCRIPTION: <description with bullet points>'. Be specific about what functionality was added or improved." > .tmp/pr-content.txt || \
-		(echo "TITLE: Branch updates" > .tmp/pr-content.txt && echo "DESCRIPTION: Updates and improvements to the repository." >> .tmp/pr-content.txt)
+	@echo "Files changed: $$(git diff --name-only main...HEAD | wc -l) files" > .tmp/git-summary.txt
+	@echo "Branch: $$(git branch --show-current)" >> .tmp/git-summary.txt
+	@echo "Recent commits:" >> .tmp/git-summary.txt
+	@git log --oneline main..HEAD >> .tmp/git-summary.txt
+	@claude code "Look at the git changes and create a PR title and description. The files changed are: $$(git diff --name-only main...HEAD | tr '\n' ' '). Recent commits: $$(git log --oneline main..HEAD | head -3). Write exactly this format: 'TITLE: <your title here>' on first line, then 'DESCRIPTION: <your description>' on second line. Focus on what functionality was added, not technical file details." > .tmp/pr-content.txt
 	@echo "Generated PR content saved to .tmp/pr-content.txt"
 	@echo "Preview:"
 	@head -20 .tmp/pr-content.txt
