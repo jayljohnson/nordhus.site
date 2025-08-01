@@ -1,0 +1,25 @@
+---
+layout: default
+title: Site Map
+---
+
+<h2>All Posts</h2>
+
+<ul>
+{% for post in site.posts %}
+  <li>
+    <a href="{{ post.url }}">{{ post.title }}</a>
+    <span class="post-meta"> - {{ post.date | date: "%B %d, %Y" }}</span>
+    {% if post.excerpt %}
+      <p>{{ post.excerpt | strip_html | truncate: 120 }}</p>
+    {% endif %}
+  </li>
+{% endfor %}
+</ul>
+
+<h2>Pages</h2>
+
+<ul>
+  <li><a href="/">Home</a></li>
+  <li><a href="/sitemap.html">Site Map</a></li>
+</ul>
