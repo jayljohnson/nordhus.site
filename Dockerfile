@@ -7,8 +7,19 @@ WORKDIR /srv/jekyll
 COPY Gemfile* ./
 RUN bundle install
 
-# Expose port 4000
-EXPOSE 4000
+# Create cache directories with proper permissions
+RUN mkdir -p .jekyll-cache _site && \
+    chown -R jekyll:jekyll .jekyll-cache _site
 
-# Default command to serve the site
-CMD ["bundle", "exec", "jekyll", "serve", "--host", "0.0.0.0", "--livereload", "--force_polling", "--incremental", "--skip-initial-build"]
+# Expose ports
+EXPOSE 4000 35729
+
+# Default command to serve the site with optimizations
+CMD ["bundle", "exec", "jekyll", "serve", \
+     "--config", "_config.yml,_config_dev.yml", \
+     "--host", "0.0.0.0", \
+     "--livereload", \
+     "--livereload-port", "35729", \
+     "--force_polling", \
+     "--incremental", \
+     "--watch"]

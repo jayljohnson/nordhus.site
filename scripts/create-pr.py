@@ -34,8 +34,10 @@ def main():
 
 Co-Authored-By: Claude <noreply@anthropic.com>"""
                 
-                # Create GitHub URL
-                url = f'https://github.com/jayljohnson/nordhus.site/compare/{branch}?expand=1&title={urllib.parse.quote(title)}&body={urllib.parse.quote(body)}'
+                # Create GitHub URL for PR creation
+                encoded_title = urllib.parse.quote(title)
+                encoded_body = urllib.parse.quote(body)
+                url = f'https://github.com/jayljohnson/nordhus.site/compare/main...{branch}?expand=1&title={encoded_title}&body={encoded_body}'
                 
                 print(f'Opening PR for branch: {branch} (AI-generated content)')
                 webbrowser.open(url)
