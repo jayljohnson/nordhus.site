@@ -1,4 +1,4 @@
-.PHONY: help serve build clean create-issue create-pr
+.PHONY: help serve build clean create-issue generate-pr-content create-pr
 
 IMAGE_NAME = nordhus-site-jekyll
 
@@ -8,7 +8,8 @@ help:
 	@echo "  make build              - Build Docker image and Jekyll site"
 	@echo "  make clean              - Clean build artifacts and Docker resources"
 	@echo "  make create-issue       - Create GitHub issue with pre-filled template"
-	@echo "  make create-pr          - Create GitHub PR with AI-generated content"
+	@echo "  make generate-pr-content - Generate PR content in .tmp/pr-content.txt"
+	@echo "  make create-pr          - Create GitHub PR using existing pr-content.txt"
 	@echo "  make serve              - Serve site locally using docker-compose"
 
 # Serve using docker-compose (recommended for development)
@@ -45,9 +46,9 @@ create-issue:
 	@echo "Opening GitHub issue page..."
 	@python3 -c "import urllib.parse, os, webbrowser; title = os.environ.get('TITLE', ''); body = os.environ.get('BODY', ''); url = 'https://github.com/jayljohnson/nordhus.site/issues/new'; url = url + '?title=' + urllib.parse.quote(title) + '&body=' + urllib.parse.quote(body) if (title or body) else url; webbrowser.open(url)"
 
-# Create GitHub PR with AI-generated content
-# Usage: make create-pr
-create-pr:
+# Generate PR content only
+# Usage: make generate-pr-content
+generate-pr-content:
 	@echo "Checking for uncommitted changes..."
 	@if [ -n "$$(git status --porcelain)" ]; then \
 		echo "Error: You have uncommitted changes. Please commit them first:"; \
@@ -74,8 +75,19 @@ create-pr:
 	fi
 	@echo "Generated PR content saved to .tmp/pr-content.txt"
 	@echo "Preview:"
-	@head -20 .tmp/pr-content.txt
+	@cat .tmp/pr-content.txt
+
+# Create GitHub PR using existing content
+# Usage: make create-pr
+create-pr:
+	@if [ ! -f .tmp/pr-content.txt ]; then \
+		echo "Error: No PR content found."; \
+		echo "Run 'make generate-pr-content' first to create PR content."; \
+		exit 1; \
+	fi
+	@echo "Creating PR with existing content..."
+	@echo "Using content from .tmp/pr-content.txt:"
+	@cat .tmp/pr-content.txt
 	@echo ""
-	@echo "Creating PR with generated content..."
 	@python3 scripts/create-pr.py .tmp/pr-content.txt
 
