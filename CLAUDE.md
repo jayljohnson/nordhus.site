@@ -56,20 +56,13 @@ This is a personal website (nordhus.site) built as a static Jekyll site hosted o
 ## Local Development
 
 ### Preview Changes Locally
-Use the Makefile commands for easy local development:
+Use the Makefile commands for streamlined development:
 
 ```bash
-# Recommended: Docker Compose (fastest startup)
-make serve-compose     # Uses docker-compose for optimized workflow
-
-# Alternative: Custom Docker image (good for repeated use)
-make serve            # Builds custom image, then serves with live reload
-
-# Other commands
-make help             # Show all available commands
-make build            # Build site only
-make clean            # Clean build artifacts
-make docker-clean     # Clean Docker resources
+make serve             # Start Jekyll server with Docker Compose (recommended)
+make build             # Build Docker image and Jekyll site
+make clean             # Clean build artifacts and Docker resources
+make help              # Show all available commands
 ```
 
 The server will be available at `http://localhost:4000` with live reload enabled.
@@ -80,6 +73,7 @@ The server will be available at `http://localhost:4000` with live reload enabled
 - **Volume Optimization**: Cached mounts for source files, excluded volumes for gems/cache
 - **Live Reload**: Port 35729 for automatic browser refresh on file changes
 - **Performance**: Incremental builds and force polling for file watching
+- **Image Optimization**: 108MB of images moved to `assets/` to avoid Jekyll processing overhead
 
 ### Development Dependencies
 - Docker (for containerized Jekyll environment)
@@ -87,23 +81,35 @@ The server will be available at `http://localhost:4000` with live reload enabled
 - `Dockerfile` with optimized Jekyll setup and caching
 - `docker-compose.yml` for streamlined development workflow
 
+## SEO and Analytics
+
+### Google Analytics
+- **GA4 Integration**: Tracking ID `G-5KRKCPHCGX` configured in `_config.yml`
+- **Conditional Loading**: Analytics code only loads when `google_analytics` is set
+- **Performance Optimized**: Uses async loading with gtag.js
+
+### SEO Features
+- **Meta Tags**: Comprehensive Open Graph, Twitter Cards, and semantic HTML
+- **Structured Data**: JSON-LD schema for blog posts with keywords and metadata
+- **Sitemaps**: Both XML (`sitemap.xml`) and HTML (`sitemap.html`) versions
+- **Robots.txt**: Optimized for search engine crawling
+- **Canonical URLs**: Prevents duplicate content issues
+
 ## Automated Workflows
 
 ### GitHub PR Creation
-Streamlined PR workflow with AI-generated content:
+Intelligent PR workflow that analyzes changes:
 
 ```bash
-make generate-pr-content  # Creates PR title/description using Claude Code
-make create-pr           # Opens GitHub with pre-filled PR form
+make create-pr           # Analyzes git changes and opens GitHub PR with contextual content
 ```
 
-The PR generation script (`scripts/create-pr.py`) analyzes git changes and creates contextual PR content, including Claude Code attribution.
-
-### Development Performance Optimizations
-Current branch focuses on `make serve` startup performance improvements:
-- Pre-built Docker images with dependencies baked in
-- Optimized volume mounts to exclude gems/cache from host
-- Parallel browser opening and server readiness detection
+**How it works:**
+- Detects file changes to determine PR type (analytics, performance, general)
+- Generates appropriate title and description focusing on functional impact
+- Creates `.tmp/pr-content.txt` with TITLE and DESCRIPTION format
+- Opens GitHub with pre-filled PR form using URL parameters
+- Requires all changes to be committed before running
 
 ## Domain and Hosting
 - Custom domain: nordhus.site (configured via CNAME file)

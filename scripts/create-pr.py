@@ -43,10 +43,11 @@ Co-Authored-By: Claude <noreply@anthropic.com>"""
                 
                 if len(full_url) > 7500:  # Leave some buffer
                     # Use shorter description for URL
-                    short_body = "See full details in PR description after creation."
+                    short_body = f"{description[:200]}...\n\n*Full description was too long for URL. Please copy the complete description from .tmp/pr-content.txt*"
                     encoded_short_body = urllib.parse.quote(short_body)
                     url = f'https://github.com/jayljohnson/nordhus.site/compare/main...{branch}?expand=1&title={encoded_title}&body={encoded_short_body}'
-                    print("Note: Full description too long for URL, using shortened version")
+                    print(f"Note: Full description too long for URL ({len(full_url)} chars), using truncated version")
+                    print("Copy the full description from .tmp/pr-content.txt and paste it into the PR manually")
                 else:
                     url = full_url
                 
