@@ -67,11 +67,15 @@ generate-pr-content:
 	FILES=$$(git diff --name-only main...HEAD | tr '\n' ' '); \
 	if command -v claude >/dev/null 2>&1; then \
 		echo "Using Claude CLI to generate PR content..."; \
-		claude "Create a GitHub PR title and description for branch $$BRANCH. Files changed: $$FILES. Recent commits: $$COMMITS. Format: First line 'TITLE: <title>', second line 'DESCRIPTION: <description>'. Focus on functional impact, not technical details." > .tmp/pr-content.txt; \
+		claude "Create a GitHub PR title and description for branch $$BRANCH. Files changed: $$FILES. Recent commits: $$COMMITS. Format: First line 'TITLE: <title>', second line 'DESCRIPTION: <description with markdown formatting like bullet points, bold text, etc>'. Focus on functional impact, not technical details." > .tmp/pr-content.txt; \
 	else \
 		echo "Claude CLI not found, using fallback..."; \
 		echo "TITLE: Updates from $$BRANCH branch" > .tmp/pr-content.txt; \
-		echo "DESCRIPTION: Functional improvements based on recent commits and file changes." >> .tmp/pr-content.txt; \
+		echo "DESCRIPTION: **Functional improvements** based on recent commits and file changes." >> .tmp/pr-content.txt; \
+		echo "" >> .tmp/pr-content.txt; \
+		echo "### Changes in this branch:" >> .tmp/pr-content.txt; \
+		echo "- Updated files: $$FILES" >> .tmp/pr-content.txt; \
+		echo "- Recent commits: $$COMMITS" >> .tmp/pr-content.txt; \
 	fi
 	@echo "Generated PR content saved to .tmp/pr-content.txt"
 	@echo "Preview:"
