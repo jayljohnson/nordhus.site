@@ -63,7 +63,7 @@ create-pr:
 	@echo "Branch: $$(git branch --show-current)" >> .tmp/git-summary.txt
 	@echo "Recent commits:" >> .tmp/git-summary.txt
 	@git log --oneline main..HEAD >> .tmp/git-summary.txt
-	@claude code "Look at the git changes and create a PR title and description. The files changed are: $$(git diff --name-only main...HEAD | tr '\n' ' '). Recent commits: $$(git log --oneline main..HEAD | head -3). Write exactly this format: 'TITLE: <your title here>' on first line, then 'DESCRIPTION: <your description>' on second line. Focus on what functionality was added, not technical file details." > .tmp/pr-content.txt
+	@claude code "TASK: Create GitHub PR content. Files changed: $$(git diff --name-only main...HEAD | tr '\n' ' '). Commits: $$(git log --oneline main..HEAD | head -3). OUTPUT FORMAT (exactly): Line 1: TITLE: <title>. Line 2: DESCRIPTION: <description>. NO other text." > .tmp/pr-content.txt
 	@echo "Generated PR content saved to .tmp/pr-content.txt"
 	@echo "Preview:"
 	@head -20 .tmp/pr-content.txt
