@@ -48,8 +48,46 @@ create-issue:
 # Create GitHub PR with AI-generated content
 # Usage: make create-pr
 create-pr:
+	@echo "Checking for uncommitted changes..."
+	@if [ -n "$$(git status --porcelain)" ]; then \
+		echo "Error: You have uncommitted changes. Please commit them first:"; \
+		echo ""; \
+		git status --short; \
+		echo ""; \
+		echo "Run: git add . && git commit -m 'Your commit message'"; \
+		exit 1; \
+	fi
+	@echo "Generating PR content with Claude Code..."
+	@if [ ! -d .tmp ]; then mkdir .tmp; fi
+	@echo "## Git Status and Changes" > .tmp/pr-context.md
+	@echo "" >> .tmp/pr-context.md
+	@echo "\`\`\`" >> .tmp/pr-context.md
+	@git status >> .tmp/pr-context.md 2>&1 || echo "Not a git repository" >> .tmp/pr-context.md
+	@echo "\`\`\`" >> .tmp/pr-context.md
+	@echo "" >> .tmp/pr-context.md
+	@echo "## Files Changed" >> .tmp/pr-context.md
+	@echo "" >> .tmp/pr-context.md
+	@echo "\`\`\`" >> .tmp/pr-context.md
+	@git diff --name-only main...HEAD >> .tmp/pr-context.md 2>&1 || echo "No changes or not on a branch" >> .tmp/pr-context.md
+	@echo "\`\`\`" >> .tmp/pr-context.md
+	@echo "" >> .tmp/pr-context.md
+	@echo "## Commit History" >> .tmp/pr-context.md
+	@echo "" >> .tmp/pr-context.md
+	@echo "\`\`\`" >> .tmp/pr-context.md
+	@git log --oneline main..HEAD >> .tmp/pr-context.md 2>&1 || echo "No commits ahead of main" >> .tmp/pr-context.md
+	@echo "\`\`\`" >> .tmp/pr-context.md
+	@echo "" >> .tmp/pr-context.md
+	@echo "## Change Summary" >> .tmp/pr-context.md
+	@echo "" >> .tmp/pr-context.md
+	@echo "\`\`\`" >> .tmp/pr-context.md
+	@git diff --stat main...HEAD >> .tmp/pr-context.md 2>&1 || echo "No diff available" >> .tmp/pr-context.md
+	@echo "\`\`\`" >> .tmp/pr-context.md
+	@echo "Generating PR content..."
+	@claude code "Based on the git changes in .tmp/pr-context.md, write a GitHub PR title and description. Format as 'TITLE: <title>' followed by 'DESCRIPTION: <description>'. Focus on performance improvements, code simplification, and quantitative impact. Include up to 5 bullet points with specific metrics where possible." > .tmp/pr-content.txt
+	@echo "Generated PR content saved to .tmp/pr-content.txt"
+	@echo "Preview:"
+	@cat .tmp/pr-content.txt
+	@echo ""
 	@echo "Creating PR with generated content..."
-	@echo "TITLE: Repo improvements and simplifications" > .tmp/pr-content.txt
-	@echo "DESCRIPTION: Simplified Jekyll development workflow and cleaned up repository structure for better maintainability and performance." >> .tmp/pr-content.txt
 	@python3 scripts/create-pr.py .tmp/pr-content.txt
 
