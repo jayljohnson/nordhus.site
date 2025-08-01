@@ -57,16 +57,28 @@ create-pr:
 		echo "Run: git add . && git commit -m 'Your commit message'"; \
 		exit 1; \
 	fi
-	@echo "Generating PR content..."
+	@echo "Generating PR content based on git changes..."
 	@if [ ! -d .tmp ]; then mkdir .tmp; fi
-	@echo "TITLE: Optimize Jekyll performance and simplify development workflow" > .tmp/pr-content.txt
-	@echo "DESCRIPTION: Major performance and usability improvements:" >> .tmp/pr-content.txt
-	@echo "" >> .tmp/pr-content.txt
-	@echo "• **Faster local builds** - Moved 108MB of images to eliminate Jekyll processing overhead" >> .tmp/pr-content.txt
-	@echo "• **Simpler commands** - Consolidated Makefile from 8 to 5 commands for easier development" >> .tmp/pr-content.txt
-	@echo "• **Better PR workflow** - Single \`make create-pr\` command with automated content generation" >> .tmp/pr-content.txt
-	@echo "• **Cleaner repository** - Removed dead code, optimized directory structure, fixed gitignore" >> .tmp/pr-content.txt
-	@echo "• **Modern tooling** - Updated to current Docker Compose syntax with proper error handling" >> .tmp/pr-content.txt
+	@echo "## Git Status and Changes" > .tmp/pr-context.md
+	@echo "" >> .tmp/pr-context.md
+	@echo "\`\`\`" >> .tmp/pr-context.md
+	@git status >> .tmp/pr-context.md 2>&1 || echo "Not a git repository" >> .tmp/pr-context.md
+	@echo "\`\`\`" >> .tmp/pr-context.md
+	@echo "" >> .tmp/pr-context.md
+	@echo "## Files Changed" >> .tmp/pr-context.md
+	@echo "" >> .tmp/pr-context.md
+	@echo "\`\`\`" >> .tmp/pr-context.md
+	@git diff --name-only main...HEAD >> .tmp/pr-context.md 2>&1 || echo "No changes or not on a branch" >> .tmp/pr-context.md
+	@echo "\`\`\`" >> .tmp/pr-context.md
+	@echo "" >> .tmp/pr-context.md
+	@echo "## Commit History" >> .tmp/pr-context.md
+	@echo "" >> .tmp/pr-context.md
+	@echo "\`\`\`" >> .tmp/pr-context.md
+	@git log --oneline main..HEAD >> .tmp/pr-context.md 2>&1 || echo "No commits ahead of main" >> .tmp/pr-context.md
+	@echo "\`\`\`" >> .tmp/pr-context.md
+	@echo "Analyzing changes and generating PR content..."
+	@claude code "Based on the git changes in .tmp/pr-context.md, create a GitHub PR title and description. Focus on functional benefits, not technical details. Format as 'TITLE: <title>' followed by 'DESCRIPTION: <description with bullet points>'. Be specific about what functionality was added or improved." > .tmp/pr-content.txt || \
+		(echo "TITLE: Branch updates" > .tmp/pr-content.txt && echo "DESCRIPTION: Updates and improvements to the repository." >> .tmp/pr-content.txt)
 	@echo "Generated PR content saved to .tmp/pr-content.txt"
 	@echo "Preview:"
 	@head -20 .tmp/pr-content.txt
