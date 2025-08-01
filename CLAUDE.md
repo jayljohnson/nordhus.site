@@ -10,22 +10,25 @@ This is a personal website (nordhus.site) built as a static Jekyll site hosted o
 
 ### Structure
 - `index.md` - Main landing page with contact info and blog post links
-- `blog/` - Individual blog posts in markdown format with date-prefixed filenames
-- `docs/assets/images/` - Image assets organized by project/date folders
-- `_config.yml` - Jekyll configuration (currently minimal/empty)
+- `_posts/` - Blog posts in markdown format with date-prefixed filenames (Jekyll standard)
+- `_layouts/` - Jekyll templates (default.html, post.html)
+- `assets/images/` - Image assets organized by project/date folders
+- `_config.yml` - Main Jekyll configuration with plugins and site settings
+- `_config_dev.yml` - Development-specific config overrides for faster builds
 - `CNAME` - Custom domain configuration for nordhus.site
 
 ### Content Organization
-- Blog posts follow naming convention: `YYYY-MM-DD-descriptive-title.md`
-- Images are organized in dated project folders under `docs/assets/images/`
-- Recent posts include project documentation with detailed photos (shed organization, window repair)
+- Blog posts use Jekyll's standard `_posts/` directory with `YYYY-MM-DD-title.md` naming
+- Posts use permalink: `/blog/:title/` for clean URLs
+- Images organized in dated project folders under `assets/images/`
+- Recent posts include project documentation with detailed photos
 
 ## Development Workflow
 
 ### Content Creation
-- Create new blog posts in `blog/` directory following date naming convention
-- Add images to appropriate subfolder in `docs/assets/images/`
-- Update `index.md` to include new blog post links in chronological order (newest first)
+- Create new blog posts in `_posts/` directory following Jekyll's `YYYY-MM-DD-title.md` convention
+- Add images to appropriate subfolder in `assets/images/`
+- Posts automatically appear on the site via Jekyll's processing - no manual index updates needed
 
 ### Deployment
 - GitHub Pages automatically builds and deploys the site on push to main branch
@@ -42,7 +45,7 @@ This is a personal website (nordhus.site) built as a static Jekyll site hosted o
 ### Blog Posts
 - Always include descriptive title and date
 - Use markdown formatting
-- Include relevant images with proper paths to `docs/assets/images/`
+- Include relevant images with proper paths to `assets/images/`
 - Maintain consistent front matter if needed
 
 ### Image Management
@@ -56,21 +59,51 @@ This is a personal website (nordhus.site) built as a static Jekyll site hosted o
 Use the Makefile commands for easy local development:
 
 ```bash
-# Start local server (recommended)
-make serve
+# Recommended: Docker Compose (fastest startup)
+make serve-compose     # Uses docker-compose for optimized workflow
 
-# Alternative commands
-make help          # Show all available commands
-make build         # Build site only
-make clean         # Clean build artifacts
+# Alternative: Custom Docker image (good for repeated use)
+make serve            # Builds custom image, then serves with live reload
+
+# Other commands
+make help             # Show all available commands
+make build            # Build site only
+make clean            # Clean build artifacts
+make docker-clean     # Clean Docker resources
 ```
 
 The server will be available at `http://localhost:4000` with live reload enabled.
 
+### Development Architecture
+- **Containerized Development**: Uses Docker with Jekyll 4.2.2 base image
+- **Multi-config Setup**: `_config.yml` for production, `_config_dev.yml` for development overrides
+- **Volume Optimization**: Cached mounts for source files, excluded volumes for gems/cache
+- **Live Reload**: Port 35729 for automatic browser refresh on file changes
+- **Performance**: Incremental builds and force polling for file watching
+
 ### Development Dependencies
-- Docker (for containerized Jekyll)
-- Gemfile and Dockerfile provided for consistent environment
-- GitHub Pages compatible gem versions
+- Docker (for containerized Jekyll environment)
+- `Gemfile` with GitHub Pages gem and compatible versions
+- `Dockerfile` with optimized Jekyll setup and caching
+- `docker-compose.yml` for streamlined development workflow
+
+## Automated Workflows
+
+### GitHub PR Creation
+Streamlined PR workflow with AI-generated content:
+
+```bash
+make generate-pr-content  # Creates PR title/description using Claude Code
+make create-pr           # Opens GitHub with pre-filled PR form
+```
+
+The PR generation script (`scripts/create-pr.py`) analyzes git changes and creates contextual PR content, including Claude Code attribution.
+
+### Development Performance Optimizations
+Current branch focuses on `make serve` startup performance improvements:
+- Pre-built Docker images with dependencies baked in
+- Optimized volume mounts to exclude gems/cache from host
+- Parallel browser opening and server readiness detection
 
 ## Domain and Hosting
 - Custom domain: nordhus.site (configured via CNAME file)

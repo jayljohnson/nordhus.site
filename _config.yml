@@ -9,9 +9,11 @@ plugins:
   - jekyll-feed
   - jekyll-sitemap
 
-# Development optimizations
-incremental: true
-livereload: true
+# Production-safe defaults
+
+# Include files that should be copied as-is
+include:
+  - favicon.ico
 
 # Exclude files from processing to speed up builds
 exclude:
@@ -28,3 +30,11 @@ exclude:
   - docker-compose.yml
   - README.md
   - scripts/
+  - .git/
+  - .github/
+  - .gitignore
+  - .dockerignore
+  - "*.log"
+  - .sass-cache/
+  - .jekyll-cache/
+  - .bundle/

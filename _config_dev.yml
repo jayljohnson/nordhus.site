@@ -1,0 +1,16 @@
+# Development-only configuration overrides
+# Use: jekyll serve --config _config.yml,_config_dev.yml
+
+# Development optimizations
+incremental: true
+livereload: true
+livereload_port: 35729
+future: true
+unpublished: false
+safe: false
+
+# Liquid rendering optimization for faster local builds
+liquid:
+  error_mode: warn
+  strict_filters: false
+  strict_variables: false

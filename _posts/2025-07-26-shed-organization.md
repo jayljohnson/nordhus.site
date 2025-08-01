@@ -117,46 +117,46 @@ The shed is now a functional space that actually serves its purpose. Garden tool
 ## Photo Gallery
 
 The workbench after clearing out the shed and gathering tools
-![Workbench after clearing out the shed and gathering tools](/docs/assets/images/2025-07-26-shed-organization/IMG20250726132239.jpg)
+![Workbench after clearing out the shed and gathering tools](/assets/images/2025-07-26-shed-organization/IMG20250726132239.jpg)
 
 Added the back support along the wall
-![Back support installed along the wall](/docs/assets/images/2025-07-26-shed-organization/IMG20250726132251.jpg)
+![Back support installed along the wall](/assets/images/2025-07-26-shed-organization/IMG20250726132251.jpg)
 
 Attached the first end support to the studs, spaced by 1.5" to account for the front support flipped flat
-![First end support attached to wall studs, spaced 1.5 inches for front support](/docs/assets/images/2025-07-26-shed-organization/IMG20250726133553.jpg)
+![First end support attached to wall studs, spaced 1.5 inches for front support](/assets/images/2025-07-26-shed-organization/IMG20250726133553.jpg)
 
 Checking for plumb
-![Checking the shelf support for plumb with a level](/docs/assets/images/2025-07-26-shed-organization/IMG20250726133634.jpg)
+![Checking the shelf support for plumb with a level](/assets/images/2025-07-26-shed-organization/IMG20250726133634.jpg)
 
 About to screw the leg to the first front support
-![About to screw the leg to the first front support beam](/docs/assets/images/2025-07-26-shed-organization/IMG20250726135424.jpg)
+![About to screw the leg to the first front support beam](/assets/images/2025-07-26-shed-organization/IMG20250726135424.jpg)
 
 Front support dry fitted, and checking for plumb
-![Front support dry fitted and checking for plumb alignment](/docs/assets/images/2025-07-26-shed-organization/IMG20250726140034.jpg)
+![Front support dry fitted and checking for plumb alignment](/assets/images/2025-07-26-shed-organization/IMG20250726140034.jpg)
 
 level enough!
-![Level showing the shelf support is level enough to proceed](/docs/assets/images/2025-07-26-shed-organization/IMG20250726140633.jpg)
+![Level showing the shelf support is level enough to proceed](/assets/images/2025-07-26-shed-organization/IMG20250726140633.jpg)
 
 First section done!
-![First section of shelf framework completed and secured](/docs/assets/images/2025-07-26-shed-organization/IMG20250726141408.jpg)
+![First section of shelf framework completed and secured](/assets/images/2025-07-26-shed-organization/IMG20250726141408.jpg)
 
 Dry fitting the remaining front edges
-![Dry fitting the remaining front edge supports](/docs/assets/images/2025-07-26-shed-organization/IMG20250726141705.jpg)
+![Dry fitting the remaining front edge supports](/assets/images/2025-07-26-shed-organization/IMG20250726141705.jpg)
 
 More dry fitting
-![More dry fitting of shelf supports to ensure proper alignment](/docs/assets/images/2025-07-26-shed-organization/IMG20250726141718.jpg)
+![More dry fitting of shelf supports to ensure proper alignment](/assets/images/2025-07-26-shed-organization/IMG20250726141718.jpg)
 
 Other side is looking level
-![Other side of shelf framework showing level alignment](/docs/assets/images/2025-07-26-shed-organization/IMG20250726141922.jpg)
+![Other side of shelf framework showing level alignment](/assets/images/2025-07-26-shed-organization/IMG20250726141922.jpg)
 
 Double checking alignment with the workbench
-![Double checking shelf alignment with the existing workbench](/docs/assets/images/2025-07-26-shed-organization/IMG20250726142840.jpg)
+![Double checking shelf alignment with the existing workbench](/assets/images/2025-07-26-shed-organization/IMG20250726142840.jpg)
 
 Framing done!
-![Complete shelf framing structure before adding shelf surfaces](/docs/assets/images/2025-07-26-shed-organization/IMG20250726144728.jpg)
+![Complete shelf framing structure before adding shelf surfaces](/assets/images/2025-07-26-shed-organization/IMG20250726144728.jpg)
 
 First shelf surface added
-![First shelf surface added to the completed framework](/docs/assets/images/2025-07-26-shed-organization/IMG20250726150328.jpg)
+![First shelf surface added to the completed framework](/assets/images/2025-07-26-shed-organization/IMG20250726150328.jpg)
 
 Done!  Starting to put things away.
-![Completed organized shed shelving with tools and equipment properly stored](/docs/assets/images/2025-07-26-shed-organization/IMG20250726162433.jpg)
+![Completed organized shed shelving with tools and equipment properly stored](/assets/images/2025-07-26-shed-organization/IMG20250726162433.jpg)

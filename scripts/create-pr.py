@@ -34,8 +34,21 @@ def main():
 
 Co-Authored-By: Claude <noreply@anthropic.com>"""
                 
-                # Create GitHub URL
-                url = f'https://github.com/jayljohnson/nordhus.site/compare/{branch}?expand=1&title={urllib.parse.quote(title)}&body={urllib.parse.quote(body)}'
+                # Create GitHub URL for PR creation
+                encoded_title = urllib.parse.quote(title)
+                encoded_body = urllib.parse.quote(body)
+                
+                # GitHub URL length limit is ~8000 chars, truncate if needed
+                full_url = f'https://github.com/jayljohnson/nordhus.site/compare/main...{branch}?expand=1&title={encoded_title}&body={encoded_body}'
+                
+                if len(full_url) > 7500:  # Leave some buffer
+                    # Use shorter description for URL
+                    short_body = "See full details in PR description after creation."
+                    encoded_short_body = urllib.parse.quote(short_body)
+                    url = f'https://github.com/jayljohnson/nordhus.site/compare/main...{branch}?expand=1&title={encoded_title}&body={encoded_short_body}'
+                    print("Note: Full description too long for URL, using shortened version")
+                else:
+                    url = full_url
                 
                 print(f'Opening PR for branch: {branch} (AI-generated content)')
                 webbrowser.open(url)
