@@ -60,6 +60,7 @@ generate-pr-content:
 	fi
 	@echo "Generating PR content..."
 	@if [ ! -d .tmp ]; then mkdir .tmp; fi
+<<<<<<< Updated upstream
 	@rm -f .tmp/*
 	@echo "Analyzing git changes to generate PR content..."
 	@BRANCH=$$(git branch --show-current); \
@@ -78,6 +79,20 @@ generate-pr-content:
 		echo "- Recent commits: $$COMMITS" >> .tmp/pr-content.txt; \
 	fi
 	@echo "Generated PR content saved to .tmp/pr-content.txt"
+=======
+	@echo "## Commit Messages\n" > .tmp/pr-context.md
+	@echo "\`\`\`" >> .tmp/pr-context.md
+	@git log --oneline main..HEAD >> .tmp/pr-context.md 2>&1 || echo "No commits ahead of main" >> .tmp/pr-context.md
+	@echo "\`\`\`\n" >> .tmp/pr-context.md
+	@echo "## Actual Changes (diff)\n" >> .tmp/pr-context.md
+	@echo "\`\`\`" >> .tmp/pr-context.md
+	@git diff main...HEAD >> .tmp/pr-context.md 2>&1 || echo "No diff available" >> .tmp/pr-context.md
+	@echo "\`\`\`" >> .tmp/pr-context.md
+	@echo "Context saved to .tmp/pr-context.md"
+	@echo "Now running Claude Code to generate PR content..."
+	@claude code "Based on the git changes in .tmp/pr-context.md, write a GitHub PR title and description. Focus on the PURPOSE and IMPACT of the changes, not on listing files that changed. Use this format:\n\nTITLE: [Brief descriptive title about what this accomplishes]\n\nDESCRIPTION:\n## What this does\n[1-2 sentences explaining the purpose and goals]\n\n## Why this matters\n[1-2 sentences about the impact - user benefits, improvements, fixes]\n\n## Key changes\n• [High-level change 1 - focus on what it accomplishes]\n• [High-level change 2 - focus on what it accomplishes]\n\nAnalyze the actual code changes (git diff) and commit messages to understand the intent and impact. Avoid mentioning specific filenames unless absolutely necessary for understanding." > .tmp/pr-content.txt
+	@echo "PR content generated and saved to .tmp/pr-content.txt"
+>>>>>>> Stashed changes
 	@echo "Preview:"
 	@cat .tmp/pr-content.txt
 
