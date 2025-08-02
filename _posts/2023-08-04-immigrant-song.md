@@ -1,4 +1,9 @@
-# Immigrant Song
+---
+layout: post
+title: "Immigrant Song"
+date: 2023-08-04
+excerpt: "Personal reflections on Norwegian ancestry, family immigration history, and the connection to Led Zeppelin's Immigrant Song"
+---
 
 > We come from the land of the ice and snow
 > From the midnight sun where the hot springs flow

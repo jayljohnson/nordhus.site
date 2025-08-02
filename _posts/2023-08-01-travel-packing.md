@@ -1,3 +1,10 @@
+---
+layout: post
+title: "Travel Packing Essentials"
+date: 2023-08-01
+excerpt: "A practical guide to essential items for travel, focusing on toiletries and medications for Latin America and beyond"
+---
+
 ## Essentials for travel
 Things to pack for travel in Latin America, or really anywhere.
 

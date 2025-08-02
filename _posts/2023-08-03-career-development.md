@@ -1,4 +1,10 @@
-# Career Development
+---
+layout: post
+title: "Career Development"
+date: 2023-08-03
+excerpt: "Reflections on career transitions, cognitive dissonance at work, and learning to run toward opportunities rather than away from problems"
+---
+
 > Dont run away from something, run to something
 
 *- career and life advice from a mentor*
@@ -26,7 +32,7 @@ Did I run to something new?
 Was there some of both?
 Did I bring any unresolved baggage from my old role into my new one?
 
-# Conclusions
+## Conclusions
 
 Where do I want to be a few years from now?  I'll face many new challenging and conflicting situations like this one.  I hope to be able to handle them better and with less cognitive dissonance.    To catch that stagnant feeling early and really understand it.
 

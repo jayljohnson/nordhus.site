@@ -1,4 +1,9 @@
-# Soliciting Feedback
+---
+layout: post
+title: "Soliciting Feedback"
+date: 2023-08-04
+excerpt: "Reflections on Amazon's leadership principle 'Are right, a lot' and the importance of seeking diverse perspectives to disconfirm beliefs"
+---
 
 Amazon really tries to embody its [leadership principles](https://www.amazon.jobs/content/our-workplace/leadership-principles). It can feel a bit cult-like.  That is by design as a way to preserve company culture while experiencing some of the most extreme scaling ever seen.
 
