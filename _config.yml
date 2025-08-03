@@ -8,6 +8,7 @@ permalink: /blog/:title/
 plugins:
   - jekyll-feed
   - jekyll-sitemap
+  - jekyll-seo-tag
 
 # Analytics
 google_analytics: G-5KRKCPHCGX
@@ -33,11 +34,16 @@ exclude:
   - docker-compose.yml
   - README.md
   - scripts/
+  - tests/
   - .git/
   - .github/
   - .gitignore
   - .dockerignore
   - "*.log"
+  - "*.py"
+  - "*.pyc"
+  - pyproject.toml
+  - __pycache__/
   - .sass-cache/
   - .jekyll-cache/
   - .bundle/

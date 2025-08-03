@@ -31,9 +31,11 @@ This is a personal website (nordhus.site) built as a static Jekyll site hosted o
 - Posts automatically appear on the site via Jekyll's processing - no manual index updates needed
 
 ### Deployment
-- GitHub Pages automatically builds and deploys the site on push to main branch
-- No build commands needed - GitHub handles Jekyll processing
-- Changes typically take a few minutes to appear due to CDN caching
+- **Custom GitHub Actions**: Uses `.github/workflows/deploy.yml` for full control over build process
+- **Code Quality First**: All pushes run linting and tests before deployment
+- **Modern Jekyll**: Uses Jekyll 4.3+ with flexible plugin support instead of restrictive github-pages gem
+- **Automatic Deployment**: Only main branch pushes deploy after passing quality checks
+- **PR Testing**: Pull requests run code quality checks without deployment
 
 ### Branch Strategy
 - `main` - Production branch, auto-deployed to nordhus.site
@@ -69,7 +71,7 @@ make help              # Show all available commands
 The server will be available at `http://localhost:4000` with live reload enabled.
 
 ### Development Architecture
-- **Containerized Development**: Uses Docker with Jekyll 4.2.2 base image
+- **Containerized Development**: Uses Docker with Jekyll 4.3 base image
 - **Multi-config Setup**: `_config.yml` for production, `_config_dev.yml` for development overrides
 - **Volume Optimization**: Cached mounts for source files, excluded volumes for gems/cache
 - **Live Reload**: Port 35729 for automatic browser refresh on file changes
@@ -78,7 +80,7 @@ The server will be available at `http://localhost:4000` with live reload enabled
 
 ### Development Dependencies
 - Docker (for containerized Jekyll environment)
-- `Gemfile` with GitHub Pages gem and compatible versions
+- `Gemfile` with modern Jekyll 4.3+ and flexible plugin versions
 - `Dockerfile` with optimized Jekyll setup and caching
 - `docker-compose.yml` for streamlined development workflow
 
@@ -91,7 +93,7 @@ The server will be available at `http://localhost:4000` with live reload enabled
 
 ### SEO Features
 - **Meta Tags**: Comprehensive Open Graph, Twitter Cards, and semantic HTML
-- **Structured Data**: JSON-LD schema for blog posts with keywords and metadata
+- **Jekyll SEO Tag**: Automated meta tags and structured data generation
 - **Sitemaps**: Both XML (`sitemap.xml`) and HTML (`sitemap.html`) versions
 - **Robots.txt**: Optimized for search engine crawling
 - **Canonical URLs**: Prevents duplicate content issues
