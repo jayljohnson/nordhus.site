@@ -1,0 +1,68 @@
+name: Imgur Construction Project Monitor
+on:
+  schedule:
+    - cron: '0 * * * *'  # Every hour
+  workflow_dispatch:     # Manual trigger
+  
+env:
+  PYTHON_VERSION: '3.11'
+  ENABLE_PHOTO_MONITORING: 'false'  # Feature flag: set to 'true' to enable photo album integration
+
+jobs:
+  monitor-projects:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Full history for branch operations
+        
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests ruff
+        
+    - name: Check code quality
+      run: |
+        echo "Running quick linter check..."
+        ruff check scripts/ --select=E,F,W --quiet
+        
+    - name: Configure git
+      run: |
+        git config --global user.name "Construction Bot"
+        git config --global user.email "noreply@nordhus.site"
+        
+    - name: Monitor Imgur Albums
+      if: env.ENABLE_PHOTO_MONITORING == 'true'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
+        IMGUR_CLIENT_SECRET: ${{ secrets.IMGUR_CLIENT_SECRET }}
+        IMGUR_ACCESS_TOKEN: ${{ secrets.IMGUR_ACCESS_TOKEN }}
+      run: python scripts/workflows/imgur_construction_monitor.py
+      
+    - name: Photo monitoring disabled
+      if: env.ENABLE_PHOTO_MONITORING != 'true'
+      run: |
+        echo "Photo album monitoring is currently disabled"
+        echo "To enable, set ENABLE_PHOTO_MONITORING to 'true' in the workflow file"
+      
+    - name: Push changes if any
+      if: env.ENABLE_PHOTO_MONITORING == 'true'
+      run: |
+        if [[ $(git status --porcelain) ]]; then
+          echo "Changes detected, pushing to repository"
+          git push origin HEAD
+        else
+          echo "No changes to push"
+        fi

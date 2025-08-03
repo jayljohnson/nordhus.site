@@ -37,8 +37,9 @@ This is a personal website (nordhus.site) built as a static Jekyll site hosted o
 
 ### Branch Strategy
 - `main` - Production branch, auto-deployed to nordhus.site
-- Feature branches for new content (e.g., `2025-07-26-window-repair-photos`)
-- Use pull requests for merging feature branches
+- Project branches for construction projects (e.g., `project/2025-08-02-deck-repair`)
+- Feature branches for other content (e.g., `feature/analytics-update`)
+- Use pull requests for merging branches
 
 ## File Patterns
 
@@ -49,7 +50,7 @@ This is a personal website (nordhus.site) built as a static Jekyll site hosted o
 - Maintain consistent front matter if needed
 
 ### Image Management
-- Store images in date/project-specific folders
+- Store images in date/project-specific folders using YYYY-MM-DD format (e.g., `assets/images/2025-08-02-deck-repair/`)
 - Use descriptive filenames from camera (e.g., `IMG20250726132239.jpg`)
 - Organize by project theme for easy reference
 
@@ -107,9 +108,36 @@ make create-pr           # Analyzes git changes and opens GitHub PR with context
 **How it works:**
 - Detects file changes to determine PR type (analytics, performance, general)
 - Generates appropriate title and description focusing on functional impact
-- Creates `.tmp/pr-content.txt` with TITLE and DESCRIPTION format
 - Opens GitHub with pre-filled PR form using URL parameters
 - Requires all changes to be committed before running
+
+## Photo Album Integration Feature Flag
+
+The construction project workflow includes photo album integration that can be controlled via feature flags:
+
+### Environment Variable
+- **ENABLE_PHOTO_MONITORING**: Controls photo album integration
+  - `true`: Enables Imgur album creation and monitoring
+  - `false`: Disables photo integration (default)
+
+### GitHub Actions
+Photo monitoring in GitHub Actions is controlled by the workflow environment variable:
+```yaml
+env:
+  ENABLE_PHOTO_MONITORING: 'false'  # Set to 'true' to enable
+```
+
+### Local Development
+For local project creation:
+```bash
+ENABLE_PHOTO_MONITORING=true make start-project PROJECT=my-project
+```
+
+When disabled:
+- Projects are created without photo albums
+- No Imgur API calls are made
+- GitHub Actions monitoring is skipped
+- All other functionality remains intact
 
 ## Domain and Hosting
 - Custom domain: nordhus.site (configured via CNAME file)
