@@ -28,7 +28,6 @@ from scripts.project.project_manager import start_project
 
 
 class TestProjectManager(unittest.TestCase):
-
     def setUp(self):
         """Set up test fixtures"""
         self.temp_dir = tempfile.mkdtemp()
@@ -159,11 +158,7 @@ class TestProjectDirectoryOperations(TestProjectManager):
         self.assertEqual(result, branch_name)
 
         # Should checkout existing branch
-        checkout_calls = [
-            call
-            for call in self.mock_subprocess.call_args_list
-            if "checkout" in str(call)
-        ]
+        checkout_calls = [call for call in self.mock_subprocess.call_args_list if "checkout" in str(call)]
         self.assertTrue(any(branch_name in str(call) for call in checkout_calls))
 
 

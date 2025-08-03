@@ -9,21 +9,21 @@ Provides unified access to all site management commands including:
 - Development tools
 """
 
-import click
 import sys
 from pathlib import Path
+
+import click
 
 # Add scripts directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
 
-from clients.imgur_client import ImgurClient, setup_imgur_auth  # noqa: E402
-from project.project_manager import (  # noqa: E402
-    start_project,
-    add_photos,
-    finish_project,
-    get_project_branch,
-    get_project_dir,
-)
+from clients.imgur_client import ImgurClient
+from clients.imgur_client import setup_imgur_auth
+from project.project_manager import add_photos
+from project.project_manager import finish_project
+from project.project_manager import get_project_branch
+from project.project_manager import get_project_dir
+from project.project_manager import start_project
 
 
 @click.group()
@@ -232,39 +232,39 @@ def dev():
 
 
 @dev.command("lint")
-@click.option("--fix", is_flag=True, help="Auto-fix formatting issues")
+@click.option("--fix", is_flag=True, help="Auto-fix formatting and linting issues")
 def lint_cmd(fix):
     """Run code linting and formatting.
 
-    Checks Python code quality using flake8 and black.
+    Checks Python code quality using ruff.
     """
     import subprocess
 
     if fix:
-        click.echo("Running code formatter (black)...")
-        result = subprocess.run(["black", "scripts/", "tests/", "--line-length=88"])
+        click.echo("Running code formatter (ruff format)...")
+        result = subprocess.run(["ruff", "format", "scripts/", "tests/"], check=False)
         if result.returncode == 0:
             click.echo("✅ Code formatting completed")
         else:
             click.echo("❌ Code formatting failed", err=True)
             sys.exit(1)
 
-    click.echo("Running linter (flake8)...")
-    result = subprocess.run(
-        [
-            "flake8",
-            "scripts/",
-            "tests/",
-            "--max-line-length=88",
-            "--extend-ignore=E501,E203,E251,E302,E131,E128,E127",
-        ]
-    )
-
-    if result.returncode == 0:
-        click.echo("✅ Code linting passed")
+        click.echo("Running linter with auto-fix (ruff check --fix)...")
+        result = subprocess.run(["ruff", "check", "scripts/", "tests/", "--fix"], check=False)
+        if result.returncode == 0:
+            click.echo("✅ Code linting with auto-fix completed")
+        else:
+            click.echo("❌ Code linting with auto-fix failed", err=True)
+            sys.exit(1)
     else:
-        click.echo("❌ Code linting failed", err=True)
-        sys.exit(1)
+        click.echo("Running linter (ruff check)...")
+        result = subprocess.run(["ruff", "check", "scripts/", "tests/"], check=False)
+
+        if result.returncode == 0:
+            click.echo("✅ Code linting passed")
+        else:
+            click.echo("❌ Code linting failed", err=True)
+            sys.exit(1)
 
 
 @dev.command("test")
@@ -282,7 +282,7 @@ def test_cmd(coverage):
         cmd.extend(["--cov=scripts", "--cov-report=html", "--cov-report=term"])
 
     click.echo("Running test suite...")
-    result = subprocess.run(cmd)
+    result = subprocess.run(cmd, check=False)
 
     if result.returncode == 0:
         click.echo("✅ All tests passed")
@@ -314,7 +314,7 @@ def clean_cmd():
             click.echo(f"  Removed {path}")
 
     # Remove Python cache
-    for path in Path(".").rglob("__pycache__"):
+    for path in Path().rglob("__pycache__"):
         shutil.rmtree(path)
         click.echo(f"  Removed {path}")
 

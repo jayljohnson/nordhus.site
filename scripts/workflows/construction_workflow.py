@@ -16,7 +16,6 @@ from typing import List
 from typing import Optional
 
 import requests
-
 from interfaces.photo_client_interface import PhotoClient
 from interfaces.photo_client_interface import ProjectExtractor
 from interfaces.photo_client_interface import ProjectHasher
@@ -91,9 +90,7 @@ class GitHubManager:
         self.repo_owner = repo_owner
         self.repo_name = repo_name
 
-    def _api_request(
-        self, method: str, endpoint: str, data: Optional[Dict] = None
-    ) -> Optional[Dict]:
+    def _api_request(self, method: str, endpoint: str, data: Optional[Dict] = None) -> Optional[Dict]:
         """Make authenticated GitHub API request"""
         url = f"https://api.github.com/repos/{self.repo_owner}/{self.repo_name}/{endpoint}"
         headers = {
@@ -109,9 +106,7 @@ class GitHubManager:
 
         return response.json()
 
-    def create_issue(
-        self, project_name: str, project_title: str, project_url: str = ""
-    ) -> Optional[Dict]:
+    def create_issue(self, project_name: str, project_title: str, project_url: str = "") -> Optional[Dict]:
         """Create GitHub issue for new construction project"""
         formatted_name = project_name.replace("-", " ").title()
         title = f"Construction Project: {formatted_name}"
@@ -228,9 +223,7 @@ class ConstructionWorkflow:
         self.state_manager = ProjectStateManager(state_file)
         self.git = GitManager()
 
-    def sync_project_photos(
-        self, project: Dict[str, Any], existing_images: Dict[str, Any]
-    ) -> tuple[List[Dict], int]:
+    def sync_project_photos(self, project: Dict[str, Any], existing_images: Dict[str, Any]) -> tuple[List[Dict], int]:
         """Sync photos for a specific project"""
         project_id = project["id"]
         project_name = project["project_name"]
@@ -244,9 +237,7 @@ class ConstructionWorkflow:
 
         # Find new images (not in existing_images)
         existing_hashes = set(existing_images.keys())
-        new_images = [
-            img for img in current_images if img["hash"] not in existing_hashes
-        ]
+        new_images = [img for img in current_images if img["hash"] not in existing_hashes]
 
         if not new_images:
             print(f"No new photos for project: {project_name}")
@@ -260,9 +251,7 @@ class ConstructionWorkflow:
             return [], len(current_images)
 
         # Create project directory
-        project_dir = Path(
-            f"assets/images/{datetime.now().strftime('%Y-%m-%d')}-{project_name}"
-        )
+        project_dir = Path(f"assets/images/{datetime.now().strftime('%Y-%m-%d')}-{project_name}")
         project_dir.mkdir(parents=True, exist_ok=True)
 
         # Download new images
@@ -271,9 +260,7 @@ class ConstructionWorkflow:
             if not image["url"]:
                 continue
 
-            file_path = self.photo_client.download_image(
-                image["url"], str(project_dir), image["filename"]
-            )
+            file_path = self.photo_client.download_image(image["url"], str(project_dir), image["filename"])
             if file_path:
                 downloaded_files.append(file_path)
 
@@ -341,9 +328,7 @@ class ConstructionWorkflow:
                 print(f"🆕 New project detected: {project_name}")
 
                 # Create GitHub issue
-                issue = self.github.create_issue(
-                    project_name, project_title, project.get("url", "")
-                )
+                issue = self.github.create_issue(project_name, project_title, project.get("url", ""))
 
                 # Initialize project state
                 state["projects"][project_name] = {
@@ -384,10 +369,5 @@ class ConstructionWorkflow:
         state["last_scan"] = datetime.now().isoformat()
         self.state_manager.save_state(state)
 
-        print(
-            (
-                f"✅ Monitoring complete. "
-                f"Processed {len(current_projects)} active projects."
-            )
-        )
+        print(f"✅ Monitoring complete. " f"Processed {len(current_projects)} active projects.")
         return True

@@ -16,13 +16,11 @@ from typing import List
 from typing import Optional
 
 import requests
-
 from interfaces.photo_client_interface import PhotoClient
 from interfaces.photo_client_interface import ProjectHasher
 
 
 class ImgurClient(PhotoClient):
-
     def __init__(self, client_id=None, client_secret=None, access_token=None):
         """Initialize Imgur client with API credentials"""
         self.client_id = client_id or os.environ.get("IMGUR_CLIENT_ID")
@@ -41,9 +39,7 @@ class ImgurClient(PhotoClient):
         else:
             return {"Authorization": f"Client-ID {self.client_id}"}
 
-    def _make_request(
-        self, method, endpoint, data=None, files=None, authenticated=False
-    ):
+    def _make_request(self, method, endpoint, data=None, files=None, authenticated=False):
         """Make authenticated Imgur API request"""
         url = f"{self.base_url}/{endpoint}"
         headers = self._get_headers(authenticated)
@@ -254,9 +250,7 @@ class ImgurClient(PhotoClient):
 
         return project_images
 
-    def download_image(
-        self, image_url: str, download_dir: str, filename: str
-    ) -> Optional[Path]:
+    def download_image(self, image_url: str, download_dir: str, filename: str) -> Optional[Path]:
         """Download an image from Imgur URL"""
         if not filename:
             # Extract filename from URL
@@ -291,9 +285,7 @@ class ImgurClient(PhotoClient):
             if not image["url"]:
                 continue
 
-            file_path = self.download_image(
-                image["url"], download_dir, image["filename"]
-            )
+            file_path = self.download_image(image["url"], download_dir, image["filename"])
             if file_path:
                 downloaded_files.append(file_path)
 
@@ -304,9 +296,7 @@ class ImgurClient(PhotoClient):
         """Legacy method - use download_project_images instead"""
         return self.download_project_images(album_id, download_dir)
 
-    def update_album(
-        self, album_id, title=None, description=None, privacy=None, tags=None
-    ):
+    def update_album(self, album_id, title=None, description=None, privacy=None, tags=None):
         """Update album properties"""
         data = {}
 
@@ -326,9 +316,7 @@ class ImgurClient(PhotoClient):
             print("No update data provided")
             return None
 
-        result = self._make_request(
-            "PUT", f"album/{album_id}", data=data, authenticated=True
-        )
+        result = self._make_request("PUT", f"album/{album_id}", data=data, authenticated=True)
 
         if result:
             print(f"Updated album: {album_id}")

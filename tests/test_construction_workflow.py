@@ -54,9 +54,7 @@ class MockPhotoClient(PhotoClient):
         images = self.get_project_images(project_id)
         downloaded = []
         for image in images:
-            file_path = self.download_image(
-                image["url"], download_dir, image["filename"]
-            )
+            file_path = self.download_image(image["url"], download_dir, image["filename"])
             if file_path:
                 downloaded.append(file_path)
         return downloaded
@@ -166,9 +164,7 @@ class TestGitManager(unittest.TestCase):
         ]
 
         for expected_call in expected_calls:
-            self.assertIn(
-                expected_call, [call[0] for call in self.mock_subprocess.call_args_list]
-            )
+            self.assertIn(expected_call, [call[0] for call in self.mock_subprocess.call_args_list])
 
     def test_switch_to_existing_branch(self):
         """Test switching to existing local branch"""
@@ -191,14 +187,8 @@ class TestGitManager(unittest.TestCase):
         self.assertTrue(result)
 
         # Should checkout existing branch
-        checkout_calls = [
-            call
-            for call in self.mock_subprocess.call_args_list
-            if "checkout" in str(call)
-        ]
-        self.assertTrue(
-            any("project/2025-01-test" in str(call) for call in checkout_calls)
-        )
+        checkout_calls = [call for call in self.mock_subprocess.call_args_list if "checkout" in str(call)]
+        self.assertTrue(any("project/2025-01-test" in str(call) for call in checkout_calls))
 
     def test_commit_changes(self):
         """Test committing changes"""
@@ -232,9 +222,7 @@ class TestGitHubManager(unittest.TestCase):
         }
         mock_request.return_value = mock_response
 
-        issue = self.github.create_issue(
-            "test-project", "Test Project", "http://example.com"
-        )
+        issue = self.github.create_issue("test-project", "Test Project", "http://example.com")
 
         self.assertIsNotNone(issue)
         self.assertEqual(issue["number"], 42)

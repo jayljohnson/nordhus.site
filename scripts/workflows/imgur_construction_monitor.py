@@ -17,14 +17,9 @@ from workflows.construction_workflow import ConstructionWorkflow
 def main():
     """Main entry point for Imgur construction monitoring"""
     # Check feature flag
-    photo_monitoring_enabled = (
-        os.environ.get("ENABLE_PHOTO_MONITORING", "false").lower() == "true"
-    )
+    photo_monitoring_enabled = os.environ.get("ENABLE_PHOTO_MONITORING", "false").lower() == "true"
     if not photo_monitoring_enabled:
-        print(
-            "Photo monitoring "
-            "is disabled via ENABLE_PHOTO_MONITORING environment variable"
-        )
+        print("Photo monitoring " "is disabled via ENABLE_PHOTO_MONITORING environment variable")
         print("Set ENABLE_PHOTO_MONITORING = true to enable photo album integration")
         return
 

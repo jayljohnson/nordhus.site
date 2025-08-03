@@ -24,7 +24,6 @@ from scripts.clients.imgur_client import ImgurHasher
 
 
 class TestImgurClient(unittest.TestCase):
-
     def setUp(self):
         """Set up test fixtures"""
         self.temp_dir = tempfile.mkdtemp()
@@ -108,13 +107,9 @@ class TestProjectDiscovery(TestImgurClient):
     def test_get_construction_projects_with_tags(self, mock_get_albums):
         """Test finding construction projects with project: tags"""
         mock_albums = [
-            self.create_mock_album(
-                "Deck Repair", "album1", ["project:deck_repair", "construction"]
-            ),
+            self.create_mock_album("Deck Repair", "album1", ["project:deck_repair", "construction"]),
             self.create_mock_album("Family Photos", "album2", ["family", "vacation"]),
-            self.create_mock_album(
-                "Kitchen Remodel", "album3", ["project:kitchen_remodel"]
-            ),
+            self.create_mock_album("Kitchen Remodel", "album3", ["project:kitchen_remodel"]),
         ]
         mock_get_albums.return_value = mock_albums
 
@@ -142,11 +137,7 @@ class TestProjectDiscovery(TestImgurClient):
     @patch("scripts.clients.imgur_client.ImgurClient.get_account_albums")
     def test_get_construction_projects_string_tags(self, mock_get_albums):
         """Test handling of comma-separated string tags"""
-        mock_albums = [
-            self.create_mock_album(
-                "Test Project", "album1", "project:test_project,construction,photos"
-            )
-        ]
+        mock_albums = [self.create_mock_album("Test Project", "album1", "project:test_project,construction,photos")]
         mock_get_albums.return_value = mock_albums
 
         projects = self.client.get_construction_projects()
@@ -204,9 +195,7 @@ class TestImageOperations(TestImgurClient):
         mock_get.return_value = mock_response
 
         download_dir = self.temp_path / "downloads"
-        result = self.client.download_image(
-            "https://i.imgur.com/test.jpg", str(download_dir), "test_image.jpg"
-        )
+        result = self.client.download_image("https://i.imgur.com/test.jpg", str(download_dir), "test_image.jpg")
 
         self.assertIsNotNone(result)
         self.assertEqual(result, download_dir / "test_image.jpg")
@@ -223,9 +212,7 @@ class TestImageOperations(TestImgurClient):
         mock_get.side_effect = requests.RequestException("Network error")
 
         download_dir = self.temp_path / "downloads"
-        result = self.client.download_image(
-            "https://i.imgur.com/test.jpg", str(download_dir), "test_image.jpg"
-        )
+        result = self.client.download_image("https://i.imgur.com/test.jpg", str(download_dir), "test_image.jpg")
 
         self.assertIsNone(result)
 
@@ -253,9 +240,7 @@ class TestImageOperations(TestImgurClient):
             self.temp_path / "img2.jpg",
         ]
 
-        downloaded_files = self.client.download_project_images(
-            "album123", str(self.temp_path)
-        )
+        downloaded_files = self.client.download_project_images("album123", str(self.temp_path))
 
         self.assertEqual(len(downloaded_files), 2)
         self.assertEqual(mock_download.call_count, 2)
@@ -287,9 +272,7 @@ class TestAPIRequests(TestImgurClient):
         mock_response.json.return_value = {"success": True, "data": {"created": True}}
         mock_post.return_value = mock_response
 
-        result = self.client._make_request(
-            "POST", "test/endpoint", data={"test": "data"}
-        )
+        result = self.client._make_request("POST", "test/endpoint", data={"test": "data"})
 
         self.assertIsNotNone(result)
         self.assertEqual(result, {"created": True})

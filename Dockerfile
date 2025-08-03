@@ -11,8 +11,7 @@ RUN apk add --no-cache \
         pytest==8.3.3 \
         pytest-cov==6.0.0 \
         requests==2.32.3 \
-        black==24.10.0 \
-        flake8==7.1.1 \
+        ruff==0.8.6 \
         click==8.1.7
 
 # Add venv to PATH
