@@ -11,7 +11,6 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
-from unittest.mock import MagicMock
 from unittest.mock import Mock
 from unittest.mock import patch
 
@@ -289,7 +288,13 @@ class TestProjectStateManager(unittest.TestCase):
     def test_save_and_load_state(self):
         """Test saving and loading state"""
         test_state = {
-            "projects": {"test-project": {"project_id": "album123", "issue_number": 42, "images": {"hash1": {"image_id": "img1"}}}},
+            "projects": {
+                "test-project": {
+                    "project_id": "album123",
+                    "issue_number": 42,
+                    "images": {"hash1": {"image_id": "img1"}},
+                }
+            },
             "last_scan": "2025-01-15T10:00:00Z",
         }
 
@@ -353,8 +358,20 @@ class TestConstructionWorkflow(unittest.TestCase):
         ]
 
         self.photo_client.images["album123"] = [
-            {"id": "img1", "title": "First Image", "url": "http://example.com/img1.jpg", "filename": "001_first.jpg", "metadata": {}},
-            {"id": "img2", "title": "Second Image", "url": "http://example.com/img2.jpg", "filename": "002_second.jpg", "metadata": {}},
+            {
+                "id": "img1",
+                "title": "First Image",
+                "url": "http://example.com/img1.jpg",
+                "filename": "001_first.jpg",
+                "metadata": {},
+            },
+            {
+                "id": "img2",
+                "title": "Second Image",
+                "url": "http://example.com/img2.jpg",
+                "filename": "002_second.jpg",
+                "metadata": {},
+            },
         ]
 
         # Run workflow
@@ -378,7 +395,13 @@ class TestConstructionWorkflow(unittest.TestCase):
         """Test workflow with existing project and no new images"""
         # Setup existing state
         existing_state = {
-            "projects": {"test-project": {"project_id": "album123", "issue_number": 42, "images": {"image_hash_img1": {"image_id": "img1"}}}},
+            "projects": {
+                "test-project": {
+                    "project_id": "album123",
+                    "issue_number": 42,
+                    "images": {"image_hash_img1": {"image_id": "img1"}},
+                }
+            },
             "last_scan": "2025-01-15T09:00:00Z",
         }
         self.workflow.state_manager.save_state(existing_state)
@@ -396,7 +419,13 @@ class TestConstructionWorkflow(unittest.TestCase):
         ]
 
         self.photo_client.images["album123"] = [
-            {"id": "img1", "title": "First Image", "url": "http://example.com/img1.jpg", "filename": "001_first.jpg", "metadata": {}}
+            {
+                "id": "img1",
+                "title": "First Image",
+                "url": "http://example.com/img1.jpg",
+                "filename": "001_first.jpg",
+                "metadata": {},
+            }
         ]
 
         # Run workflow
@@ -427,7 +456,13 @@ if __name__ == "__main__":
     test_suite = unittest.TestSuite()
 
     # Add test classes
-    test_classes = [TestProjectExtractor, TestGitManager, TestGitHubManager, TestProjectStateManager, TestConstructionWorkflow]
+    test_classes = [
+        TestProjectExtractor,
+        TestGitManager,
+        TestGitHubManager,
+        TestProjectStateManager,
+        TestConstructionWorkflow,
+    ]
 
     for test_class in test_classes:
         tests = unittest.TestLoader().loadTestsFromTestCase(test_class)

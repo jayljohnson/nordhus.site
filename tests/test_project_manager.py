@@ -12,7 +12,6 @@ import tempfile
 import unittest
 from datetime import datetime
 from pathlib import Path
-from unittest.mock import MagicMock
 from unittest.mock import Mock
 from unittest.mock import patch
 
@@ -95,7 +94,12 @@ class TestProjectDirectoryOperations(TestProjectManager):
         with open(metadata_file) as f:
             metadata = json.load(f)
 
-        expected_metadata = {"project_name": project_name, "start_date": "2025-01-15T10:00:00", "photos": [], "status": "active"}
+        expected_metadata = {
+            "project_name": project_name,
+            "start_date": "2025-01-15T10:00:00",
+            "photos": [],
+            "status": "active",
+        }
 
         self.assertEqual(metadata, expected_metadata)
 
@@ -103,6 +107,7 @@ class TestProjectDirectoryOperations(TestProjectManager):
         """Test creating a new project branch"""
 
         # Mock git branch list to show branch doesn't exist
+
         def mock_subprocess_side_effect(cmd, **kwargs):
             mock_result = Mock()
             mock_result.returncode = 0
@@ -133,6 +138,7 @@ class TestProjectDirectoryOperations(TestProjectManager):
         branch_name = f"project/{current_date}-test-project"
 
         # Mock git branch list to show branch exists
+
         def mock_subprocess_side_effect(cmd, **kwargs):
             mock_result = Mock()
             mock_result.returncode = 0
@@ -187,7 +193,12 @@ class TestStartProject(TestProjectManager):
 
     def test_start_project_invalid_name(self):
         """Test project start with invalid project name"""
-        invalid_names = ["project with spaces!", "project@with$symbols", "project/with/slashes", ""]
+        invalid_names = [
+            "project with spaces!",
+            "project@with$symbols",
+            "project/with/slashes",
+            "",
+        ]
 
         for name in invalid_names:
             with self.subTest(name=name):
@@ -209,7 +220,12 @@ if __name__ == "__main__":
     test_suite = unittest.TestSuite()
 
     # Add test classes
-    test_classes = [TestProjectDirectoryOperations, TestPhotoManagement, TestBlogPostGeneration, TestStartProject]
+    test_classes = [
+        TestProjectDirectoryOperations,
+        TestPhotoManagement,
+        TestBlogPostGeneration,
+        TestStartProject,
+    ]
 
     for test_class in test_classes:
         tests = unittest.TestLoader().loadTestsFromTestCase(test_class)

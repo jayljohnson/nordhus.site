@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 """
 Imgur Construction Project Monitor for GitHub Actions
-Monitors Imgur albums for construction projects and manages git branches/issues automatically.
+Monitors Imgur albums for construction projects and
+    manages git branches/issues automatically.
 """
 
 import os
 import sys
 from pathlib import Path
 
-from scripts.clients.imgur_client import ImgurClient
-from scripts.clients.imgur_client import ImgurHasher
-from scripts.workflows.construction_workflow import ConstructionWorkflow
+from clients.imgur_client import ImgurClient
+from clients.imgur_client import ImgurHasher
+from workflows.construction_workflow import ConstructionWorkflow
 
 
 def main():
@@ -19,7 +20,7 @@ def main():
     photo_monitoring_enabled = os.environ.get("ENABLE_PHOTO_MONITORING", "false").lower() == "true"
     if not photo_monitoring_enabled:
         print("Photo monitoring is disabled via ENABLE_PHOTO_MONITORING environment variable")
-        print("Set ENABLE_PHOTO_MONITORING=true to enable photo album integration")
+        print("Set ENABLE_PHOTO_MONITORING = true to enable photo album integration")
         return
 
     # Get environment variables
@@ -40,7 +41,11 @@ def main():
     state_file = Path(".github/imgur-project-state.json")
 
     # Initialize clients
-    photo_client = ImgurClient(client_id=imgur_client_id, client_secret=imgur_client_secret, access_token=imgur_access_token)
+    photo_client = ImgurClient(
+        client_id=imgur_client_id,
+        client_secret=imgur_client_secret,
+        access_token=imgur_access_token,
+    )
 
     project_hasher = ImgurHasher()
 

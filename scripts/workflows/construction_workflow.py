@@ -16,10 +16,9 @@ from typing import List
 from typing import Optional
 
 import requests
-
-from scripts.interfaces.photo_client_interface import PhotoClient
-from scripts.interfaces.photo_client_interface import ProjectExtractor
-from scripts.interfaces.photo_client_interface import ProjectHasher
+from interfaces.photo_client_interface import PhotoClient
+from interfaces.photo_client_interface import ProjectExtractor
+from interfaces.photo_client_interface import ProjectHasher
 
 
 class GitManager:
@@ -30,7 +29,12 @@ class GitManager:
         """Create or switch to project branch"""
         try:
             # Check if branch exists locally
-            result = subprocess.run(["git", "branch", "--list", branch_name], check=False, capture_output=True, text=True)
+            result = subprocess.run(
+                ["git", "branch", "--list", branch_name],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
 
             if branch_name in result.stdout:
                 # Switch to existing branch
@@ -38,12 +42,20 @@ class GitManager:
                 print(f"Switched to existing branch: {branch_name}")
             else:
                 # Check if branch exists remotely
-                result = subprocess.run(["git", "ls-remote", "--heads", "origin", branch_name], check=False, capture_output=True, text=True)
+                result = subprocess.run(
+                    ["git", "ls-remote", "--heads", "origin", branch_name],
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                )
 
                 if result.stdout.strip():
                     # Fetch and checkout remote branch
                     subprocess.run(["git", "fetch", "origin", branch_name], check=True)
-                    subprocess.run(["git", "checkout", "-b", branch_name, f"origin/{branch_name}"], check=True)
+                    subprocess.run(
+                        ["git", "checkout", "-b", branch_name, f"origin/{branch_name}"],
+                        check=True,
+                    )
                     print(f"Checked out remote branch: {branch_name}")
                 else:
                     # Create new branch from main
@@ -81,7 +93,10 @@ class GitHubManager:
     def _api_request(self, method: str, endpoint: str, data: Optional[Dict] = None) -> Optional[Dict]:
         """Make authenticated GitHub API request"""
         url = f"https://api.github.com/repos/{self.repo_owner}/{self.repo_name}/{endpoint}"
-        headers = {"Authorization": f"token {self.github_token}", "Accept": "application/vnd.github.v3+json"}
+        headers = {
+            "Authorization": (f"t oken {self.github_token}"),
+            "Accept": "application/vnd.github.v3+json",
+        }
 
         response = requests.request(method, url, json=data, headers=headers)
 
@@ -93,15 +108,16 @@ class GitHubManager:
 
     def create_issue(self, project_name: str, project_title: str, project_url: str = "") -> Optional[Dict]:
         """Create GitHub issue for new construction project"""
-        title = f"Construction Project: {project_name.replace('-', ' ').title()}"
+        formatted_name = project_name.replace("-", " ").title()
+        title = f"Construction Project: {formatted_name}"
 
         branch_name = ProjectExtractor.get_branch_name(project_name)
 
         body = f"""# Construction Project: {project_title}
 
-**Status**: 🚧 Active  
-**Photo Album**: [{project_title}]({project_url})  
-**Project Branch**: `{branch_name}`  
+**Status**: 🚧 Active
+**Photo Album**: [{project_title}]({project_url})
+**Project Branch**: `{branch_name}`
 **Tag**: `project:{project_name.replace("-", "_")}`
 
 ## Project Timeline
@@ -124,7 +140,11 @@ class GitHubManager:
 *This issue was created automatically by Construction Project Monitor*
 """
 
-        data = {"title": title, "body": body, "labels": ["construction", "auto-generated"]}
+        data = {
+            "title": title,
+            "body": body,
+            "labels": ["construction", "auto-generated"],
+        }
 
         result = self._api_request("POST", "issues", data)
         if result:
@@ -132,15 +152,21 @@ class GitHubManager:
             return result
         return None
 
-    def add_issue_comment(self, issue_number: int, project_name: str, photo_count: int, new_photos_count: int):
+    def add_issue_comment(
+        self,
+        issue_number: int,
+        project_name: str,
+        photo_count: int,
+        new_photos_count: int,
+    ):
         """Add comment to issue with sync update"""
         branch_name = ProjectExtractor.get_branch_name(project_name)
 
         if new_photos_count > 0:
             body = f"""## Photo Sync Update - {datetime.now().strftime("%Y-%m-%d %H:%M UTC")}
 
-✅ **{new_photos_count} new photos** synced to branch `{branch_name}`  
-📸 **Total photos**: {photo_count}  
+✅ **{new_photos_count} new photos** synced to branch `{branch_name}`
+📸 **Total photos**: {photo_count}
 🔄 **Next sync**: In ~1 hour
 
 Photos have been committed and are ready for review.
@@ -148,8 +174,8 @@ Photos have been committed and are ready for review.
         else:
             body = f"""## Photo Sync - {datetime.now().strftime("%Y-%m-%d %H:%M UTC")}
 
-ℹ️ No new photos found  
-📸 **Total photos**: {photo_count}  
+ℹ️ No new photos found
+📸 **Total photos**: {photo_count}
 🔄 **Next sync**: In ~1 hour
 """
 
@@ -183,7 +209,13 @@ class ConstructionWorkflow:
     """Main workflow orchestrator for construction projects"""
 
     def __init__(
-        self, photo_client: PhotoClient, project_hasher: ProjectHasher, github_token: str, repo_owner: str, repo_name: str, state_file: Path
+        self,
+        photo_client: PhotoClient,
+        project_hasher: ProjectHasher,
+        github_token: str,
+        repo_owner: str,
+        repo_name: str,
+        state_file: Path,
     ):
         self.photo_client = photo_client
         self.project_hasher = project_hasher
@@ -243,7 +275,13 @@ class ConstructionWorkflow:
                 "last_sync": datetime.now().isoformat(),
                 "project_url": project.get("url", ""),
                 "images": [
-                    {"id": img["id"], "title": img["title"], "filename": img["filename"], "metadata": img["metadata"]} for img in current_images
+                    {
+                        "id": img["id"],
+                        "title": img["title"],
+                        "filename": img["filename"],
+                        "metadata": img["metadata"],
+                    }
+                    for img in current_images
                 ],
             }
 
@@ -317,7 +355,12 @@ class ConstructionWorkflow:
 
             # Update GitHub issue if there were changes
             if new_images and state["projects"][project_name].get("issue_number"):
-                self.github.add_issue_comment(state["projects"][project_name]["issue_number"], project_name, total_count, len(new_images))
+                self.github.add_issue_comment(
+                    state["projects"][project_name]["issue_number"],
+                    project_name,
+                    total_count,
+                    len(new_images),
+                )
 
             current_projects[project_name] = state["projects"][project_name]
 

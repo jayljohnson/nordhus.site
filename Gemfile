@@ -1,7 +1,10 @@
 source "https://rubygems.org"
 
 # Use Jekyll directly instead of github-pages gem for more flexibility
-gem "jekyll", "~> 4.3.0"
+gem "jekyll", "~> 4.2.0"
+
+# Required for Jekyll serve with Ruby 3.x
+gem "webrick", "~> 1.8"
 
 # Essential Jekyll plugins
 group :jekyll_plugins do

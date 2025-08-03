@@ -16,9 +16,8 @@ from typing import List
 from typing import Optional
 
 import requests
-
-from scripts.interfaces.photo_client_interface import PhotoClient
-from scripts.interfaces.photo_client_interface import ProjectHasher
+from interfaces.photo_client_interface import PhotoClient
+from interfaces.photo_client_interface import ProjectHasher
 
 
 class ImgurClient(PhotoClient):
@@ -60,7 +59,8 @@ class ImgurClient(PhotoClient):
             result = response.json()
 
             if not result.get("success"):
-                error_msg = result.get("data", {}).get("error", "Unknown Imgur API error")
+                error_data = result.get("data", {})
+                error_msg = error_data.get("error", "Unknown Imgur API error")
                 print(f"Imgur API error: {error_msg}")
                 return None
 
@@ -178,7 +178,7 @@ class ImgurClient(PhotoClient):
 
     def get_construction_projects(self) -> List[Dict[str, Any]]:
         """Get all albums tagged with project: tags"""
-        from scripts.interfaces.photo_client_interface import ProjectExtractor
+        from interfaces.photo_client_interface import ProjectExtractor
 
         albums = self.get_account_albums()
         project_albums = []
@@ -342,18 +342,27 @@ class ImgurHasher(ProjectHasher):
 
     def generate_project_hash(self, project: Dict[str, Any]) -> str:
         """Generate hash for project to detect changes"""
-        hash_data = f"{project.get('id', '')}{project.get('image_count', 0)}{project.get('title', '')}"
+        project_id = project.get("id", "")
+        image_count = project.get("image_count", 0)
+        title = project.get("title", "")
+        hash_data = f"{project_id}{image_count}{title}"
         return hashlib.md5(hash_data.encode()).hexdigest()
 
     def generate_image_hash(self, image: Dict[str, Any]) -> str:
         """Generate hash for image to detect changes"""
-        hash_data = f"{image.get('id', '')}{image.get('url', '')}{image.get('metadata', {}).get('datetime', '')}"
+        image_id = image.get("id", "")
+        url = image.get("url", "")
+        datetime_val = image.get("metadata", {}).get("datetime", "")
+        hash_data = f"{image_id}{url}{datetime_val}"
         return hashlib.md5(hash_data.encode()).hexdigest()
 
 
 def setup_imgur_auth():
     """Interactive setup for Imgur API credentials"""
-    print("""
+    print(
+        """
+
+
 Imgur API Setup
 ===============
 
@@ -365,7 +374,8 @@ To use Imgur integration, you need to:
 4. Get your Client ID and Client Secret
 5. Complete OAuth flow for access token (optional for anonymous uploads)
 
-""")
+"""
+    )
 
     client_id = input("Enter your Imgur Client ID: ").strip()
     client_secret = input("Enter your Imgur Client Secret: ").strip()
@@ -375,10 +385,19 @@ To use Imgur integration, you need to:
         return False
 
     print(f"\nClient ID: {client_id}")
-    print(f"Client Secret: {client_secret[:10]}..." if client_secret else "Client Secret: (not provided)")
+    if client_secret:
+        secret_preview = client_secret[:10]
+        print(f"Client Secret: {secret_preview}...")
+    else:
+        print("Client Secret: (not provided)")
 
     # Save to config file
-    config = {"client_id": client_id, "client_secret": client_secret, "setup_date": datetime.now().isoformat()}
+    setup_date = datetime.now().isoformat()
+    config = {
+        "client_id": client_id,
+        "client_secret": client_secret,
+        "setup_date": setup_date,
+    }
 
     config_dir = Path.home() / ".config"
     config_dir.mkdir(exist_ok=True)
