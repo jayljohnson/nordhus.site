@@ -1,4 +1,4 @@
-.PHONY: help serve build clean create-issue start-project add-photos finish-project setup-imgur test test-coverage install-test-deps lint lint-fix check crypt-init crypt-unlock crypt-lock crypt-status container-start container-stop container-exec
+.PHONY: help serve build clean create-issue start-project add-photos finish-project setup-imgur test test-coverage install-test-deps lint lint-fix check container-start container-stop container-exec
 
 IMAGE_NAME = nordhus-site-jekyll
 CONTAINER_NAME = nordhus-dev-container
@@ -19,10 +19,6 @@ help:
 	@echo "  make lint               - Run Python linter (ruff) to check code quality"
 	@echo "  make lint-fix           - Run Python linter with auto-fix"
 	@echo "  make check              - Run all quality checks (lint + tests)"
-	@echo "  make crypt-init         - Initialize git-crypt for encrypted files"
-	@echo "  make crypt-unlock       - Unlock encrypted files for editing"
-	@echo "  make crypt-lock         - Lock encrypted files after editing"
-	@echo "  make crypt-status       - Check git-crypt status"
 	@echo "  make container-start    - Start persistent development container"
 	@echo "  make container-stop     - Stop persistent development container"
 	@echo "  make container-exec     - Execute command in running container (CMD=command)"
@@ -147,42 +143,6 @@ lint-fix:
 check: lint test
 	@echo "All quality checks passed!"
 
-# Git-crypt commands (using Docker container)
-crypt-init:
-	@echo "Initializing git-crypt..."
-	@docker run --rm -v "$(PWD)":/srv/jekyll:cached \
-		-v /srv/jekyll/vendor \
-		-v /srv/jekyll/.bundle \
-		-w /srv/jekyll \
-		$(IMAGE_NAME) \
-		git-crypt init
-
-crypt-unlock:
-	@echo "Unlocking encrypted files..."
-	@docker run --rm -v "$(PWD)":/srv/jekyll:cached \
-		-v /srv/jekyll/vendor \
-		-v /srv/jekyll/.bundle \
-		-w /srv/jekyll \
-		$(IMAGE_NAME) \
-		git-crypt unlock
-
-crypt-lock:
-	@echo "Locking encrypted files..."
-	@docker run --rm -v "$(PWD)":/srv/jekyll:cached \
-		-v /srv/jekyll/vendor \
-		-v /srv/jekyll/.bundle \
-		-w /srv/jekyll \
-		$(IMAGE_NAME) \
-		git-crypt lock
-
-crypt-status:
-	@echo "Checking git-crypt status..."
-	@docker run --rm -v "$(PWD)":/srv/jekyll:cached \
-		-v /srv/jekyll/vendor \
-		-v /srv/jekyll/.bundle \
-		-w /srv/jekyll \
-		$(IMAGE_NAME) \
-		git-crypt status
 
 # Container management for faster command execution
 container-start:

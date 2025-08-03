@@ -3,7 +3,6 @@ FROM jekyll/jekyll:latest
 # Install additional tools for development workflow
 USER root
 RUN apk add --no-cache \
-    git-crypt \
     python3 \
     py3-pip \
     && python3 -m venv /opt/venv \
