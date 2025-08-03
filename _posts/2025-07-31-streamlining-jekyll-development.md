@@ -176,7 +176,7 @@ This blog post itself demonstrates the new workflow in action. Created and updat
 - Added new sections as features were completed
 - No manual index updates needed
 
-The conversation that led to these improvements is preserved in the [full transcript](../docs/assets/transcripts/2025-07-31-jekyll-improvements-conversation.html) - a detailed record of the iterative development process with Claude Code.
+These improvements were developed through an iterative process with Claude Code, focusing on practical developer experience enhancements.
 
 ## Time Investment Analysis
 

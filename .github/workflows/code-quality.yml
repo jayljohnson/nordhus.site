@@ -1,0 +1,59 @@
+name: Code Quality
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'scripts/**'
+      - 'tests/**'
+      - 'pyproject.toml'
+      - '.github/workflows/code-quality.yml'
+  push:
+    branches: [ main ]
+    paths:
+      - 'scripts/**'
+      - 'tests/**'
+      - 'pyproject.toml'
+      - '.github/workflows/code-quality.yml'
+
+env:
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    name: Code Quality Checks
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install ruff pytest pytest-cov requests
+        
+    - name: Run linter
+      run: |
+        echo "Running ruff linter..."
+        ruff check scripts/ tests/ --output-format=github
+        
+    - name: Check formatting
+      run: |
+        echo "Checking code formatting..."
+        ruff format scripts/ tests/ --check --diff
+        
+    - name: Run tests
+      run: |
+        echo "Running tests..."
+        python -m pytest tests/ -v --tb=short
+        
+    - name: Test coverage
+      run: |
+        echo "Running test coverage..."
+        python -m pytest tests/ --cov=scripts --cov-report=term-missing --cov-fail-under=80

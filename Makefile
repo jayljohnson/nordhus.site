@@ -1,4 +1,4 @@
-.PHONY: help serve build clean create-issue generate-pr-content create-pr
+.PHONY: help serve build clean create-issue start-project add-photos finish-project setup-imgur test test-coverage install-test-deps lint lint-fix check
 
 IMAGE_NAME = nordhus-site-jekyll
 
@@ -8,12 +8,19 @@ help:
 	@echo "  make build              - Build Docker image and Jekyll site"
 	@echo "  make clean              - Clean build artifacts and Docker resources"
 	@echo "  make create-issue       - Create GitHub issue with pre-filled template"
-	@echo "  make generate-pr-content - Generate PR content in .tmp/pr-content.txt"
-	@echo "  make create-pr          - Create GitHub PR using existing pr-content.txt"
 	@echo "  make serve              - Serve site locally using docker-compose"
+	@echo "  make start-project      - Start new construction project (usage: PROJECT=name make start-project)"
+	@echo "  make add-photos         - Add photos to existing project (usage: PROJECT=name make add-photos)"
+	@echo "  make finish-project     - Generate blog post and create PR (usage: PROJECT=name make finish-project)"
+	@echo "  make setup-imgur         - Setup Imgur API integration"
+	@echo "  make test               - Run unit tests for photo management system"
+	@echo "  make test-coverage      - Run tests with coverage report"
+	@echo "  make lint               - Run Python linter (ruff) to check code quality"
+	@echo "  make lint-fix           - Run Python linter with auto-fix"
+	@echo "  make check              - Run all quality checks (lint + tests)"
 
 # Serve using docker-compose (recommended for development)
-serve:
+serve: lint
 	@echo "Starting Jekyll server with Docker Compose..."
 	@echo "Opening browser..."
 	@(sleep 5 && (xdg-open http://localhost:4000 2>/dev/null || open http://localhost:4000 2>/dev/null || echo "Please open http://localhost:4000 in your browser")) &
@@ -46,67 +53,64 @@ create-issue:
 	@echo "Opening GitHub issue page..."
 	@python3 -c "import urllib.parse, os, webbrowser; title = os.environ.get('TITLE', ''); body = os.environ.get('BODY', ''); url = 'https://github.com/jayljohnson/nordhus.site/issues/new'; url = url + '?title=' + urllib.parse.quote(title) + '&body=' + urllib.parse.quote(body) if (title or body) else url; webbrowser.open(url)"
 
-# Generate PR content only
-# Usage: make generate-pr-content
-generate-pr-content:
-	@echo "Checking for uncommitted changes..."
-	@if [ -n "$$(git status --porcelain)" ]; then \
-		echo "Error: You have uncommitted changes. Please commit them first:"; \
-		echo ""; \
-		git status --short; \
-		echo ""; \
-		echo "Run: git add . && git commit -m 'Your commit message'"; \
-		exit 1; \
-	fi
-	@echo "Generating PR content..."
-	@if [ ! -d .tmp ]; then mkdir .tmp; fi
-<<<<<<< Updated upstream
-	@rm -f .tmp/*
-	@echo "Analyzing git changes to generate PR content..."
-	@BRANCH=$$(git branch --show-current); \
-	COMMITS=$$(git log --oneline main..HEAD | head -3); \
-	FILES=$$(git diff --name-only main...HEAD | tr '\n' ' '); \
-	if command -v claude >/dev/null 2>&1; then \
-		echo "Using Claude CLI to generate PR content..."; \
-		claude "Create a GitHub PR title and description for branch $$BRANCH. Files changed: $$FILES. Recent commits: $$COMMITS. Format: First line 'TITLE: <title>', second line 'DESCRIPTION: <description with markdown formatting like bullet points, bold text, etc>'. Focus on functional impact, not technical details." > .tmp/pr-content.txt; \
-	else \
-		echo "Claude CLI not found, using fallback..."; \
-		echo "TITLE: Updates from $$BRANCH branch" > .tmp/pr-content.txt; \
-		echo "DESCRIPTION: **Functional improvements** based on recent commits and file changes." >> .tmp/pr-content.txt; \
-		echo "" >> .tmp/pr-content.txt; \
-		echo "### Changes in this branch:" >> .tmp/pr-content.txt; \
-		echo "- Updated files: $$FILES" >> .tmp/pr-content.txt; \
-		echo "- Recent commits: $$COMMITS" >> .tmp/pr-content.txt; \
-	fi
-	@echo "Generated PR content saved to .tmp/pr-content.txt"
-=======
-	@echo "## Commit Messages\n" > .tmp/pr-context.md
-	@echo "\`\`\`" >> .tmp/pr-context.md
-	@git log --oneline main..HEAD >> .tmp/pr-context.md 2>&1 || echo "No commits ahead of main" >> .tmp/pr-context.md
-	@echo "\`\`\`\n" >> .tmp/pr-context.md
-	@echo "## Actual Changes (diff)\n" >> .tmp/pr-context.md
-	@echo "\`\`\`" >> .tmp/pr-context.md
-	@git diff main...HEAD >> .tmp/pr-context.md 2>&1 || echo "No diff available" >> .tmp/pr-context.md
-	@echo "\`\`\`" >> .tmp/pr-context.md
-	@echo "Context saved to .tmp/pr-context.md"
-	@echo "Now running Claude Code to generate PR content..."
-	@claude code "Based on the git changes in .tmp/pr-context.md, write a GitHub PR title and description. Focus on the PURPOSE and IMPACT of the changes, not on listing files that changed. Use this format:\n\nTITLE: [Brief descriptive title about what this accomplishes]\n\nDESCRIPTION:\n## What this does\n[1-2 sentences explaining the purpose and goals]\n\n## Why this matters\n[1-2 sentences about the impact - user benefits, improvements, fixes]\n\n## Key changes\n• [High-level change 1 - focus on what it accomplishes]\n• [High-level change 2 - focus on what it accomplishes]\n\nAnalyze the actual code changes (git diff) and commit messages to understand the intent and impact. Avoid mentioning specific filenames unless absolutely necessary for understanding." > .tmp/pr-content.txt
-	@echo "PR content generated and saved to .tmp/pr-content.txt"
->>>>>>> Stashed changes
-	@echo "Preview:"
-	@cat .tmp/pr-content.txt
 
-# Create GitHub PR using existing content
-# Usage: make create-pr
-create-pr:
-	@if [ ! -f .tmp/pr-content.txt ]; then \
-		echo "Error: No PR content found."; \
-		echo "Run 'make generate-pr-content' first to create PR content."; \
+# Construction project workflow
+start-project:
+	@if [ -z "$(PROJECT)" ]; then \
+		echo "Error: PROJECT variable required. Usage: PROJECT=window-repair make start-project"; \
 		exit 1; \
 	fi
-	@echo "Creating PR with existing content..."
-	@echo "Using content from .tmp/pr-content.txt:"
-	@cat .tmp/pr-content.txt
-	@echo ""
-	@python3 scripts/create-pr.py .tmp/pr-content.txt
+	@echo "Starting construction project: $(PROJECT)"
+	@python3 scripts/project/project_manager.py start $(PROJECT)
+
+add-photos:
+	@if [ -z "$(PROJECT)" ]; then \
+		echo "Error: PROJECT variable required. Usage: PROJECT=window-repair make add-photos"; \
+		exit 1; \
+	fi
+	@echo "Adding photos to project: $(PROJECT)"
+	@python3 scripts/project/project_manager.py add-photos $(PROJECT)
+
+finish-project:
+	@if [ -z "$(PROJECT)" ]; then \
+		echo "Error: PROJECT variable required. Usage: PROJECT=window-repair make finish-project"; \
+		exit 1; \
+	fi
+	@echo "Finishing project: $(PROJECT)"
+	@echo "Generating blog post with Claude analysis..."
+	@python3 scripts/project/project_manager.py finish $(PROJECT)
+
+setup-imgur:
+	@echo "Setting up Imgur API integration..."
+	@python3 scripts/clients/imgur_client.py setup
+
+# Testing commands
+test: lint
+	@echo "Running unit tests for photo management system..."
+	@python3 -m pytest tests/ -v
+
+test-coverage: lint
+	@echo "Running tests with coverage report..."
+	@python3 -m pytest tests/ --cov=scripts --cov-report=html --cov-report=term -v
+	@echo "Coverage report generated in htmlcov/index.html"
+
+# Install test dependencies
+install-test-deps:
+	@echo "Installing test dependencies..."
+	@pip3 install pytest pytest-cov requests ruff
+
+# Python code quality
+lint:
+	@echo "Running Python linter (ruff)..."
+	@ruff check scripts/ tests/ --diff
+	@ruff format scripts/ tests/ --diff --check
+
+lint-fix:
+	@echo "Running Python linter with auto-fix..."
+	@ruff check scripts/ tests/ --fix
+	@ruff format scripts/ tests/
+
+check: lint test
+	@echo "All quality checks passed!"
+
 

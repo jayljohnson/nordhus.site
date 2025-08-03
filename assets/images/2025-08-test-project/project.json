@@ -1,0 +1,22 @@
+{
+  "project_name": "test-project",
+  "project_id": "album123",
+  "project_title": "Test Project",
+  "total_photos": 2,
+  "last_sync": "2025-08-02T17:57:06.444533",
+  "project_url": "http://example.com",
+  "images": [
+    {
+      "id": "img1",
+      "title": "First Image",
+      "filename": "001_first.jpg",
+      "metadata": {}
+    },
+    {
+      "id": "img2",
+      "title": "Second Image",
+      "filename": "002_second.jpg",
+      "metadata": {}
+    }
+  ]
+}
