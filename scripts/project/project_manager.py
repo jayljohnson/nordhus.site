@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
 Mobile Construction Project Manager
-Handles photo organization, branch creation, and blog post generation for construction projects.
+Handles photo organization, branch creation, and blog post generation for
+construction projects.
 """
 
 import json
@@ -13,7 +14,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from scripts.clients.imgur_client import ImgurClient
+from clients.imgur_client import ImgurClient
 
 
 def get_project_dir(project_name):
@@ -31,7 +32,12 @@ def create_project_branch(project_name):
     branch_name = get_project_branch(project_name)
     try:
         # Check if branch already exists
-        result = subprocess.run(["git", "branch", "--list", branch_name], check=False, capture_output=True, text=True)
+        result = subprocess.run(
+            ["git", "branch", "--list", branch_name],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
 
         if branch_name in result.stdout:
             print(f"Branch {branch_name} already exists, switching to it...")
@@ -55,7 +61,12 @@ def setup_project_directory(project_name):
     project_dir.mkdir(parents=True, exist_ok=True)
 
     # Create project metadata file
-    metadata = {"project_name": project_name, "start_date": datetime.now().isoformat(), "photos": [], "status": "active"}
+    metadata = {
+        "project_name": project_name,
+        "start_date": datetime.now().isoformat(),
+        "photos": [],
+        "status": "active",
+    }
 
     with open(project_dir / "project.json", "w") as f:
         json.dump(metadata, f, indent=2)
@@ -70,7 +81,10 @@ def start_project(project_name):
 
     # Validate project name
     if not re.match(r"^[a-zA-Z0-9-_]+$", project_name):
-        print("Error: Project name can only contain letters, numbers, hyphens, and underscores")
+        print(
+            "Error: Project name can only contain letters, "
+            "numbers, hyphens, and underscores"
+        )
         return False
 
     # Create branch
@@ -82,9 +96,12 @@ def start_project(project_name):
     project_dir = setup_project_directory(project_name)
 
     # Create photo album (if enabled)
-    photo_integration_enabled = os.environ.get("ENABLE_PHOTO_MONITORING", "false").lower() == "true"
+    photo_integration_enabled = (
+        os.environ.get("ENABLE_PHOTO_MONITORING", "false").lower() == "true"
+    )
     if photo_integration_enabled:
-        album_title = f"Construction: {project_name.replace('-', ' ').replace('_', ' ').title()}"
+        formatted_name = project_name.replace("-", " ").replace("_", " ").title()
+        album_title = f"Construction: {formatted_name}"
         try:
             photos_client = ImgurClient()
             album = photos_client.create_album(album_title)
@@ -95,7 +112,12 @@ def start_project(project_name):
                 with open(metadata_file) as f:
                     metadata = json.load(f)
 
-                metadata["google_photos_album"] = {"id": album["id"], "title": album["title"], "url": album.get("productUrl", "")}
+                album_url = album.get("productUrl", "")
+                metadata["google_photos_album"] = {
+                    "id": album["id"],
+                    "title": album["title"],
+                    "url": album_url,
+                }
 
                 with open(metadata_file, "w") as f:
                     json.dump(metadata, f, indent=2)
@@ -104,25 +126,33 @@ def start_project(project_name):
                 if album.get("productUrl"):
                     print(f"Album URL: {album['productUrl']}")
             else:
-                print("Warning: Could not create Google Photos album. You can create it manually.")
+                print(
+                    "Warning: "
+                    "Could not create Google Photos album. You can create it manually."
+                )
 
         except Exception as e:
             print(f"Warning: Google Photos integration failed: {e}")
             print("You can still use the project without Google Photos integration.")
     else:
-        print("Photo album integration is disabled (ENABLE_PHOTO_MONITORING=false)")
+        print("Photo album integration is disabled (ENABLE_PHOTO_MONITORING = false)")
         print("Project created without photo album integration")
 
     # Create initial commit
     try:
         subprocess.run(["git", "add", str(project_dir)], check=True)
-        subprocess.run(["git", "commit", "-m", f"Start project: {project_name}"], check=True)
+        subprocess.run(
+            ["git", "commit", "-m", f"Start project: {project_name}"], check=True
+        )
         print("Initial commit created")
     except subprocess.CalledProcessError as e:
         print(f"Error creating initial commit: {e}")
         return False
 
-    print(f"""
+    print(
+        f"""
+
+
 Project setup complete!
 
 Next steps:
@@ -132,7 +162,8 @@ Next steps:
 4. When project is complete, run: make finish-project PROJECT={project_name}
 
 Note: Photos will be downloaded from Google Photos and organized locally.
-""")
+"""
+    )
     return True
 
 
@@ -141,7 +172,12 @@ def add_photos(project_name):
     project_dir = get_project_dir(project_name)
 
     if not project_dir.exists():
-        print(f"Error: Project {project_name} not found. Run 'make start-project PROJECT={project_name}' first.")
+        print(
+            (
+                f"Error: Project {project_name} not found. "
+                f"Run 'make start-project PROJECT={project_name}' first."
+            )
+        )
         return False
 
     # Switch to project branch
@@ -171,18 +207,26 @@ def add_photos(project_name):
         album_title = album_info["title"]
 
         print(f"Downloading photos from Google Photos album: {album_title}")
-        downloaded_files = photos_client.download_album_photos(album_title, str(project_dir))
+        downloaded_files = photos_client.download_album_photos(
+            album_title, str(project_dir)
+        )
 
         if downloaded_files:
             print(f"Downloaded {len(downloaded_files)} photos from Google Photos")
 
             # Update project metadata
             existing_photos = set(metadata.get("photos", []))
-            new_photos = [f.name for f in downloaded_files if f.name not in existing_photos]
+            new_photos = [
+                f.name for f in downloaded_files if f.name not in existing_photos
+            ]
 
             metadata["photos"] = list(existing_photos) + new_photos
             metadata["last_updated"] = datetime.now().isoformat()
-            metadata["last_sync"] = {"date": datetime.now().isoformat(), "photos_downloaded": len(downloaded_files), "new_photos": len(new_photos)}
+            metadata["last_sync"] = {
+                "date": datetime.now().isoformat(),
+                "photos_downloaded": len(downloaded_files),
+                "new_photos": len(new_photos),
+            }
 
             with open(metadata_file, "w") as f:
                 json.dump(metadata, f, indent=2)
@@ -191,7 +235,15 @@ def add_photos(project_name):
             if new_photos:
                 try:
                     subprocess.run(["git", "add", str(project_dir)], check=True)
-                    subprocess.run(["git", "commit", "-m", f"Sync {len(new_photos)} new photos from Google Photos: {project_name}"], check=True)
+                    subprocess.run(
+                        [
+                            "git",
+                            "commit",
+                            "-m",
+                            f"Sync {len(new_photos)} new photos from Google Photos: {project_name}",
+                        ],
+                        check=True,
+                    )
                     print("New photos committed to git")
                 except subprocess.CalledProcessError as e:
                     print(f"Warning: Could not commit photos: {e}")
@@ -211,7 +263,12 @@ def add_photos(project_name):
 def add_photos_fallback(project_name, project_dir):
     """Fallback method to add photos from local sources"""
     # Look for new photos in common locations
-    photo_sources = [Path.home() / "Downloads", Path.home() / "Pictures", Path("/tmp"), Path.cwd() / "tmp"]
+    photo_sources = [
+        Path.home() / "Downloads",
+        Path.home() / "Pictures",
+        Path("/tmp"),
+        Path.cwd() / "tmp",
+    ]
 
     photos_found = []
     for source in photo_sources:
@@ -251,7 +308,10 @@ def add_photos_fallback(project_name, project_dir):
 
         try:
             subprocess.run(["git", "add", str(project_dir)], check=True)
-            subprocess.run(["git", "commit", "-m", f"Add {copied_count} photos to {project_name}"], check=True)
+            subprocess.run(
+                ["git", "commit", "-m", f"Add {copied_count} photos to {project_name}"],
+                check=True,
+            )
             print("Photos committed to git")
         except subprocess.CalledProcessError as e:
             print(f"Warning: Could not commit photos: {e}")
@@ -286,7 +346,9 @@ def generate_blog_post(project_name):
 
     # Generate blog post content using Claude
     claude_prompt = f"""
-Create a blog post for a construction project documentation. 
+
+
+Create a blog post for a construction project documentation.
 
 Project: {project_name}
 Photos: {len(photo_files)} images in {project_dir}
@@ -306,7 +368,9 @@ Focus on the project process, challenges, and outcomes.
 
     try:
         # Use Claude CLI to generate blog post
-        result = subprocess.run(["claude", claude_prompt], capture_output=True, text=True, check=True)
+        result = subprocess.run(
+            ["claude", claude_prompt], capture_output=True, text=True, check=True
+        )
         blog_content = result.stdout
 
         # Write blog post
@@ -327,7 +391,10 @@ categories: [construction, projects]
 
 # {project_name.replace("-", " ").replace("_", " ").title()}
 
-Project started on {metadata.get("start_date", "recently")} with {len(photo_files)} photos documented.
+Project started on {metadata.get(
+    "start_date",
+                                     "recently")} with {len(photo_files
+)} photos documented.
 
 ## Photos
 
@@ -389,7 +456,15 @@ def finish_project(project_name):
     # Commit blog post
     try:
         subprocess.run(["git", "add", str(blog_post), str(project_dir)], check=True)
-        subprocess.run(["git", "commit", "-m", f"Complete project: {project_name} - add blog post"], check=True)
+        subprocess.run(
+            [
+                "git",
+                "commit",
+                "-m",
+                f"Complete project: {project_name} - add blog post",
+            ],
+            check=True,
+        )
         print("Blog post committed")
     except subprocess.CalledProcessError as e:
         print(f"Error committing blog post: {e}")
@@ -405,14 +480,19 @@ def finish_project(project_name):
         print(f"Error creating PR: {e}")
         print("You can manually create a PR with:")
         print(f"  git push origin {branch}")
-        print(f"  gh pr create --title 'Project: {project_name}' --body 'Construction project documentation'")
+        print(
+            f"  gh pr create --title 'Project: {project_name}' --body 'Construction project documentation'"
+        )
 
     return True
 
 
 def main():
     if len(sys.argv) < 3:
-        print("Usage: python3 project-manager.py {start|add-photos|finish} <project-name>")
+        print(
+            "Usage: python3 "
+            "project-manager.py {start|add-photos|finish} <project-name>"
+        )
         sys.exit(1)
 
     command = sys.argv[1]

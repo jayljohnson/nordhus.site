@@ -1,4 +1,22 @@
-FROM jekyll/jekyll:4.3
+FROM jekyll/jekyll:latest
+
+# Install additional tools for development workflow
+USER root
+RUN apk add --no-cache \
+    git-crypt \
+    python3 \
+    py3-pip \
+    && python3 -m venv /opt/venv \
+    && /opt/venv/bin/pip install --no-cache-dir \
+        pytest==8.3.3 \
+        pytest-cov==6.0.0 \
+        requests==2.32.3 \
+        black==24.10.0 \
+        flake8==7.1.1 \
+        click==8.1.7
+
+# Add venv to PATH
+ENV PATH="/opt/venv/bin:$PATH"
 
 # Set working directory
 WORKDIR /srv/jekyll
@@ -7,9 +25,11 @@ WORKDIR /srv/jekyll
 COPY Gemfile* ./
 RUN bundle install
 
+# Switch back to jekyll user after installations
+USER jekyll
+
 # Create cache directories with proper permissions
-RUN mkdir -p .jekyll-cache _site && \
-    chown -R jekyll:jekyll .jekyll-cache _site
+RUN mkdir -p .jekyll-cache _site
 
 # Expose ports
 EXPOSE 4000 35729

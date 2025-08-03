@@ -54,7 +54,9 @@ class PhotoClient(ABC):
         pass
 
     @abstractmethod
-    def download_image(self, image_url: str, download_dir: str, filename: str) -> Optional[Path]:
+    def download_image(
+        self, image_url: str, download_dir: str, filename: str
+    ) -> Optional[Path]:
         """Download an image to local directory
 
         Args:

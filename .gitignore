@@ -79,3 +79,6 @@ venv.bak/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+
+# Git-crypt
+.git-crypt/
