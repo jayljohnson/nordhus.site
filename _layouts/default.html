@@ -27,14 +27,18 @@
     
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     
-    <!-- Google Analytics -->
-    {% if site.google_analytics %}
+    <!-- Klaro Cookie Consent -->
+    <script defer type="application/javascript" src="https://cdn.kiprotect.com/klaro/v0.7/klaro.js"></script>
+    <script defer type="application/javascript" src="/assets/js/klaro-config.js"></script>
+    
+    <!-- Google Analytics (conditional loading) -->
+    {% if site.google_analytics and jekyll.environment == "production" %}
     <script async src="https://www.googletagmanager.com/gtag/js?id={{ site.google_analytics }}"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', '{{ site.google_analytics }}');
+      // Don't call gtag('config') here - Klaro will do it after consent
     </script>
     {% endif %}
     <style>
@@ -74,6 +78,7 @@
     
     <footer>
         <p>------------------------------------------------------------------------------------------------------------</p>
+        <p><a href="#" onclick="klaro.show(); return false;" style="font-size: 0.9em; color: #666;">Cookie Settings</a></p>
     </footer>
 </body>
 </html>
