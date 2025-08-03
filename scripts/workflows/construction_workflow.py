@@ -94,7 +94,7 @@ class GitHubManager:
         """Make authenticated GitHub API request"""
         url = f"https://api.github.com/repos/{self.repo_owner}/{self.repo_name}/{endpoint}"
         headers = {
-            "Authorization": (f"t " f"oken {self.github_token}"),
+            "Authorization": (f"t oken {self.github_token}"),
             "Accept": "application/vnd.github.v3+json",
         }
 
@@ -369,5 +369,5 @@ class ConstructionWorkflow:
         state["last_scan"] = datetime.now().isoformat()
         self.state_manager.save_state(state)
 
-        print(f"✅ Monitoring complete. " f"Processed {len(current_projects)} active projects.")
+        print(f"✅ Monitoring complete. Processed {len(current_projects)} active projects.")
         return True

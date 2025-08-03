@@ -43,15 +43,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install ruff pytest pytest-cov requests
         
-    - name: Run linter
-      run: |
-        echo "Running ruff linter..."
-        ruff check scripts/ tests/ --output-format=github
-        
-    - name: Check formatting
+    - name: Code quality check
       run: |
         echo "Checking code formatting..."
         ruff format scripts/ tests/ --check --diff
+        echo "Running linter..."
+        ruff check scripts/ tests/ --output-format=github
         
     - name: Run tests
       run: |

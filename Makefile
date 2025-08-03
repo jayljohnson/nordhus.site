@@ -16,9 +16,9 @@ help:
 	@echo "  make setup-imgur         - Setup Imgur API integration"
 	@echo "  make test               - Run unit tests for photo management system"
 	@echo "  make test-coverage      - Run tests with coverage report"
-	@echo "  make lint               - Run Python linter (ruff) to check code quality"
-	@echo "  make lint-fix           - Run Python linter with auto-fix"
-	@echo "  make check              - Run all quality checks (lint + tests)"
+	@echo "  make lint               - Run ruff linter to check code quality"
+	@echo "  make lint-fix           - Format and fix code with ruff"
+	@echo "  make check              - Run all quality checks (lint + test coverage)"
 	@echo "  make container-start    - Start persistent development container"
 	@echo "  make container-stop     - Stop persistent development container"
 	@echo "  make container-exec     - Execute command in running container (CMD=command)"
@@ -133,14 +133,15 @@ install-test-deps:
 
 # Python code quality
 lint:
-	@echo "Running Python linter via CLI..."
-	$(call run_in_container,python3 scripts/cli.py dev lint)
+	@echo "Running ruff linter..."
+	$(call run_in_container,ruff check scripts/)
 
 lint-fix:
-	@echo "Running Python formatter via CLI..."
-	$(call run_in_container,python3 scripts/cli.py dev lint --fix)
+	@echo "Running ruff formatter and linter..."
+	$(call run_in_container,ruff format scripts/)
+	$(call run_in_container,ruff check --fix scripts/)
 
-check: lint test
+check: lint test-coverage
 	@echo "All quality checks passed!"
 
 

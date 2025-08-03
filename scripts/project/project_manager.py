@@ -81,7 +81,7 @@ def start_project(project_name):
 
     # Validate project name
     if not re.match(r"^[a-zA-Z0-9-_]+$", project_name):
-        print("Error: Project name can only contain letters, " "numbers, hyphens, and underscores")
+        print("Error: Project name can only contain letters, numbers, hyphens, and underscores")
         return False
 
     # Create branch
@@ -121,7 +121,7 @@ def start_project(project_name):
                 if album.get("productUrl"):
                     print(f"Album URL: {album['productUrl']}")
             else:
-                print("Warning: " "Could not create Google Photos album. You can create it manually.")
+                print("Warning: Could not create Google Photos album. You can create it manually.")
 
         except Exception as e:
             print(f"Warning: Google Photos integration failed: {e}")
@@ -162,7 +162,7 @@ def add_photos(project_name):
     project_dir = get_project_dir(project_name)
 
     if not project_dir.exists():
-        print(f"Error: Project {project_name} not found. " f"Run 'make start-project PROJECT={project_name}' first.")
+        print(f"Error: Project {project_name} not found. Run 'make start-project PROJECT={project_name}' first.")
         return False
 
     # Switch to project branch
@@ -370,10 +370,7 @@ categories: [construction, projects]
 
 # {project_name.replace("-", " ").replace("_", " ").title()}
 
-Project started on {metadata.get(
-    "start_date",
-                                     "recently")} with {len(photo_files
-)} photos documented.
+Project started on {metadata.get("start_date", "recently")} with {len(photo_files)} photos documented.
 
 ## Photos
 
@@ -466,7 +463,7 @@ def finish_project(project_name):
 
 def main():
     if len(sys.argv) < 3:
-        print("Usage: python3 " "project-manager.py {start|add-photos|finish} <project-name>")
+        print("Usage: python3 project-manager.py {start|add-photos|finish} <project-name>")
         sys.exit(1)
 
     command = sys.argv[1]
