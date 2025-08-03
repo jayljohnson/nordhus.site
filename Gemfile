@@ -1,13 +1,17 @@
 source "https://rubygems.org"
 
-# GitHub Pages gem includes Jekyll and all GitHub Pages dependencies
-gem "github-pages", group: :jekyll_plugins
+# Use Jekyll directly instead of github-pages gem for more flexibility
+gem "jekyll", "~> 4.3.0"
 
-# Optional: Add jekyll plugins that GitHub Pages supports
+# Essential Jekyll plugins
 group :jekyll_plugins do
-  gem "jekyll-feed"
-  gem "jekyll-sitemap"
+  gem "jekyll-feed", "~> 0.17"
+  gem "jekyll-sitemap", "~> 1.4"
+  gem "jekyll-seo-tag", "~> 2.8"
 end
+
+# GitHub Pages compatible versions
+gem "kramdown-parser-gfm", "~> 1.1"
 
 # Windows and JRuby support
 platforms :mingw, :x64_mingw, :mswin, :jruby do
