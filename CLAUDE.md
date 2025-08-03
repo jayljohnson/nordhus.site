@@ -37,8 +37,9 @@ This is a personal website (nordhus.site) built as a static Jekyll site hosted o
 
 ### Branch Strategy
 - `main` - Production branch, auto-deployed to nordhus.site
-- Feature branches for new content (e.g., `2025-07-26-window-repair-photos`)
-- Use pull requests for merging feature branches
+- Project branches for construction projects (e.g., `project/2025-08-02-deck-repair`)
+- Feature branches for other content (e.g., `feature/analytics-update`)
+- Use pull requests for merging branches
 
 ## File Patterns
 
@@ -49,7 +50,7 @@ This is a personal website (nordhus.site) built as a static Jekyll site hosted o
 - Maintain consistent front matter if needed
 
 ### Image Management
-- Store images in date/project-specific folders
+- Store images in date/project-specific folders using YYYY-MM-DD format (e.g., `assets/images/2025-08-02-deck-repair/`)
 - Use descriptive filenames from camera (e.g., `IMG20250726132239.jpg`)
 - Organize by project theme for easy reference
 

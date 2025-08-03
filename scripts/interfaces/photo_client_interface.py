@@ -128,5 +128,5 @@ class ProjectExtractor:
         if not date_prefix:
             from datetime import datetime
 
-            date_prefix = datetime.now().strftime("%Y-%m")
+            date_prefix = datetime.now().strftime("%Y-%m-%d")
         return f"project/{date_prefix}-{project_name}"

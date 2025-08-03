@@ -219,7 +219,7 @@ class ConstructionWorkflow:
             return [], len(current_images)
 
         # Create project directory
-        project_dir = Path(f"assets/images/{datetime.now().strftime('%Y-%m')}-{project_name}")
+        project_dir = Path(f"assets/images/{datetime.now().strftime('%Y-%m-%d')}-{project_name}")
         project_dir.mkdir(parents=True, exist_ok=True)
 
         # Download new images

@@ -88,10 +88,14 @@ setup-imgur:
 test: lint
 	@echo "Running unit tests for photo management system..."
 	@python3 -m pytest tests/ -v
+	@echo "Cleaning up test artifacts..."
+	@rm -rf ./assets/images/*test-project* ./_posts/*test-project* 2>/dev/null || true
 
 test-coverage: lint
 	@echo "Running tests with coverage report..."
 	@python3 -m pytest tests/ --cov=scripts --cov-report=html --cov-report=term -v
+	@echo "Cleaning up test artifacts..."
+	@rm -rf ./assets/images/*test-project* ./_posts/*test-project* 2>/dev/null || true
 	@echo "Coverage report generated in htmlcov/index.html"
 
 # Install test dependencies

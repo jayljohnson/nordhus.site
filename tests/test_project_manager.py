@@ -129,8 +129,8 @@ class TestProjectDirectoryOperations(TestProjectManager):
     def test_create_project_branch_existing(self):
         """Test switching to existing project branch"""
         # Use current date format for realistic branch name
-        current_month = datetime.now().strftime("%Y-%m")
-        branch_name = f"project/{current_month}-test-project"
+        current_date = datetime.now().strftime("%Y-%m-%d")
+        branch_name = f"project/{current_date}-test-project"
 
         # Mock git branch list to show branch exists
         def mock_subprocess_side_effect(cmd, **kwargs):

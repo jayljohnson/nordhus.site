@@ -18,12 +18,12 @@ from scripts.clients.imgur_client import ImgurClient
 
 def get_project_dir(project_name):
     """Get the project directory path"""
-    return Path(f"assets/images/{datetime.now().strftime('%Y-%m')}-{project_name}")
+    return Path(f"assets/images/{datetime.now().strftime('%Y-%m-%d')}-{project_name}")
 
 
 def get_project_branch(project_name):
     """Get the git branch name for the project"""
-    return f"project/{datetime.now().strftime('%Y-%m')}-{project_name}"
+    return f"project/{datetime.now().strftime('%Y-%m-%d')}-{project_name}"
 
 
 def create_project_branch(project_name):
