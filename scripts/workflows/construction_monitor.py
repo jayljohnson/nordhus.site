@@ -23,7 +23,7 @@ def get_photo_client():
         return CloudinaryClient(), CloudinaryHasher()
 
     else:
-        raise ValueError("Cloudinary credentials not found. Set environment variable:\n" "CLOUDINARY_URL=cloudinary://api_key:api_secret@cloud_name")
+        raise ValueError("Cloudinary credentials not found. Set environment variable:\nCLOUDINARY_URL=cloudinary://api_key:api_secret@cloud_name")
 
 
 def main():

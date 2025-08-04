@@ -134,12 +134,12 @@ install-test-deps:
 # Python code quality
 lint:
 	@echo "Running ruff linter..."
-	$(call run_in_container,ruff check scripts/)
+	$(call run_in_container,ruff check scripts/ tests/)
 
 lint-fix:
 	@echo "Running ruff formatter and linter..."
-	$(call run_in_container,ruff format scripts/)
-	$(call run_in_container,ruff check --fix scripts/)
+	$(call run_in_container,ruff format scripts/ tests/)
+	$(call run_in_container,ruff check --fix scripts/ tests/)
 
 check: lint test-coverage
 	@echo "All quality checks passed!"

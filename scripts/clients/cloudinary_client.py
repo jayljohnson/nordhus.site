@@ -48,7 +48,7 @@ class CloudinaryClient(PhotoClient):
 
             if not all([config.cloud_name, config.api_key, config.api_secret]):
                 raise ValueError(
-                    "Missing Cloudinary credentials. Set environment variable:\n" "CLOUDINARY_URL=cloudinary://api_key:api_secret@cloud_name"
+                    "Missing Cloudinary credentials. Set environment variable:\nCLOUDINARY_URL=cloudinary://api_key:api_secret@cloud_name"
                 )
 
         self.cloud_name = config.cloud_name
