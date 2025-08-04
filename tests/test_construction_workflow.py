@@ -259,9 +259,10 @@ class TestGitHubManager(unittest.TestCase):
         mock_response.text = "Bad Request"
         mock_request.return_value = mock_response
 
-        result = self.github._api_request("GET", "test")
+        with self.assertRaises(Exception) as context:
+            self.github._api_request("GET", "test")
 
-        self.assertIsNone(result)
+        self.assertIn("GitHub API error: 400 - Bad Request", str(context.exception))
 
 
 class TestProjectStateManager(unittest.TestCase):

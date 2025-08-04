@@ -1,7 +1,7 @@
 name: Construction Project Monitor
 on:
   schedule:
-    - cron: '0 * * * *'  # Every hour
+    - cron: '0 0 * * *'  # Every 24 hours at midnight UTC
   workflow_dispatch:     # Manual trigger
   
 env:

@@ -108,8 +108,9 @@ class GitHubManager:
         response = requests.request(method, url, json=data, headers=headers)
 
         if response.status_code not in [200, 201]:
-            print(f"GitHub API error: {response.status_code} - {response.text}")
-            return None
+            error_msg = f"GitHub API error: {response.status_code} - {response.text}"
+            print(error_msg)
+            raise Exception(error_msg)
 
         return response.json()
 
@@ -154,10 +155,8 @@ class GitHubManager:
         }
 
         result = self._api_request("POST", "issues", data)
-        if result:
-            print(f"Created GitHub issue #{result['number']}: {title}")
-            return result
-        return None
+        print(f"Created GitHub issue #{result['number']}: {title}")
+        return result
 
     def add_issue_comment(
         self,
@@ -188,8 +187,7 @@ Photos have been committed and are ready for review.
 
         data = {"body": body}
         result = self._api_request("POST", f"issues/{issue_number}/comments", data)
-        if result:
-            print(f"Updated issue #{issue_number} with sync status")
+        print(f"Updated issue #{issue_number} with sync status")
 
 
 class ProjectStateManager:
@@ -297,7 +295,8 @@ class ConstructionWorkflow:
 
             # Commit changes
             commit_msg = f"Sync {len(downloaded_files)} new photos: {project_name}"
-            self.git.commit_changes(project_dir, commit_msg)
+            if not self.git.commit_changes(project_dir, commit_msg):
+                raise Exception(f"Failed to commit changes for project: {project_name}")
 
         return new_images, len(current_images)
 
@@ -341,7 +340,7 @@ class ConstructionWorkflow:
                 state["projects"][project_name] = {
                     "project_id": project_id,
                     "project_title": project_title,
-                    "issue_number": issue["number"] if issue else None,
+                    "issue_number": issue["number"],
                     "branch_name": ProjectExtractor.get_branch_name(project_name),
                     "created_at": datetime.now().isoformat(),
                     "images": {},
