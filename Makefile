@@ -133,7 +133,8 @@ install-test-deps:
 
 # Python code quality
 lint:
-	@echo "Running ruff linter..."
+	@echo "Running ruff formatter and linter..."
+	$(call run_in_container,ruff format --check scripts/ tests/)
 	$(call run_in_container,ruff check scripts/ tests/)
 
 lint-fix:

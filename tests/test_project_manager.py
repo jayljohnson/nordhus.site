@@ -77,7 +77,7 @@ class TestProjectDirectoryOperations(TestProjectManager):
     def test_setup_project_directory(self, mock_get_project_dir):
         """Test creating project directory and metadata"""
         project_name = "test-project"
-        
+
         # Mock the project directory to be in temp directory
         mock_project_dir = self.temp_path / f"2025-01-15-{project_name}"
         mock_get_project_dir.return_value = mock_project_dir
