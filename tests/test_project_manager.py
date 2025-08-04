@@ -73,9 +73,14 @@ class TestProjectDirectoryOperations(TestProjectManager):
 
         self.assertEqual(result, expected)
 
-    def test_setup_project_directory(self):
+    @patch("scripts.project.project_manager.get_project_dir")
+    def test_setup_project_directory(self, mock_get_project_dir):
         """Test creating project directory and metadata"""
         project_name = "test-project"
+        
+        # Mock the project directory to be in temp directory
+        mock_project_dir = self.temp_path / f"2025-01-15-{project_name}"
+        mock_get_project_dir.return_value = mock_project_dir
 
         with patch("scripts.project.project_manager.datetime") as mock_dt:
             mock_dt.now.return_value.isoformat.return_value = "2025-01-15T10:00:00"
@@ -191,7 +196,9 @@ class TestStartProject(TestProjectManager):
         # Core functionality is tested through integration tests
         self.assertTrue(True)
 
-    def test_start_project_invalid_name(self):
+    @patch("scripts.project.project_manager.setup_project_directory")
+    @patch("scripts.project.project_manager.create_project_branch")
+    def test_start_project_invalid_name(self, mock_create_branch, mock_setup_dir):
         """Test project start with invalid project name"""
         invalid_names = [
             "project with spaces!",
@@ -204,6 +211,11 @@ class TestStartProject(TestProjectManager):
             with self.subTest(name=name):
                 result = start_project(name)
                 self.assertFalse(result)
+                # Verify no real operations were attempted for invalid names
+                mock_create_branch.assert_not_called()
+                mock_setup_dir.assert_not_called()
+                mock_create_branch.reset_mock()
+                mock_setup_dir.reset_mock()
 
     @patch("scripts.project.project_manager.create_project_branch")
     def test_start_project_branch_failure(self, mock_create_branch):

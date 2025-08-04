@@ -40,7 +40,7 @@ def main():
 
     # Validate required environment variables
     if not github_token:
-        raise Exception("GITHUB_TOKEN environment variable required")
+        raise ValueError("GITHUB_TOKEN environment variable required")
 
     try:
         # Get photo client and hasher based on available credentials
