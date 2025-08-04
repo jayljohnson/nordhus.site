@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Abstract interface for photo client implementations.
-Provides a consistent API for different photo services (Imgur, etc.)
+Provides a consistent API for different photo services (Cloudinary, etc.)
 """
 
 from abc import ABC

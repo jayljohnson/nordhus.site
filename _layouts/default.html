@@ -56,6 +56,37 @@
         .post-meta { color: #7f8c8d; font-size: 0.9em; }
         img { max-width: 100%; height: auto; }
         
+        footer {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid #e1e8ed;
+            text-align: center;
+        }
+        
+        .footer-content {
+            font-size: 0.85em;
+            color: #666;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .footer-content a {
+            color: #3498db;
+            transition: color 0.2s ease;
+        }
+        
+        .footer-content a:hover {
+            color: #2980b9;
+        }
+        
+        .footer-separator {
+            color: #bbb;
+            font-weight: bold;
+        }
+        
         @media (prefers-color-scheme: dark) {
             body {
                 background-color: #1a1a1a;
@@ -64,6 +95,26 @@
             h1, h2, h3 { color: #f0f0f0; }
             a { color: #66b3ff; }
             .post-meta { color: #999; }
+            
+            footer {
+                border-top: 2px solid #333;
+            }
+            
+            .footer-content {
+                color: #999;
+            }
+            
+            .footer-content a {
+                color: #66b3ff;
+            }
+            
+            .footer-content a:hover {
+                color: #4da6ff;
+            }
+            
+            .footer-separator {
+                color: #666;
+            }
         }
     </style>
 </head>
@@ -77,8 +128,11 @@
     </main>
     
     <footer>
-        <p>------------------------------------------------------------------------------------------------------------</p>
-        <p><a href="#" onclick="klaro.show(); return false;" style="font-size: 0.9em; color: #666;">Cookie Settings</a></p>
+        <div class="footer-content">
+            <a href="#" onclick="klaro.show(); return false;">🍪 Cookie Settings</a>
+            <span class="footer-separator">•</span>
+            <a href="https://github.com/jayljohnson/nordhus.site">📚 Source Code</a>
+        </div>
     </footer>
 </body>
 </html>

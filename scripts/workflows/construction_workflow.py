@@ -58,8 +58,15 @@ class GitManager:
                     )
                     print(f"Checked out remote branch: {branch_name}")
                 else:
-                    # Create new branch from main
-                    subprocess.run(["git", "checkout", "main"], check=True)
+                    # Create new branch from main (handle GitHub Actions shallow checkout)
+                    try:
+                        # Try to checkout main locally first
+                        subprocess.run(["git", "checkout", "main"], check=True)
+                    except subprocess.CalledProcessError:
+                        # If main doesn't exist locally, fetch it from origin
+                        subprocess.run(["git", "fetch", "origin", "main"], check=True)
+                        subprocess.run(["git", "checkout", "-b", "main", "origin/main"], check=True)
+
                     subprocess.run(["git", "pull", "origin", "main"], check=True)
                     subprocess.run(["git", "checkout", "-b", branch_name], check=True)
                     print(f"Created new branch: {branch_name}")
@@ -94,15 +101,19 @@ class GitHubManager:
         """Make authenticated GitHub API request"""
         url = f"https://api.github.com/repos/{self.repo_owner}/{self.repo_name}/{endpoint}"
         headers = {
-            "Authorization": (f"t oken {self.github_token}"),
+            "Authorization": f"token {self.github_token}",
             "Accept": "application/vnd.github.v3+json",
         }
 
         response = requests.request(method, url, json=data, headers=headers)
 
         if response.status_code not in [200, 201]:
-            print(f"GitHub API error: {response.status_code} - {response.text}")
-            return None
+            error_msg = f"GitHub API error: {response.status_code} - {response.text}"
+            print(error_msg)
+            # For 403 errors, raise a more specific exception
+            if response.status_code == 403:
+                raise PermissionError(error_msg)
+            raise Exception(error_msg)
 
         return response.json()
 
@@ -147,10 +158,8 @@ class GitHubManager:
         }
 
         result = self._api_request("POST", "issues", data)
-        if result:
-            print(f"Created GitHub issue #{result['number']}: {title}")
-            return result
-        return None
+        print(f"Created GitHub issue #{result['number']}: {title}")
+        return result
 
     def add_issue_comment(
         self,
@@ -181,8 +190,7 @@ Photos have been committed and are ready for review.
 
         data = {"body": body}
         result = self._api_request("POST", f"issues/{issue_number}/comments", data)
-        if result:
-            print(f"Updated issue #{issue_number} with sync status")
+        print(f"Updated issue #{issue_number} with sync status")
 
 
 class ProjectStateManager:
@@ -290,7 +298,8 @@ class ConstructionWorkflow:
 
             # Commit changes
             commit_msg = f"Sync {len(downloaded_files)} new photos: {project_name}"
-            self.git.commit_changes(project_dir, commit_msg)
+            if not self.git.commit_changes(project_dir, commit_msg):
+                raise Exception(f"Failed to commit changes for project: {project_name}")
 
         return new_images, len(current_images)
 
@@ -327,14 +336,20 @@ class ConstructionWorkflow:
             if project_name not in state["projects"]:
                 print(f"🆕 New project detected: {project_name}")
 
-                # Create GitHub issue
-                issue = self.github.create_issue(project_name, project_title, project.get("url", ""))
+                # Try to create GitHub issue
+                issue_number = None
+                try:
+                    issue = self.github.create_issue(project_name, project_title, project.get("url", ""))
+                    issue_number = issue["number"]
+                except PermissionError as e:
+                    print(f"⚠️  Warning: Could not create GitHub issue due to permissions: {e}")
+                    print("This may happen when running on non-default branches. Project will be tracked without issue.")
 
                 # Initialize project state
                 state["projects"][project_name] = {
                     "project_id": project_id,
                     "project_title": project_title,
-                    "issue_number": issue["number"] if issue else None,
+                    "issue_number": issue_number,
                     "branch_name": ProjectExtractor.get_branch_name(project_name),
                     "created_at": datetime.now().isoformat(),
                     "images": {},
@@ -355,12 +370,16 @@ class ConstructionWorkflow:
 
             # Update GitHub issue if there were changes
             if new_images and state["projects"][project_name].get("issue_number"):
-                self.github.add_issue_comment(
-                    state["projects"][project_name]["issue_number"],
-                    project_name,
-                    total_count,
-                    len(new_images),
-                )
+                try:
+                    self.github.add_issue_comment(
+                        state["projects"][project_name]["issue_number"],
+                        project_name,
+                        total_count,
+                        len(new_images),
+                    )
+                except PermissionError as e:
+                    print(f"⚠️  Warning: Could not update GitHub issue comment due to permissions: {e}")
+                    print("Photo sync completed but issue was not updated.")
 
             current_projects[project_name] = state["projects"][project_name]
 

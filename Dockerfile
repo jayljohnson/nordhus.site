@@ -4,14 +4,12 @@ FROM jekyll/jekyll:latest
 USER root
 RUN apk add --no-cache \
     python3 \
-    py3-pip \
-    && python3 -m venv /opt/venv \
-    && /opt/venv/bin/pip install --no-cache-dir \
-        pytest==8.3.3 \
-        pytest-cov==6.0.0 \
-        requests==2.32.3 \
-        ruff==0.8.6 \
-        click==8.1.7
+    py3-pip
+
+# Copy requirements and install Python dependencies
+COPY requirements.txt .
+RUN python3 -m venv /opt/venv \
+    && /opt/venv/bin/pip install --no-cache-dir -r requirements.txt
 
 # Add venv to PATH
 ENV PATH="/opt/venv/bin:$PATH"

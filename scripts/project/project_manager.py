@@ -14,7 +14,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from clients.imgur_client import ImgurClient
+from clients.cloudinary_client import CloudinaryClient
 
 
 def get_project_dir(project_name):
@@ -98,7 +98,7 @@ def start_project(project_name):
         formatted_name = project_name.replace("-", " ").replace("_", " ").title()
         album_title = f"Construction: {formatted_name}"
         try:
-            photos_client = ImgurClient()
+            photos_client = CloudinaryClient()
             album = photos_client.create_album(album_title)
 
             if album:
@@ -188,7 +188,7 @@ def add_photos(project_name):
 
     # Download photos from Google Photos album
     try:
-        photos_client = ImgurClient()
+        photos_client = CloudinaryClient()
         album_title = album_info["title"]
 
         print(f"Downloading photos from Google Photos album: {album_title}")
