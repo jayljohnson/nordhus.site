@@ -6,7 +6,7 @@ on:
   
 env:
   PYTHON_VERSION: '3.11'
-  ENABLE_PHOTO_MONITORING: 'false'  # Feature flag: set to 'true' to enable photo album integration
+  ENABLE_PHOTO_MONITORING: 'true'  # Feature flag: set to 'true' to enable photo album integration
 
 jobs:
   monitor-projects:
