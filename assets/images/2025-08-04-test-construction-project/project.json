@@ -1,0 +1,22 @@
+{
+  "project_name": "test-construction-project",
+  "project_id": "test-construction-project",
+  "project_title": "Test Construction Project",
+  "total_photos": 1,
+  "last_sync": "2025-08-04T11:03:59.528331",
+  "project_url": "https://console.cloudinary.com/console/media_library/folders/test-construction-project",
+  "images": [
+    {
+      "id": "test-construction-project/test_image_1754299437",
+      "title": "test_image_1754299437",
+      "filename": "001_test_image_1754299437.png",
+      "metadata": {
+        "datetime": 1754299437,
+        "size": 88,
+        "width": 1,
+        "height": 1,
+        "format": "png"
+      }
+    }
+  ]
+}
