@@ -1,0 +1,7 @@
+ruff==0.8.1
+pytest==8.4.1
+pytest-cov==6.2.1
+requests==2.32.3
+python-dotenv==1.0.1
+cloudinary==1.41.0
+click==8.1.7
