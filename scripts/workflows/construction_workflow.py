@@ -110,6 +110,9 @@ class GitHubManager:
         if response.status_code not in [200, 201]:
             error_msg = f"GitHub API error: {response.status_code} - {response.text}"
             print(error_msg)
+            # For 403 errors, raise a more specific exception
+            if response.status_code == 403:
+                raise PermissionError(error_msg)
             raise Exception(error_msg)
 
         return response.json()
@@ -333,14 +336,20 @@ class ConstructionWorkflow:
             if project_name not in state["projects"]:
                 print(f"🆕 New project detected: {project_name}")
 
-                # Create GitHub issue
-                issue = self.github.create_issue(project_name, project_title, project.get("url", ""))
+                # Try to create GitHub issue
+                issue_number = None
+                try:
+                    issue = self.github.create_issue(project_name, project_title, project.get("url", ""))
+                    issue_number = issue["number"]
+                except PermissionError as e:
+                    print(f"⚠️  Warning: Could not create GitHub issue due to permissions: {e}")
+                    print("This may happen when running on non-default branches. Project will be tracked without issue.")
 
                 # Initialize project state
                 state["projects"][project_name] = {
                     "project_id": project_id,
                     "project_title": project_title,
-                    "issue_number": issue["number"],
+                    "issue_number": issue_number,
                     "branch_name": ProjectExtractor.get_branch_name(project_name),
                     "created_at": datetime.now().isoformat(),
                     "images": {},
@@ -361,12 +370,16 @@ class ConstructionWorkflow:
 
             # Update GitHub issue if there were changes
             if new_images and state["projects"][project_name].get("issue_number"):
-                self.github.add_issue_comment(
-                    state["projects"][project_name]["issue_number"],
-                    project_name,
-                    total_count,
-                    len(new_images),
-                )
+                try:
+                    self.github.add_issue_comment(
+                        state["projects"][project_name]["issue_number"],
+                        project_name,
+                        total_count,
+                        len(new_images),
+                    )
+                except PermissionError as e:
+                    print(f"⚠️  Warning: Could not update GitHub issue comment due to permissions: {e}")
+                    print("Photo sync completed but issue was not updated.")
 
             current_projects[project_name] = state["projects"][project_name]
 
