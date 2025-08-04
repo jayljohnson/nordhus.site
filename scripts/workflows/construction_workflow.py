@@ -73,13 +73,17 @@ class GitManager:
     def commit_changes(project_dir: Path, commit_message: str) -> bool:
         """Commit changes in project directory"""
         try:
+            # Ensure git user is configured for this repository
+            subprocess.run(["git", "config", "user.name", "Construction Bot"], check=True)
+            subprocess.run(["git", "config", "user.email", "noreply@nordhus.site"], check=True)
+
             subprocess.run(["git", "add", str(project_dir)], check=True)
             subprocess.run(["git", "commit", "-m", commit_message], check=True)
             print(f"Committed changes: {commit_message}")
             return True
         except subprocess.CalledProcessError as e:
             print(f"Error committing changes: {e}")
-            return False
+            raise  # Re-raise to fail the workflow properly
 
 
 class GitHubManager:
@@ -94,7 +98,7 @@ class GitHubManager:
         """Make authenticated GitHub API request"""
         url = f"https://api.github.com/repos/{self.repo_owner}/{self.repo_name}/{endpoint}"
         headers = {
-            "Authorization": (f"t oken {self.github_token}"),
+            "Authorization": f"token {self.github_token}",
             "Accept": "application/vnd.github.v3+json",
         }
 
