@@ -23,7 +23,7 @@ try:
     import cloudinary.api
     import cloudinary.uploader
 except ImportError as e:
-    raise ImportError("Cloudinary SDK not installed. Run: pip install cloudinary") from e
+    raise ImportError("Cloudinary SDK not installed. Run: pip install -r requirements.txt") from e
 
 
 class CloudinaryClient(PhotoClient):
@@ -309,7 +309,7 @@ if __name__ == "__main__":
                 load_dotenv(env_path)
                 break
     except ImportError:
-        print("💡 Tip: Install python-dotenv to use .env files: pip install python-dotenv")
+        print("💡 Tip: Install dependencies to use .env files: pip install -r requirements.txt")
 
     if len(sys.argv) > 1 and sys.argv[1] == "test":
         # Test basic functionality
