@@ -66,7 +66,11 @@ jobs:
     - name: Monitor construction projects
       run: |
         echo "Checking for construction project updates..."
-        PYTHONPATH=scripts python scripts/workflows/construction_monitor.py
+        if ! PYTHONPATH=scripts python scripts/workflows/construction_monitor.py; then
+          echo "❌ Construction project monitoring failed"
+          exit 1
+        fi
+        echo "✅ Construction project monitoring completed successfully"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         CLOUDINARY_URL: ${{ secrets.CLOUDINARY_URL }}

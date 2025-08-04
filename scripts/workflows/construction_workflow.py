@@ -58,8 +58,15 @@ class GitManager:
                     )
                     print(f"Checked out remote branch: {branch_name}")
                 else:
-                    # Create new branch from main
-                    subprocess.run(["git", "checkout", "main"], check=True)
+                    # Create new branch from main (handle GitHub Actions shallow checkout)
+                    try:
+                        # Try to checkout main locally first
+                        subprocess.run(["git", "checkout", "main"], check=True)
+                    except subprocess.CalledProcessError:
+                        # If main doesn't exist locally, fetch it from origin
+                        subprocess.run(["git", "fetch", "origin", "main"], check=True)
+                        subprocess.run(["git", "checkout", "-b", "main", "origin/main"], check=True)
+
                     subprocess.run(["git", "pull", "origin", "main"], check=True)
                     subprocess.run(["git", "checkout", "-b", branch_name], check=True)
                     print(f"Created new branch: {branch_name}")
@@ -94,7 +101,7 @@ class GitHubManager:
         """Make authenticated GitHub API request"""
         url = f"https://api.github.com/repos/{self.repo_owner}/{self.repo_name}/{endpoint}"
         headers = {
-            "Authorization": (f"t oken {self.github_token}"),
+            "Authorization": f"token {self.github_token}",
             "Accept": "application/vnd.github.v3+json",
         }
 
