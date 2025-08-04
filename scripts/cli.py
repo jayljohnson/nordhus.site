@@ -5,7 +5,7 @@ Jekyll Site CLI - Command line interface for site management
 Provides unified access to all site management commands including:
 - Construction project workflows
 - Photo management
-- Imgur integration
+- Cloudinary integration
 - Development tools
 """
 
@@ -17,8 +17,7 @@ import click
 # Add scripts directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
 
-from clients.imgur_client import ImgurClient
-from clients.imgur_client import setup_imgur_auth
+from clients.cloudinary_client import CloudinaryClient
 from project.project_manager import add_photos
 from project.project_manager import finish_project
 from project.project_manager import get_project_branch
@@ -151,61 +150,44 @@ def project_status_cmd(name):
 
 
 @cli.group()
-def imgur():
-    """Imgur API integration commands."""
+def cloudinary():
+    """Cloudinary API integration commands."""
     pass
 
 
-@imgur.command("setup")
-def imgur_setup_cmd():
-    """Set up Imgur API authentication.
+@cloudinary.command("test")
+def cloudinary_test_cmd():
+    """Test Cloudinary API connection.
 
-    Interactive setup for Imgur API credentials and authentication.
+    Verifies that Cloudinary API credentials are working correctly.
     """
-    click.echo("Setting up Imgur API integration...")
+    click.echo("Testing Cloudinary API connection...")
 
     try:
-        setup_imgur_auth()
-        click.echo("✅ Imgur API setup completed successfully!")
-
-    except Exception as e:
-        click.echo(f"❌ Error setting up Imgur: {e}", err=True)
-        sys.exit(1)
-
-
-@imgur.command("test")
-def imgur_test_cmd():
-    """Test Imgur API connection.
-
-    Verifies that Imgur API credentials are working correctly.
-    """
-    click.echo("Testing Imgur API connection...")
-
-    try:
-        client = ImgurClient()
+        client = CloudinaryClient()
         if client.authenticate():
-            click.echo("✅ Imgur API connection successful!")
+            click.echo("✅ Cloudinary API connection successful!")
         else:
-            click.echo("❌ Imgur API authentication failed", err=True)
+            click.echo("❌ Cloudinary API authentication failed", err=True)
             sys.exit(1)
 
     except Exception as e:
-        click.echo(f"❌ Error testing Imgur connection: {e}", err=True)
+        click.echo(f"❌ Error testing Cloudinary connection: {e}", err=True)
         sys.exit(1)
 
 
-@imgur.command("projects")
-def imgur_projects_cmd():
-    """List construction projects from Imgur.
+@cloudinary.command("projects")
+def cloudinary_projects_cmd():
+    """List construction projects from Cloudinary.
 
-    Shows all albums and images tagged with construction projects.
+    Shows all folders tagged as construction projects.
     """
-    click.echo("Fetching construction projects from Imgur...")
+    click.echo("Fetching construction projects from Cloudinary...")
 
     try:
-        client = ImgurClient()
+        client = CloudinaryClient()
         if not client.authenticate():
-            click.echo("❌ Failed to authenticate with Imgur", err=True)
+            click.echo("❌ Failed to authenticate with Cloudinary", err=True)
             sys.exit(1)
 
         projects = client.get_construction_projects()
@@ -215,10 +197,11 @@ def imgur_projects_cmd():
             return
 
         click.echo(f"Found {len(projects)} project(s):")
-        for project_name, data in projects.items():
-            click.echo(f"  📁 {project_name}")
-            click.echo(f"     Album: {data.get('album_title', 'N/A')}")
-            click.echo(f"     Images: {len(data.get('images', []))}")
+        for project in projects:
+            click.echo(f"  📁 {project['title']}")
+            click.echo(f"     Folder: {project['id']}")
+            click.echo(f"     Images: {project['image_count']}")
+            click.echo(f"     URL: {project['url']}")
 
     except Exception as e:
         click.echo(f"❌ Error fetching projects: {e}", err=True)
@@ -279,7 +262,7 @@ def test_cmd(coverage):
     cmd = ["python", "-m", "pytest", "tests/", "-v"]
 
     if coverage:
-        cmd.extend(["--cov=scripts", "--cov-report=html", "--cov-report=term"])
+        cmd.extend(["--cov", "--cov-report=html", "--cov-report=term"])
 
     click.echo("Running test suite...")
     result = subprocess.run(cmd, check=False)

@@ -1,0 +1,16 @@
+[run]
+source = scripts
+omit = 
+    */tests/*
+    */__pycache__/*
+    */venv/*
+    */.venv/*
+
+[report]
+# Set minimum coverage threshold to 62%
+fail_under = 62
+show_missing = true
+skip_covered = false
+
+[html]
+directory = htmlcov

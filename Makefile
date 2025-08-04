@@ -1,4 +1,4 @@
-.PHONY: help serve build clean create-issue start-project add-photos finish-project setup-imgur test test-coverage install-test-deps lint lint-fix check container-start container-stop container-exec
+.PHONY: help serve build clean create-issue start-project add-photos finish-project setup-cloudinary test test-coverage install-test-deps lint lint-fix check container-start container-stop container-exec
 
 IMAGE_NAME = nordhus-site-jekyll
 CONTAINER_NAME = nordhus-dev-container
@@ -13,7 +13,7 @@ help:
 	@echo "  make start-project      - Start new construction project (usage: PROJECT=name make start-project)"
 	@echo "  make add-photos         - Add photos to existing project (usage: PROJECT=name make add-photos)"
 	@echo "  make finish-project     - Generate blog post and create PR (usage: PROJECT=name make finish-project)"
-	@echo "  make setup-imgur         - Setup Imgur API integration"
+	@echo "  make setup-cloudinary    - Setup Cloudinary API integration"
 	@echo "  make test               - Run unit tests for photo management system"
 	@echo "  make test-coverage      - Run tests with coverage report"
 	@echo "  make lint               - Run ruff linter to check code quality"
@@ -103,14 +103,14 @@ finish-project:
 		$(IMAGE_NAME) \
 		python3 scripts/cli.py project finish $(PROJECT)
 
-setup-imgur:
-	@echo "Setting up Imgur API integration..."
-	@docker run --rm -v "$(PWD)":/srv/jekyll:cached \
+setup-cloudinary:
+	@echo "Setting up Cloudinary API integration..."
+	@docker run --rm -it -v "$(PWD)":/srv/jekyll:cached \
 		-v /srv/jekyll/vendor \
 		-v /srv/jekyll/.bundle \
 		-w /srv/jekyll \
 		$(IMAGE_NAME) \
-		python3 scripts/cli.py imgur setup
+		python3 scripts/cli.py cloudinary test
 
 # Testing commands
 test: lint-fix

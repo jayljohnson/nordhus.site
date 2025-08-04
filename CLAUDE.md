@@ -119,7 +119,7 @@ The construction project workflow includes photo album integration that can be c
 
 ### Environment Variable
 - **ENABLE_PHOTO_MONITORING**: Controls photo album integration
-  - `true`: Enables Imgur album creation and monitoring
+  - `true`: Enables Cloudinary folder creation and monitoring
   - `false`: Disables photo integration (default)
 
 ### GitHub Actions
@@ -137,7 +137,7 @@ ENABLE_PHOTO_MONITORING=true make start-project PROJECT=my-project
 
 When disabled:
 - Projects are created without photo albums
-- No Imgur API calls are made
+- No Cloudinary API calls are made
 - GitHub Actions monitoring is skipped
 - All other functionality remains intact
 

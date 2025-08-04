@@ -11,7 +11,9 @@ RUN apk add --no-cache \
         pytest-cov==6.0.0 \
         requests==2.32.3 \
         ruff==0.8.6 \
-        click==8.1.7
+        click==8.1.7 \
+        python-dotenv==1.1.1 \
+        cloudinary==1.44.1
 
 # Add venv to PATH
 ENV PATH="/opt/venv/bin:$PATH"

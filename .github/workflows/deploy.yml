@@ -22,6 +22,7 @@ concurrency:
 env:
   PYTHON_VERSION: '3.11'
   RUBY_VERSION: '3.1'
+  ENABLE_PHOTO_MONITORING: 'false'  # Set to 'true' to enable photo monitoring
 
 jobs:
   # Code quality checks job (runs on all pushes and PRs)
@@ -41,7 +42,7 @@ jobs:
     - name: Install Python dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install ruff pytest pytest-cov requests
+        pip install ruff pytest pytest-cov requests python-dotenv cloudinary
         
     - name: Code quality check
       run: |
@@ -60,7 +61,16 @@ jobs:
     - name: Test coverage
       run: |
         echo "Running test coverage..."
-        python -m pytest tests/ --cov=scripts --cov-report=term-missing --cov-fail-under=39
+        python -m pytest tests/ --cov --cov-report=term-missing
+        
+    - name: Monitor construction projects
+      run: |
+        echo "Checking for construction project updates..."
+        PYTHONPATH=scripts python scripts/workflows/construction_monitor.py
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        CLOUDINARY_URL: ${{ secrets.CLOUDINARY_URL }}
+        ENABLE_PHOTO_MONITORING: 'true'
 
   # Build job (runs on all pushes and PRs)
   build:
