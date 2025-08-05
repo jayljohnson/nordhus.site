@@ -6,59 +6,71 @@ construction projects.
 """
 
 import json
-import os
 import re
 import shutil
 import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
+from typing import Optional
 
 from clients.cloudinary_client import CloudinaryClient
+from utils.config import Config
+from utils.git_operations import GitOperations
+from utils.logging import logger
 
 
+class ProjectManager:
+    """Domain object for managing construction project lifecycle and paths"""
+
+    def __init__(self, project_name: str, date_prefix: Optional[str] = None):
+        self.project_name = project_name
+        self.date_prefix = date_prefix or datetime.now().strftime("%Y-%m-%d")
+
+    @property
+    def project_directory(self) -> Path:
+        """Project domain: Where project images and metadata live"""
+        return Path(f"assets/images/{self.date_prefix}-{self.project_name}")
+
+    @property
+    def metadata_file(self) -> Path:
+        """Project domain: Project metadata location"""
+        return self.project_directory / "project.json"
+
+    @property
+    def blog_post_path(self) -> Path:
+        """Project domain: Generated blog post location"""
+        return Path(f"_posts/{self.date_prefix}-{self.project_name.replace('_', '-')}.md")
+
+    @property
+    def git_branch(self) -> str:
+        """Delegate to git domain for branch naming"""
+        return GitOperations.get_project_branch(self.project_name, self.date_prefix)
+
+
+# Legacy functions for backward compatibility
 def get_project_dir(project_name):
-    """Get the project directory path"""
-    return Path(f"assets/images/{datetime.now().strftime('%Y-%m-%d')}-{project_name}")
+    """Legacy function - use ProjectManager.project_directory instead"""
+    return ProjectManager(project_name).project_directory
 
 
 def get_project_branch(project_name):
-    """Get the git branch name for the project"""
-    return f"project/{datetime.now().strftime('%Y-%m-%d')}-{project_name}"
+    """Legacy function - use ProjectManager.git_branch instead"""
+    return ProjectManager(project_name).git_branch
 
 
 def create_project_branch(project_name):
     """Create and switch to project branch"""
-    branch_name = get_project_branch(project_name)
-    try:
-        # Check if branch already exists
-        result = subprocess.run(
-            ["git", "branch", "--list", branch_name],
-            check=False,
-            capture_output=True,
-            text=True,
-        )
-
-        if branch_name in result.stdout:
-            print(f"Branch {branch_name} already exists, switching to it...")
-            subprocess.run(["git", "checkout", branch_name], check=True)
-        else:
-            # Create new branch from main
-            subprocess.run(["git", "checkout", "main"], check=True)
-            subprocess.run(["git", "pull", "origin", "main"], check=True)
-            subprocess.run(["git", "checkout", "-b", branch_name], check=True)
-            print(f"Created and switched to branch: {branch_name}")
-
-        return branch_name
-    except subprocess.CalledProcessError as e:
-        print(f"Error creating branch: {e}")
-        return None
+    project = ProjectManager(project_name)
+    if GitOperations.create_or_switch_branch(project.git_branch):
+        return project.git_branch
+    return None
 
 
 def setup_project_directory(project_name):
     """Create project directory structure"""
-    project_dir = get_project_dir(project_name)
-    project_dir.mkdir(parents=True, exist_ok=True)
+    project = ProjectManager(project_name)
+    project.project_directory.mkdir(parents=True, exist_ok=True)
 
     # Create project metadata file
     metadata = {
@@ -68,20 +80,20 @@ def setup_project_directory(project_name):
         "status": "active",
     }
 
-    with open(project_dir / "project.json", "w") as f:
+    with open(project.metadata_file, "w") as f:
         json.dump(metadata, f, indent=2)
 
-    print(f"Created project directory: {project_dir}")
-    return project_dir
+    logger.info(f"Created project directory: {project.project_directory}")
+    return project.project_directory
 
 
 def start_project(project_name):
     """Start a new construction project"""
-    print(f"Starting project: {project_name}")
+    logger.info(f"Starting project: {project_name}")
 
     # Validate project name
     if not re.match(r"^[a-zA-Z0-9-_]+$", project_name):
-        print("Error: Project name can only contain letters, numbers, hyphens, and underscores")
+        logger.error("Project name can only contain letters, numbers, hyphens, and underscores")
         return False
 
     # Create branch
@@ -93,8 +105,7 @@ def start_project(project_name):
     project_dir = setup_project_directory(project_name)
 
     # Create photo album (if enabled)
-    photo_integration_enabled = os.environ.get("ENABLE_PHOTO_MONITORING", "false").lower() == "true"
-    if photo_integration_enabled:
+    if Config.is_photo_monitoring_enabled():
         formatted_name = project_name.replace("-", " ").replace("_", " ").title()
         album_title = f"Construction: {formatted_name}"
         try:
@@ -108,7 +119,7 @@ def start_project(project_name):
                     metadata = json.load(f)
 
                 album_url = album.get("productUrl", "")
-                metadata["google_photos_album"] = {
+                metadata["cloudinary_album"] = {
                     "id": album["id"],
                     "title": album["title"],
                     "url": album_url,
@@ -117,85 +128,83 @@ def start_project(project_name):
                 with open(metadata_file, "w") as f:
                     json.dump(metadata, f, indent=2)
 
-                print(f"Created Google Photos album: {album_title}")
+                logger.info(f"Created cloud photo album: {album_title}")
                 if album.get("productUrl"):
-                    print(f"Album URL: {album['productUrl']}")
+                    logger.info(f"Album URL: {album['productUrl']}")
             else:
-                print("Warning: Could not create Google Photos album. You can create it manually.")
+                logger.warning("Could not create cloud photo album. You can create it manually.")
 
         except Exception as e:
-            print(f"Warning: Google Photos integration failed: {e}")
-            print("You can still use the project without Google Photos integration.")
+            logger.handle_exception(e, "cloud photo integration")
+            logger.info("You can still use the project without cloud photo integration.")
     else:
-        print("Photo album integration is disabled (ENABLE_PHOTO_MONITORING = false)")
-        print("Project created without photo album integration")
+        logger.info("Photo album integration is disabled (ENABLE_PHOTO_MONITORING = false)")
+        logger.info("Project created without photo album integration")
 
     # Create initial commit
-    try:
-        subprocess.run(["git", "add", str(project_dir)], check=True)
-        subprocess.run(["git", "commit", "-m", f"Start project: {project_name}"], check=True)
-        print("Initial commit created")
-    except subprocess.CalledProcessError as e:
-        print(f"Error creating initial commit: {e}")
+    if not GitOperations.commit_changes(project_dir, f"Start project: {project_name}"):
         return False
 
-    print(
-        f"""
-
-
-Project setup complete!
-
+    logger.success("Project setup complete!")
+    logger.info(f"""
 Next steps:
 1. Take photos on your mobile device
-2. Add them to Google Photos album: {album_title}
+2. Add them to cloud photo album: {album_title}
 3. When ready to sync photos, run: make add-photos PROJECT={project_name}
 4. When project is complete, run: make finish-project PROJECT={project_name}
 
-Note: Photos will be downloaded from Google Photos and organized locally.
-"""
-    )
+Note: Photos will be downloaded from cloud service and organized locally.
+""")
     return True
 
 
 def add_photos(project_name):
-    """Add photos to existing project from Google Photos"""
-    project_dir = get_project_dir(project_name)
+    """Add photos to existing project from cloud photo service or local sources"""
+    project = ProjectManager(project_name)
 
-    if not project_dir.exists():
-        print(f"Error: Project {project_name} not found. Run 'make start-project PROJECT={project_name}' first.")
+    if not project.project_directory.exists():
+        logger.error(f"Project {project_name} not found. Run 'make start-project PROJECT={project_name}' first.")
         return False
 
     # Switch to project branch
-    branch = get_project_branch(project_name)
-    try:
-        subprocess.run(["git", "checkout", branch], check=True)
-    except subprocess.CalledProcessError:
-        print(f"Error: Could not switch to branch {branch}")
+    if not GitOperations.checkout_branch(project.git_branch):
+        logger.error(f"Could not switch to branch {project.git_branch}")
         return False
 
-    # Get project metadata to find Google Photos album
+    # Try cloud photo service first, fall back to local if needed
+    if _try_cloud_photo_sync(project_name, project.project_directory):
+        return True
+
+    # Cloud sync failed or unavailable, use local photo discovery
+    logger.info("Falling back to local photo discovery...")
+    return _add_photos_from_local_sources(project_name, project.project_directory)
+
+
+def _try_cloud_photo_sync(project_name, project_dir):
+    """Attempt to sync photos from cloud photo service. Returns True if successful, False to fall back."""
+    # Get project metadata to find cloud photo album
     metadata_file = project_dir / "project.json"
     metadata = {}
     if metadata_file.exists():
         with open(metadata_file) as f:
             metadata = json.load(f)
 
-    album_info = metadata.get("google_photos_album")
+    # Check for legacy google_photos_album or cloudinary album info
+    album_info = metadata.get("google_photos_album") or metadata.get("cloudinary_album")
     if not album_info:
-        print("No Google Photos album found for this project.")
-        print("Falling back to local photo discovery...")
-        return add_photos_fallback(project_name, project_dir)
+        print("No cloud photo album found for this project.")
+        return False
 
-    # Download photos from Google Photos album
+    # Download photos from cloud photo service
     try:
         photos_client = CloudinaryClient()
         album_title = album_info["title"]
 
-        print(f"Downloading photos from Google Photos album: {album_title}")
+        print(f"Downloading photos from cloud album: {album_title}")
         downloaded_files = photos_client.download_album_photos(album_title, str(project_dir))
 
         if downloaded_files:
-            print(f"Downloaded {len(downloaded_files)} photos from Google Photos")
+            print(f"Downloaded {len(downloaded_files)} photos from cloud service")
 
             # Update project metadata
             existing_photos = set(metadata.get("photos", []))
@@ -214,36 +223,25 @@ def add_photos(project_name):
 
             # Commit changes
             if new_photos:
-                try:
-                    subprocess.run(["git", "add", str(project_dir)], check=True)
-                    subprocess.run(
-                        [
-                            "git",
-                            "commit",
-                            "-m",
-                            f"Sync {len(new_photos)} new photos from Google Photos: {project_name}",
-                        ],
-                        check=True,
-                    )
+                commit_message = f"Sync {len(new_photos)} new photos from cloud service: {project_name}"
+                if GitOperations.commit_changes(project_dir, commit_message, ensure_config=False):
                     print("New photos committed to git")
-                except subprocess.CalledProcessError as e:
-                    print(f"Warning: Could not commit photos: {e}")
+                else:
+                    print("Warning: Could not commit photos")
             else:
                 print("No new photos to commit")
+            return True
         else:
-            print("No photos found in Google Photos album")
+            print("No photos found in cloud album")
+            return False
 
     except Exception as e:
-        print(f"Error downloading from Google Photos: {e}")
-        print("Falling back to local photo discovery...")
-        return add_photos_fallback(project_name, project_dir)
-
-    return True
+        print(f"Error downloading from cloud service: {e}")
+        return False
 
 
-def add_photos_fallback(project_name, project_dir):
-    """Fallback method to add photos from local sources"""
-    # Look for new photos in common locations
+def _find_local_photos():
+    """Find photos in common local directories"""
     photo_sources = [
         Path.home() / "Downloads",
         Path.home() / "Pictures",
@@ -252,28 +250,29 @@ def add_photos_fallback(project_name, project_dir):
     ]
 
     photos_found = []
+    photo_extensions = ["*.jpg", "*.jpeg", "*.png", "*.JPG", "*.JPEG", "*.PNG"]
+
     for source in photo_sources:
         if source.exists():
-            for ext in ["*.jpg", "*.jpeg", "*.png", "*.JPG", "*.JPEG", "*.PNG"]:
+            for ext in photo_extensions:
                 photos_found.extend(list(source.glob(ext)))
 
-    if not photos_found:
-        print("No photos found in common locations.")
-        print(f"Manual option: Copy photos directly to {project_dir}/")
-        return True
+    return photos_found
 
-    print(f"Found {len(photos_found)} potential photos:")
+
+def _display_photos_preview(photos_found):
+    """Display a preview of found photos"""
+    logger.info(f"Found {len(photos_found)} potential photos:")
     for i, photo in enumerate(photos_found[:10]):
-        print(f"  {i + 1}. {photo.name} ({photo.stat().st_size // 1024}KB)")
+        size_kb = photo.stat().st_size // 1024
+        logger.info(f"  {i + 1}. {photo.name} ({size_kb}KB)")
 
     if len(photos_found) > 10:
-        print(f"  ... and {len(photos_found) - 10} more")
+        logger.info(f"  ... and {len(photos_found) - 10} more")
 
-    response = input(f"Copy all photos to {project_name}? (y/n): ")
-    if response.lower() != "y":
-        return True
 
-    # Copy photos to project directory
+def _copy_photos_to_project(photos_found, project_dir):
+    """Copy photos to project directory and return count"""
     copied_count = 0
     for photo in photos_found:
         try:
@@ -282,20 +281,40 @@ def add_photos_fallback(project_name, project_dir):
                 shutil.copy2(photo, dest)
                 copied_count += 1
         except Exception as e:
-            print(f"Warning: Could not copy {photo.name}: {e}")
+            logger.warning(f"Could not copy {photo.name}: {e}")
 
+    return copied_count
+
+
+def _commit_copied_photos(project_dir, project_name, copied_count):
+    """Commit copied photos to git"""
     if copied_count > 0:
-        print(f"Copied {copied_count} photos to project directory")
+        logger.info(f"Copied {copied_count} photos to project directory")
 
-        try:
-            subprocess.run(["git", "add", str(project_dir)], check=True)
-            subprocess.run(
-                ["git", "commit", "-m", f"Add {copied_count} photos to {project_name}"],
-                check=True,
-            )
-            print("Photos committed to git")
-        except subprocess.CalledProcessError as e:
-            print(f"Warning: Could not commit photos: {e}")
+        commit_message = f"Add {copied_count} photos to {project_name}"
+        if GitOperations.commit_changes(project_dir, commit_message, ensure_config=False):
+            logger.info("Photos committed to git")
+        else:
+            logger.warning("Could not commit photos")
+
+
+def _add_photos_from_local_sources(project_name, project_dir):
+    """Add photos from local file system sources"""
+    photos_found = _find_local_photos()
+
+    if not photos_found:
+        logger.info("No photos found in common locations.")
+        logger.info(f"Manual option: Copy photos directly to {project_dir}/")
+        return True
+
+    _display_photos_preview(photos_found)
+
+    response = input(f"Copy all photos to {project_name}? (y/n): ")
+    if response.lower() != "y":
+        return True
+
+    copied_count = _copy_photos_to_project(photos_found, project_dir)
+    _commit_copied_photos(project_dir, project_name, copied_count)
 
     return True
 
@@ -405,9 +424,7 @@ def finish_project(project_name):
 
     # Switch to project branch
     branch = get_project_branch(project_name)
-    try:
-        subprocess.run(["git", "checkout", branch], check=True)
-    except subprocess.CalledProcessError:
+    if not GitOperations.checkout_branch(branch):
         print(f"Error: Could not switch to branch {branch}")
         return False
 
@@ -430,21 +447,11 @@ def finish_project(project_name):
             json.dump(metadata, f, indent=2)
 
     # Commit blog post
-    try:
-        subprocess.run(["git", "add", str(blog_post), str(project_dir)], check=True)
-        subprocess.run(
-            [
-                "git",
-                "commit",
-                "-m",
-                f"Complete project: {project_name} - add blog post",
-            ],
-            check=True,
-        )
-        print("Blog post committed")
-    except subprocess.CalledProcessError as e:
-        print(f"Error committing blog post: {e}")
+    commit_message = f"Complete project: {project_name} - add blog post"
+    if not GitOperations.add_and_commit_files([blog_post, project_dir], commit_message, ensure_config=False):
+        print("Error committing blog post")
         return False
+    print("Blog post committed")
 
     # Generate and create PR
     print("Creating pull request...")

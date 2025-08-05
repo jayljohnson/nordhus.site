@@ -76,8 +76,8 @@ max-complexity = 10
 force-single-line = true
 
 [tool.ruff.lint.per-file-ignores]
-# Tests can use assert statements and may have unused imports for setup
-"tests/*" = ["B011", "F401"]
+# Tests can use assert statements but should catch unused imports
+"tests/*" = ["B011"]
 
 # Scripts may use print statements
 "scripts/*" = ["T201"]

@@ -18,9 +18,7 @@ from unittest.mock import patch
 # Add scripts directory to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "scripts"))
 
-from scripts.project.project_manager import add_photos_fallback
 from scripts.project.project_manager import create_project_branch
-from scripts.project.project_manager import generate_blog_post
 from scripts.project.project_manager import get_project_branch
 from scripts.project.project_manager import get_project_dir
 from scripts.project.project_manager import setup_project_directory
@@ -63,15 +61,20 @@ class TestProjectDirectoryOperations(TestProjectManager):
 
         self.assertEqual(result, expected)
 
-    @patch("scripts.project.project_manager.datetime")
-    def test_get_project_branch(self, mock_datetime):
+    def test_get_project_branch(self):
         """Test generating project branch names"""
-        mock_datetime.now.return_value.strftime.return_value = "2025-01"
+        # Test with explicit date prefix to avoid datetime mocking
+        from scripts.utils.git_operations import GitOperations
 
-        result = get_project_branch("deck-repair")
+        result = GitOperations.get_project_branch("deck-repair", "2025-01")
         expected = "project/2025-01-deck-repair"
-
         self.assertEqual(result, expected)
+
+        # Test that the function returns a properly formatted branch name
+        # (we can't easily test the current date without complex mocking)
+        result_today = get_project_branch("deck-repair")
+        self.assertTrue(result_today.startswith("project/"))
+        self.assertTrue(result_today.endswith("-deck-repair"))
 
     @patch("scripts.project.project_manager.get_project_dir")
     def test_setup_project_directory(self, mock_get_project_dir):

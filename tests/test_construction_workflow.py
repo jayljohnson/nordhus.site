@@ -4,7 +4,6 @@ Unit tests for the Construction Workflow system.
 Tests workflow orchestration, git operations, and GitHub integration.
 """
 
-import json
 import os
 import shutil
 import sys
@@ -20,9 +19,9 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "scripts"))
 from scripts.interfaces.photo_client_interface import PhotoClient
 from scripts.interfaces.photo_client_interface import ProjectExtractor
 from scripts.interfaces.photo_client_interface import ProjectHasher
+from scripts.utils.git_operations import GitOperations
 from scripts.workflows.construction_workflow import ConstructionWorkflow
 from scripts.workflows.construction_workflow import GitHubManager
-from scripts.workflows.construction_workflow import GitManager
 from scripts.workflows.construction_workflow import ProjectStateManager
 
 
@@ -115,7 +114,7 @@ class TestProjectExtractor(unittest.TestCase):
         self.assertEqual(result, "project/2025-01-deck-repair")
 
 
-class TestGitManager(unittest.TestCase):
+class TestGitOperations(unittest.TestCase):
     """Test git operations"""
 
     def setUp(self):
@@ -150,7 +149,7 @@ class TestGitManager(unittest.TestCase):
 
         self.mock_subprocess.side_effect = mock_subprocess_side_effect
 
-        result = GitManager.create_or_switch_branch("project/2025-01-test")
+        result = GitOperations.create_or_switch_branch("project/2025-01-test")
 
         self.assertTrue(result)
 
@@ -182,7 +181,7 @@ class TestGitManager(unittest.TestCase):
 
         self.mock_subprocess.side_effect = mock_subprocess_side_effect
 
-        result = GitManager.create_or_switch_branch("project/2025-01-test")
+        result = GitOperations.create_or_switch_branch("project/2025-01-test")
 
         self.assertTrue(result)
 
@@ -195,7 +194,7 @@ class TestGitManager(unittest.TestCase):
         project_dir = self.temp_path / "test_project"
         project_dir.mkdir()
 
-        result = GitManager.commit_changes(project_dir, "Test commit message")
+        result = GitOperations.commit_changes(project_dir, "Test commit message")
 
         # Verify that the method succeeds (indicates git commands were called)
         # The mock subprocess returns success, so if the result is True,
@@ -484,7 +483,7 @@ if __name__ == "__main__":
     # Add test classes
     test_classes = [
         TestProjectExtractor,
-        TestGitManager,
+        TestGitOperations,
         TestGitHubManager,
         TestProjectStateManager,
         TestConstructionWorkflow,

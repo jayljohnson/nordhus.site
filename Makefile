@@ -62,55 +62,38 @@ create-issue:
 		python3 -c "import urllib.parse, os, webbrowser; title = os.environ.get('TITLE', ''); body = os.environ.get('BODY', ''); url = 'https://github.com/jayljohnson/nordhus.site/issues/new'; url = url + '?title=' + urllib.parse.quote(title) + '&body=' + urllib.parse.quote(body) if (title or body) else url; webbrowser.open(url)"
 
 
-# Construction project workflow
-start-project:
+# Project variable validation helper
+check-project-var:
 	@if [ -z "$(PROJECT)" ]; then \
-		echo "Error: PROJECT variable required. Usage: PROJECT=window-repair make start-project"; \
+		echo "Error: PROJECT variable required. Usage: PROJECT=project-name make [command]"; \
 		exit 1; \
 	fi
+
+# Unified Docker execution helper
+docker-exec:
+	@if [ -z "$(CMD)" ]; then \
+		echo "Error: CMD variable required. Usage: CMD='command' make docker-exec"; \
+		exit 1; \
+	fi
+	$(call run_in_container,$(CMD))
+
+# Construction project workflow (consolidated)
+start-project: check-project-var
 	@echo "Starting construction project: $(PROJECT)"
-	@docker run --rm -v "$(PWD)":/srv/jekyll:cached \
-		-v /srv/jekyll/vendor \
-		-v /srv/jekyll/.bundle \
-		-w /srv/jekyll \
-		$(IMAGE_NAME) \
-		python3 scripts/cli.py project start $(PROJECT)
+	@make docker-exec CMD="python3 scripts/cli.py project start $(PROJECT)"
 
-add-photos:
-	@if [ -z "$(PROJECT)" ]; then \
-		echo "Error: PROJECT variable required. Usage: PROJECT=window-repair make add-photos"; \
-		exit 1; \
-	fi
+add-photos: check-project-var
 	@echo "Adding photos to project: $(PROJECT)"
-	@docker run --rm -v "$(PWD)":/srv/jekyll:cached \
-		-v /srv/jekyll/vendor \
-		-v /srv/jekyll/.bundle \
-		-w /srv/jekyll \
-		$(IMAGE_NAME) \
-		python3 scripts/cli.py project add-photos $(PROJECT)
+	@make docker-exec CMD="python3 scripts/cli.py project add-photos $(PROJECT)"
 
-finish-project:
-	@if [ -z "$(PROJECT)" ]; then \
-		echo "Error: PROJECT variable required. Usage: PROJECT=window-repair make finish-project"; \
-		exit 1; \
-	fi
+finish-project: check-project-var
 	@echo "Finishing project: $(PROJECT)"
 	@echo "Generating blog post with Claude analysis..."
-	@docker run --rm -v "$(PWD)":/srv/jekyll:cached \
-		-v /srv/jekyll/vendor \
-		-v /srv/jekyll/.bundle \
-		-w /srv/jekyll \
-		$(IMAGE_NAME) \
-		python3 scripts/cli.py project finish $(PROJECT)
+	@make docker-exec CMD="python3 scripts/cli.py project finish $(PROJECT)"
 
 setup-cloudinary:
 	@echo "Setting up Cloudinary API integration..."
-	@docker run --rm -it -v "$(PWD)":/srv/jekyll:cached \
-		-v /srv/jekyll/vendor \
-		-v /srv/jekyll/.bundle \
-		-w /srv/jekyll \
-		$(IMAGE_NAME) \
-		python3 scripts/cli.py cloudinary test
+	@make docker-exec CMD="python3 scripts/cli.py cloudinary test"
 
 # Testing commands
 test: lint-fix
