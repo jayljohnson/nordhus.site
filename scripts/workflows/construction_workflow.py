@@ -165,6 +165,26 @@ class GitHubManager:
         print(f"Created GitHub issue #{result['number']}: {title}")
         return result
 
+    def find_existing_issue(self, project_name: str) -> Optional[Dict]:
+        """Find existing GitHub issue for project"""
+        formatted_name = project_name.replace("-", " ").title()
+        search_title = f"Construction Project: {formatted_name}"
+
+        try:
+            # Search for issues with matching title
+            result = self._api_request("GET", "issues?state=open&labels=construction")
+
+            if result:
+                for issue in result:
+                    if issue.get("title") == search_title:
+                        print(f"Found existing issue #{issue['number']}: {search_title}")
+                        return issue
+
+            return None
+        except Exception as e:
+            print(f"Error searching for existing issue: {e}")
+            return None
+
     def add_issue_comment(
         self,
         issue_number: int,
@@ -240,8 +260,16 @@ class ConstructionWorkflow:
         project_id = project["id"]
         project_name = project["project_name"]
 
+        print(f"Syncing photos for project: {project_name} (ID: {project_id})")
+        print(f"Existing tracked images: {len(existing_images)}")
+
         # Get current images from photo service
         current_images = self.photo_client.get_project_images(project_id)
+        print(f"Current images from photo service: {len(current_images)}")
+
+        if not current_images:
+            print(f"No images found in photo service for project: {project_name}")
+            return [], 0
 
         # Add hashes to images for change detection
         for image in current_images:
@@ -251,11 +279,17 @@ class ConstructionWorkflow:
         existing_hashes = set(existing_images.keys())
         new_images = [img for img in current_images if img["hash"] not in existing_hashes]
 
+        print(f"Image comparison - Existing hashes: {len(existing_hashes)}, New images: {len(new_images)}")
+
         if not new_images:
             print(f"No new photos for project: {project_name}")
             return [], len(current_images)
 
         print(f"Found {len(new_images)} new photos for project: {project_name}")
+        for i, img in enumerate(new_images[:3]):  # Show first 3
+            print(f"  New photo {i+1}: {img.get('filename', 'unknown')} (hash: {img['hash'][:8]}...)")
+        if len(new_images) > 3:
+            print(f"  ... and {len(new_images) - 3} more photos")
 
         # Switch to project branch
         branch_name = ProjectExtractor.get_branch_name(project_name)
@@ -307,6 +341,91 @@ class ConstructionWorkflow:
 
         return new_images, len(current_images)
 
+    def _setup_project_issue(self, project_name: str, project_title: str, project_url: str) -> Optional[int]:
+        """Setup GitHub issue for project (find existing or create new)"""
+        # Check for existing GitHub issue first
+        existing_issue = None
+        issue_number = None
+        try:
+            existing_issue = self.github.find_existing_issue(project_name)
+            if existing_issue:
+                issue_number = existing_issue["number"]
+                print(f"Using existing GitHub issue #{issue_number}")
+        except PermissionError as e:
+            print(f"⚠️  Warning: Could not search for GitHub issues due to permissions: {e}")
+
+        # Create new issue only if none exists
+        if not existing_issue:
+            try:
+                issue = self.github.create_issue(project_name, project_title, project_url)
+                issue_number = issue["number"]
+            except PermissionError as e:
+                print(f"⚠️  Warning: Could not create GitHub issue due to permissions: {e}")
+                print("This may happen when running on non-default branches. Project will be tracked without issue.")
+
+        return issue_number
+
+    def _process_project(self, project: Dict[str, Any], state: Dict[str, Any]) -> Dict[str, Any]:
+        """Process a single project and return updated project state"""
+        project_name = project["project_name"]
+        project_id = project["id"]
+        project_title = project["title"]
+
+        print(f"Processing project: {project_name} ({project_title})")
+
+        # Check if this is a new project or needs issue creation
+        if project_name not in state["projects"]:
+            print(f"🆕 New project detected: {project_name}")
+
+            issue_number = self._setup_project_issue(project_name, project_title, project.get("url", ""))
+
+            # Initialize project state
+            state["projects"][project_name] = {
+                "project_id": project_id,
+                "project_title": project_title,
+                "issue_number": issue_number,
+                "branch_name": ProjectExtractor.get_branch_name(project_name),
+                "created_at": datetime.now().isoformat(),
+                "images": {},
+            }
+        elif not state["projects"][project_name].get("issue_number"):
+            # For existing projects, ensure we have an issue_number if one exists on GitHub
+            try:
+                existing_issue = self.github.find_existing_issue(project_name)
+                if existing_issue:
+                    state["projects"][project_name]["issue_number"] = existing_issue["number"]
+                    print(f"Linked existing GitHub issue #{existing_issue['number']} to project")
+            except PermissionError:
+                pass  # Skip if no permissions
+
+        # Sync photos for this project
+        existing_images = state["projects"][project_name].get("images", {})
+        new_images, total_count = self.sync_project_photos(project, existing_images)
+
+        # Update state with new images
+        for image in new_images:
+            state["projects"][project_name]["images"][image["hash"]] = {
+                "image_id": image["id"],
+                "title": image["title"],
+                "filename": image["filename"],
+                "added_at": datetime.now().isoformat(),
+            }
+
+        # Update GitHub issue if there were changes
+        if new_images and state["projects"][project_name].get("issue_number"):
+            try:
+                self.github.add_issue_comment(
+                    state["projects"][project_name]["issue_number"],
+                    project_name,
+                    total_count,
+                    len(new_images),
+                )
+            except PermissionError as e:
+                print(f"⚠️  Warning: Could not update GitHub issue comment due to permissions: {e}")
+                print("Photo sync completed but issue was not updated.")
+
+        return state["projects"][project_name]
+
     def run(self) -> bool:
         """Main monitoring loop"""
         print("🔍 Starting construction project monitoring...")
@@ -329,63 +448,10 @@ class ConstructionWorkflow:
 
         current_projects = {}
 
+        # Process each project
         for project in construction_projects:
             project_name = project["project_name"]
-            project_id = project["id"]
-            project_title = project["title"]
-
-            print(f"Processing project: {project_name} ({project_title})")
-
-            # Check if this is a new project
-            if project_name not in state["projects"]:
-                print(f"🆕 New project detected: {project_name}")
-
-                # Try to create GitHub issue
-                issue_number = None
-                try:
-                    issue = self.github.create_issue(project_name, project_title, project.get("url", ""))
-                    issue_number = issue["number"]
-                except PermissionError as e:
-                    print(f"⚠️  Warning: Could not create GitHub issue due to permissions: {e}")
-                    print("This may happen when running on non-default branches. Project will be tracked without issue.")
-
-                # Initialize project state
-                state["projects"][project_name] = {
-                    "project_id": project_id,
-                    "project_title": project_title,
-                    "issue_number": issue_number,
-                    "branch_name": ProjectExtractor.get_branch_name(project_name),
-                    "created_at": datetime.now().isoformat(),
-                    "images": {},
-                }
-
-            # Sync photos for this project
-            existing_images = state["projects"][project_name].get("images", {})
-            new_images, total_count = self.sync_project_photos(project, existing_images)
-
-            # Update state with new images
-            for image in new_images:
-                state["projects"][project_name]["images"][image["hash"]] = {
-                    "image_id": image["id"],
-                    "title": image["title"],
-                    "filename": image["filename"],
-                    "added_at": datetime.now().isoformat(),
-                }
-
-            # Update GitHub issue if there were changes
-            if new_images and state["projects"][project_name].get("issue_number"):
-                try:
-                    self.github.add_issue_comment(
-                        state["projects"][project_name]["issue_number"],
-                        project_name,
-                        total_count,
-                        len(new_images),
-                    )
-                except PermissionError as e:
-                    print(f"⚠️  Warning: Could not update GitHub issue comment due to permissions: {e}")
-                    print("Photo sync completed but issue was not updated.")
-
-            current_projects[project_name] = state["projects"][project_name]
+            current_projects[project_name] = self._process_project(project, state)
 
         # Update state
         state["projects"] = current_projects

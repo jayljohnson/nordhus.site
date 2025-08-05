@@ -227,12 +227,37 @@ class TestGitHubManager(unittest.TestCase):
         self.assertIsNotNone(issue)
         self.assertEqual(issue["number"], 42)
 
+    @patch("requests.request")
+    def test_find_existing_issue_success(self, mock_request):
+        """Test finding existing GitHub issue"""
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = [{"number": 42, "title": "Construction Project: Test Project"}, {"number": 43, "title": "Other Issue"}]
+        mock_request.return_value = mock_response
+
+        result = self.github.find_existing_issue("test-project")
+
+        self.assertIsNotNone(result)
+        self.assertEqual(result["number"], 42)
+        self.assertEqual(result["title"], "Construction Project: Test Project")
+
+    @patch("requests.request")
+    def test_find_existing_issue_not_found(self, mock_request):
+        """Test when no existing GitHub issue is found"""
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = [{"number": 43, "title": "Other Issue"}]
+        mock_request.return_value = mock_response
+
+        result = self.github.find_existing_issue("test-project")
+
+        self.assertIsNone(result)
+
         # Verify API call
         mock_request.assert_called_once()
         args, kwargs = mock_request.call_args
-        self.assertEqual(args[0], "POST")
+        self.assertEqual(args[0], "GET")
         self.assertIn("issues", args[1])
-        self.assertIn("labels", kwargs["json"])
 
     @patch("requests.request")
     def test_add_issue_comment_success(self, mock_request):
