@@ -8,7 +8,6 @@ import os
 # Add scripts to path for imports
 import sys
 from pathlib import Path
-from unittest.mock import MagicMock
 from unittest.mock import Mock
 from unittest.mock import patch
 

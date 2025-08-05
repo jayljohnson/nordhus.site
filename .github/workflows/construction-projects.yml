@@ -3,8 +3,6 @@ on:
   schedule:
     - cron: '0 0 * * *'  # Every 24 hours at midnight UTC
   workflow_dispatch:     # Manual trigger
-  push:
-    branches: [ main ]   # Only run on main branch pushes
   
 env:
   PYTHON_VERSION: '3.11'

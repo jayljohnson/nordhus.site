@@ -7,7 +7,6 @@ Decoupled from specific photo service clients.
 
 import json
 import os
-import subprocess
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -19,78 +18,9 @@ import requests
 from interfaces.photo_client_interface import PhotoClient
 from interfaces.photo_client_interface import ProjectExtractor
 from interfaces.photo_client_interface import ProjectHasher
+from utils.git_operations import GitOperations
 
-
-class GitManager:
-    """Handles git operations for project branches"""
-
-    @staticmethod
-    def create_or_switch_branch(branch_name: str) -> bool:
-        """Create or switch to project branch"""
-        try:
-            # Check if branch exists locally
-            result = subprocess.run(
-                ["git", "branch", "--list", branch_name],
-                check=False,
-                capture_output=True,
-                text=True,
-            )
-
-            if branch_name in result.stdout:
-                # Switch to existing branch
-                subprocess.run(["git", "checkout", branch_name], check=True)
-                print(f"Switched to existing branch: {branch_name}")
-            else:
-                # Check if branch exists remotely
-                result = subprocess.run(
-                    ["git", "ls-remote", "--heads", "origin", branch_name],
-                    check=False,
-                    capture_output=True,
-                    text=True,
-                )
-
-                if result.stdout.strip():
-                    # Fetch and checkout remote branch
-                    subprocess.run(["git", "fetch", "origin", branch_name], check=True)
-                    subprocess.run(
-                        ["git", "checkout", "-b", branch_name, f"origin/{branch_name}"],
-                        check=True,
-                    )
-                    print(f"Checked out remote branch: {branch_name}")
-                else:
-                    # Create new branch from main (handle GitHub Actions shallow checkout)
-                    try:
-                        # Try to checkout main locally first
-                        subprocess.run(["git", "checkout", "main"], check=True)
-                    except subprocess.CalledProcessError:
-                        # If main doesn't exist locally, fetch it from origin
-                        subprocess.run(["git", "fetch", "origin", "main"], check=True)
-                        subprocess.run(["git", "checkout", "-b", "main", "origin/main"], check=True)
-
-                    subprocess.run(["git", "pull", "origin", "main"], check=True)
-                    subprocess.run(["git", "checkout", "-b", branch_name], check=True)
-                    print(f"Created new branch: {branch_name}")
-
-            return True
-        except subprocess.CalledProcessError as e:
-            print(f"Error managing branch {branch_name}: {e}")
-            return False
-
-    @staticmethod
-    def commit_changes(project_dir: Path, commit_message: str) -> bool:
-        """Commit changes in project directory"""
-        try:
-            # Ensure git user is configured for this repository
-            subprocess.run(["git", "config", "user.name", "Construction Bot"], check=True)
-            subprocess.run(["git", "config", "user.email", "noreply@nordhus.site"], check=True)
-
-            subprocess.run(["git", "add", str(project_dir)], check=True)
-            subprocess.run(["git", "commit", "-m", commit_message], check=True)
-            print(f"Committed changes: {commit_message}")
-            return True
-        except subprocess.CalledProcessError as e:
-            print(f"Error committing changes: {e}")
-            raise  # Re-raise to fail the workflow properly
+# Note: GitManager class functionality has been consolidated into GitOperations utility
 
 
 class GitHubManager:
@@ -213,7 +143,7 @@ Photos have been committed and are ready for review.
 """
 
         data = {"body": body}
-        result = self._api_request("POST", f"issues/{issue_number}/comments", data)
+        self._api_request("POST", f"issues/{issue_number}/comments", data)
         print(f"Updated issue #{issue_number} with sync status")
 
 
@@ -253,7 +183,6 @@ class ConstructionWorkflow:
         self.project_hasher = project_hasher
         self.github = GitHubManager(github_token, repo_owner, repo_name)
         self.state_manager = ProjectStateManager(state_file)
-        self.git = GitManager()
 
     def sync_project_photos(self, project: Dict[str, Any], existing_images: Dict[str, Any]) -> tuple[List[Dict], int]:
         """Sync photos for a specific project"""
@@ -293,7 +222,7 @@ class ConstructionWorkflow:
 
         # Switch to project branch
         branch_name = ProjectExtractor.get_branch_name(project_name)
-        if not self.git.create_or_switch_branch(branch_name):
+        if not GitOperations.create_or_switch_branch(branch_name):
             return [], len(current_images)
 
         # Create project directory
@@ -336,7 +265,7 @@ class ConstructionWorkflow:
 
             # Commit changes
             commit_msg = f"Sync {len(downloaded_files)} new photos: {project_name}"
-            if not self.git.commit_changes(project_dir, commit_msg):
+            if not GitOperations.commit_changes(project_dir, commit_msg):
                 raise Exception(f"Failed to commit changes for project: {project_name}")
 
         return new_images, len(current_images)
