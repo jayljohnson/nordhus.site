@@ -11,6 +11,7 @@ import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import Mock
+from unittest.mock import mock_open
 from unittest.mock import patch
 
 # Add scripts directory to path for imports
@@ -469,11 +470,288 @@ class TestConstructionWorkflow(unittest.TestCase):
 
         self.assertFalse(result)
 
-    def test_sync_project_photos_placeholder(self):
-        """Placeholder test for project photo syncing"""
-        # Complex sync tests removed due to implementation complexity
-        # Core functionality is tested through integration tests
-        self.assertTrue(True)
+    def test_sync_project_photos_with_new_images(self):
+        """Test syncing photos when new images are available"""
+        # Setup mock photo client with new images
+        mock_client = MockPhotoClient()
+        mock_hasher = MockProjectHasher()
+
+        workflow = ConstructionWorkflow(mock_client, mock_hasher, "test_token", "owner", "repo", Path("/tmp/test_state.json"))
+
+        # Setup project data
+        project = {"id": "project123", "project_name": "deck-repair", "title": "Deck Repair Project", "url": "http://example.com/album"}
+
+        # Setup new images in mock client
+        mock_client.images["project123"] = [
+            {
+                "id": "img1",
+                "title": "Before photo",
+                "url": "http://example.com/img1.jpg",
+                "filename": "before.jpg",
+                "metadata": {"date": "2025-08-07"},
+            },
+            {
+                "id": "img2",
+                "title": "During photo",
+                "url": "http://example.com/img2.jpg",
+                "filename": "during.jpg",
+                "metadata": {"date": "2025-08-07"},
+            },
+        ]
+
+        # Test with no existing images
+        existing_images = {}
+
+        with patch("scripts.workflows.construction_workflow.GitOperations") as mock_git, patch(
+            "scripts.workflows.construction_workflow.Path.mkdir"
+        ) as mock_mkdir, patch("builtins.open", mock_open()) as mock_file:
+            mock_git.create_or_switch_branch.return_value = True
+            mock_git.commit_changes.return_value = True
+
+            new_images, total_count = workflow.sync_project_photos(project, existing_images)
+
+            # Verify results
+            self.assertEqual(len(new_images), 2)
+            self.assertEqual(total_count, 2)
+
+            # Verify git operations were called
+            mock_git.create_or_switch_branch.assert_called_once()
+            mock_git.commit_changes.assert_called_once()
+
+    def test_sync_project_photos_no_new_images(self):
+        """Test syncing photos when no new images are available"""
+        mock_client = MockPhotoClient()
+        mock_hasher = MockProjectHasher()
+
+        workflow = ConstructionWorkflow(mock_client, mock_hasher, "test_token", "owner", "repo", Path("/tmp/test_state.json"))
+
+        project = {"id": "project123", "project_name": "deck-repair", "title": "Deck Repair Project"}
+
+        # Setup existing images that match current images
+        mock_client.images["project123"] = [
+            {
+                "id": "img1",
+                "title": "Before photo",
+                "url": "http://example.com/img1.jpg",
+                "filename": "before.jpg",
+                "metadata": {"date": "2025-08-07"},
+            }
+        ]
+
+        # All images already exist (use the actual hash format from MockProjectHasher)
+        existing_images = {"image_hash_img1": {"id": "img1"}}
+
+        new_images, total_count = workflow.sync_project_photos(project, existing_images)
+
+        # Should return no new images but correct total count
+        self.assertEqual(len(new_images), 0)
+        self.assertEqual(total_count, 1)
+
+    def test_sync_project_photos_no_images_in_service(self):
+        """Test syncing when photo service has no images"""
+        mock_client = MockPhotoClient()
+        mock_hasher = MockProjectHasher()
+
+        workflow = ConstructionWorkflow(mock_client, mock_hasher, "test_token", "owner", "repo", Path("/tmp/test_state.json"))
+
+        project = {"id": "project123", "project_name": "deck-repair", "title": "Deck Repair Project"}
+
+        # No images in photo service
+        mock_client.images["project123"] = []
+        existing_images = {}
+
+        new_images, total_count = workflow.sync_project_photos(project, existing_images)
+
+        self.assertEqual(len(new_images), 0)
+        self.assertEqual(total_count, 0)
+
+    def test_setup_project_issue_creates_new_issue(self):
+        """Test project issue setup when no existing issue exists"""
+        mock_client = MockPhotoClient()
+        mock_hasher = MockProjectHasher()
+
+        workflow = ConstructionWorkflow(mock_client, mock_hasher, "test_token", "owner", "repo", Path("/tmp/test_state.json"))
+
+        with patch.object(workflow.github, "find_existing_issue", return_value=None), patch.object(
+            workflow.github, "create_issue", return_value={"number": 42}
+        ):
+            issue_number = workflow._setup_project_issue("deck-repair", "Deck Repair", "http://example.com")
+
+            self.assertEqual(issue_number, 42)
+            workflow.github.create_issue.assert_called_once()
+
+    def test_setup_project_issue_uses_existing_issue(self):
+        """Test project issue setup when existing issue is found"""
+        mock_client = MockPhotoClient()
+        mock_hasher = MockProjectHasher()
+
+        workflow = ConstructionWorkflow(mock_client, mock_hasher, "test_token", "owner", "repo", Path("/tmp/test_state.json"))
+
+        existing_issue = {"number": 123, "title": "Construction Project: Deck Repair"}
+
+        with patch.object(workflow.github, "find_existing_issue", return_value=existing_issue), patch.object(
+            workflow.github, "create_issue"
+        ) as mock_create:
+            issue_number = workflow._setup_project_issue("deck-repair", "Deck Repair", "http://example.com")
+
+            self.assertEqual(issue_number, 123)
+            # Should not create new issue since existing one was found
+            mock_create.assert_not_called()
+
+    def test_setup_project_issue_handles_permission_errors(self):
+        """Test project issue setup with permission errors"""
+        mock_client = MockPhotoClient()
+        mock_hasher = MockProjectHasher()
+
+        workflow = ConstructionWorkflow(mock_client, mock_hasher, "test_token", "owner", "repo", Path("/tmp/test_state.json"))
+
+        # Both finding and creating issues fail due to permissions
+        with patch.object(workflow.github, "find_existing_issue", side_effect=PermissionError("403")), patch.object(
+            workflow.github, "create_issue", side_effect=PermissionError("403")
+        ):
+            issue_number = workflow._setup_project_issue("deck-repair", "Deck Repair", "http://example.com")
+
+            # Should gracefully handle permission errors and return None
+            self.assertIsNone(issue_number)
+
+    def test_process_project_new_project_initialization(self):
+        """Test processing a completely new project"""
+        mock_client = MockPhotoClient()
+        mock_hasher = MockProjectHasher()
+
+        workflow = ConstructionWorkflow(mock_client, mock_hasher, "test_token", "owner", "repo", Path("/tmp/test_state.json"))
+
+        project = {"id": "project123", "project_name": "deck-repair", "title": "Deck Repair Project", "url": "http://example.com/album"}
+
+        # Empty initial state
+        state = {"projects": {}, "last_scan": None}
+
+        with patch.object(workflow, "_setup_project_issue", return_value=42):
+            project_state = workflow._process_project(project, state)
+
+            # _process_project returns the individual project state, not full state
+            # But it also modifies the passed-in state object
+            self.assertIn("deck-repair", state["projects"])
+
+            self.assertEqual(project_state["project_id"], "project123")
+            self.assertEqual(project_state["project_title"], "Deck Repair Project")
+            self.assertEqual(project_state["issue_number"], 42)
+            self.assertIn("branch_name", project_state)
+            self.assertIn("created_at", project_state)
+            # Images might be populated by sync_project_photos, so just verify it exists
+            self.assertIn("images", project_state)
+
+    def test_github_manager_issue_body_formatting(self):
+        """Test that GitHub issue body contains proper project information"""
+        github = GitHubManager("test_token", "owner", "repo")
+
+        with patch.object(github, "_api_request", return_value={"number": 42}) as mock_request:
+            github.create_issue("deck-repair", "Deck Repair Project", "http://example.com")
+
+            # Verify the issue body contains expected elements
+            call_args = mock_request.call_args[0][2]
+            body = call_args["body"]
+
+            self.assertIn("Construction Project: Deck Repair Project", body)
+            self.assertIn("project/", body)  # Branch name
+            self.assertIn("project:deck_repair", body)  # Tag format
+            self.assertIn("[Deck Repair Project](http://example.com)", body)  # Album link
+            self.assertIn("Photo sync enabled", body)
+
+    def test_github_manager_comment_formatting_new_photos(self):
+        """Test comment formatting when new photos are synced"""
+        github = GitHubManager("test_token", "owner", "repo")
+
+        with patch.object(github, "_api_request") as mock_request:
+            github.add_issue_comment(42, "kitchen-renovation", 15, 5)
+
+            call_args = mock_request.call_args[0][2]
+            body = call_args["body"]
+
+            self.assertIn("5 new photos", body)
+            self.assertIn("Total photos**: 15", body)
+            self.assertIn("project/", body)  # Branch reference
+            self.assertIn("Photos have been committed", body)
+
+    def test_github_manager_comment_formatting_no_new_photos(self):
+        """Test comment formatting when no new photos are found"""
+        github = GitHubManager("test_token", "owner", "repo")
+
+        with patch.object(github, "_api_request") as mock_request:
+            github.add_issue_comment(42, "bathroom-remodel", 8, 0)
+
+            call_args = mock_request.call_args[0][2]
+            body = call_args["body"]
+
+            self.assertIn("No new photos found", body)
+            self.assertIn("Total photos**: 8", body)
+            self.assertIn("Next sync**: In ~1 hour", body)
+
+    def test_project_state_manager_directory_creation(self):
+        """Test that state manager creates parent directories"""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            # Deep nested path that doesn't exist
+            state_file = Path(temp_dir) / "nested" / "deep" / "state.json"
+            manager = ProjectStateManager(state_file)
+
+            test_state = {"projects": {}, "last_scan": "2025-08-07T10:00:00"}
+
+            # Should create parent directories
+            manager.save_state(test_state)
+
+            # Verify file was created and directories exist
+            self.assertTrue(state_file.exists())
+            self.assertTrue(state_file.parent.exists())
+
+            # Verify content is correct
+            loaded_state = manager.load_state()
+            self.assertEqual(loaded_state, test_state)
+
+    def test_sync_photos_skips_images_without_url(self):
+        """Test that photo sync skips images that have no URL"""
+        mock_client = MockPhotoClient()
+        mock_hasher = MockProjectHasher()
+
+        workflow = ConstructionWorkflow(mock_client, mock_hasher, "test_token", "owner", "repo", Path("/tmp/test_state.json"))
+
+        project = {"id": "project123", "project_name": "deck-repair", "title": "Deck Repair Project"}
+
+        # Mix of images with and without URLs
+        mock_client.images["project123"] = [
+            {"id": "img1", "title": "Good photo", "url": "http://example.com/img1.jpg", "filename": "good.jpg", "metadata": {}},
+            {
+                "id": "img2",
+                "title": "Bad photo",
+                "url": "",  # No URL
+                "filename": "bad.jpg",
+                "metadata": {},
+            },
+            {"id": "img3", "title": "Another good photo", "url": "http://example.com/img3.jpg", "filename": "good2.jpg", "metadata": {}},
+        ]
+
+        with patch("scripts.workflows.construction_workflow.GitOperations") as mock_git, patch(
+            "scripts.workflows.construction_workflow.Path.mkdir"
+        ), patch("builtins.open", mock_open()):
+            mock_git.create_or_switch_branch.return_value = True
+            mock_git.commit_changes.return_value = True
+
+            # Track download calls to verify only images with URLs are downloaded
+            download_calls = []
+            original_download = mock_client.download_image
+
+            def track_downloads(*args, **kwargs):
+                download_calls.append(args)
+                return original_download(*args, **kwargs)
+
+            mock_client.download_image = track_downloads
+
+            workflow.sync_project_photos(project, {})
+
+            # Should only download images with valid URLs (img1 and img3)
+            self.assertEqual(len(download_calls), 2)
+            downloaded_urls = [call[0] for call in download_calls]
+            self.assertIn("http://example.com/img1.jpg", downloaded_urls)
+            self.assertIn("http://example.com/img3.jpg", downloaded_urls)
 
 
 if __name__ == "__main__":

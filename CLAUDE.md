@@ -149,6 +149,7 @@ make lint-fix       # Auto-fix formatting issues
 **Quality Standards:**
 - 62%+ test coverage requirement (enforced in CI)
 - pytest framework with HTML coverage reports
+- `__init__.py` files excluded from coverage calculations
 - All tests run on every PR, blocking merge on failure
 - Automatic test artifact cleanup
 

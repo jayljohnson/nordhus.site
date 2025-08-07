@@ -1,0 +1,973 @@
+{
+  "created_at": "2025-08-05T10:48:07.263720",
+  "version": "1.0",
+  "sessions": [
+    {
+      "session_id": "session_1754408887",
+      "started_at": "2025-08-05T10:48:07.263901",
+      "commands": [
+        {
+          "timestamp": "2025-08-05T10:48:07.264123",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-05T10:48:07.308865",
+          "command_path": "session_error",
+          "metadata": {
+            "error_type": "EOFError"
+          }
+        }
+      ],
+      "completed_at": "2025-08-05T10:48:07.336646"
+    },
+    {
+      "session_id": "session_1754409150",
+      "started_at": "2025-08-05T10:52:30.137766",
+      "commands": [
+        {
+          "timestamp": "2025-08-05T10:52:30.138307",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-05T10:52:30.193830",
+          "command_path": "session_error",
+          "metadata": {
+            "error_type": "EOFError"
+          }
+        }
+      ],
+      "completed_at": "2025-08-05T10:52:30.259261"
+    },
+    {
+      "session_id": "session_1754409159",
+      "started_at": "2025-08-05T10:52:39.586361",
+      "commands": [
+        {
+          "timestamp": "2025-08-05T10:52:39.586847",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-05T10:52:39.632774",
+          "command_path": "session_error",
+          "metadata": {
+            "error_type": "EOFError"
+          }
+        }
+      ],
+      "completed_at": "2025-08-05T10:52:39.681589"
+    },
+    {
+      "session_id": "session_1754409205",
+      "started_at": "2025-08-05T10:53:25.041463",
+      "commands": [
+        {
+          "timestamp": "2025-08-05T10:53:25.041948",
+          "command_path": "session_start",
+          "metadata": {}
+        }
+      ],
+      "completed_at": null
+    },
+    {
+      "session_id": "session_1754456525",
+      "started_at": "2025-08-06T00:02:05.328639",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T00:02:05.329084",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T00:02:22.277204",
+          "command_path": "main->projects",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T00:02:25.597251",
+          "command_path": "main->projects->back",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T00:02:27.600729",
+          "command_path": "main->exit",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T00:02:27.613359"
+    },
+    {
+      "session_id": "session_1754456553",
+      "started_at": "2025-08-06T00:02:33.696992",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T00:02:33.697615",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T00:05:08.277773",
+          "command_path": "main->exit",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T00:05:08.282026"
+    },
+    {
+      "session_id": "session_1754456725",
+      "started_at": "2025-08-06T00:05:25.800909",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T00:05:25.801473",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T00:06:21.710949",
+          "command_path": "session_error",
+          "metadata": {
+            "error_type": "FileNotFoundError"
+          }
+        }
+      ],
+      "completed_at": "2025-08-06T00:06:21.714568"
+    },
+    {
+      "session_id": "session_1754456789",
+      "started_at": "2025-08-06T00:06:29.967076",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T00:06:29.967695",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T00:15:24.901877",
+          "command_path": "main->exit",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T00:15:24.911688"
+    },
+    {
+      "session_id": "session_1754457330",
+      "started_at": "2025-08-06T00:15:30.511157",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T00:15:30.511717",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T00:15:40.573504",
+          "command_path": "main->projects",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T00:22:07.983826",
+          "command_path": "main->projects->back",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T00:22:09.316521",
+          "command_path": "main->exit",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T00:22:09.320210"
+    },
+    {
+      "session_id": "session_1754457731",
+      "started_at": "2025-08-06T00:22:11.096024",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T00:22:11.096623",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T00:24:24.117675",
+          "command_path": "main->exit",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T00:24:24.121364"
+    },
+    {
+      "session_id": "session_1754457865",
+      "started_at": "2025-08-06T00:24:25.860968",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T00:24:25.861635",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T00:24:27.712356",
+          "command_path": "main->exit",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T00:24:27.713616"
+    },
+    {
+      "session_id": "session_1754457869",
+      "started_at": "2025-08-06T00:24:29.492480",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T00:24:29.493176",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T00:27:24.944780",
+          "command_path": "main->exit",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T00:27:24.946131"
+    },
+    {
+      "session_id": "session_1754458054",
+      "started_at": "2025-08-06T00:27:34.455362",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T00:27:34.456098",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T00:31:27.479162",
+          "command_path": "main->exit",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T00:31:27.480776"
+    },
+    {
+      "session_id": "session_1754458290",
+      "started_at": "2025-08-06T00:31:30.587053",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T00:31:30.587813",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T00:31:33.320979",
+          "command_path": "main->exit",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T00:31:33.322417"
+    },
+    {
+      "session_id": "session_1754458294",
+      "started_at": "2025-08-06T00:31:34.670675",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T00:31:34.671464",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T00:31:36.293279",
+          "command_path": "main->exit",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T00:31:36.294594"
+    },
+    {
+      "session_id": "session_1754458297",
+      "started_at": "2025-08-06T00:31:37.942129",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T00:31:37.942912",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T00:33:56.419131",
+          "command_path": "main->exit",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T00:33:56.429049"
+    },
+    {
+      "session_id": "session_1754458442",
+      "started_at": "2025-08-06T00:34:02.283325",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T00:34:02.284181",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T00:36:29.274749",
+          "command_path": "main->exit",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T00:36:29.276150"
+    },
+    {
+      "session_id": "session_1754458807",
+      "started_at": "2025-08-06T00:40:07.238044",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T00:40:07.238904",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T00:40:09.267005",
+          "command_path": "main->projects",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T00:40:10.479760",
+          "command_path": "main->projects->start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T00:40:17.270863",
+          "command_path": "main->projects->add_photos",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T00:40:24.390488",
+          "command_path": "main->projects->finish",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T00:40:31.262937",
+          "command_path": "main->projects->status",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T00:40:34.349282",
+          "command_path": "main->projects->list",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T00:40:37.551742",
+          "command_path": "main->projects->back",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T00:41:46.884923",
+          "command_path": "main->exit",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T00:41:46.886513"
+    },
+    {
+      "session_id": "session_1754458908",
+      "started_at": "2025-08-06T00:41:48.257954",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T00:41:48.258816",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T00:42:20.545984",
+          "command_path": "session_interrupted",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T00:42:20.547626"
+    },
+    {
+      "session_id": "session_1754458956",
+      "started_at": "2025-08-06T00:42:36.117573",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T00:42:36.118956",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T00:44:01.420411",
+          "command_path": "main->exit",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T00:44:01.430346"
+    },
+    {
+      "session_id": "session_1754459043",
+      "started_at": "2025-08-06T00:44:03.345743",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T00:44:03.346742",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T00:44:05.810519",
+          "command_path": "main->projects",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T00:44:07.067216",
+          "command_path": "main->projects->start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T00:44:40.849321",
+          "command_path": "main->projects->list",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T01:08:46.426150",
+          "command_path": "main->projects->back",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T01:08:47.893607",
+          "command_path": "main->exit",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T01:08:47.895325"
+    },
+    {
+      "session_id": "session_1754460723",
+      "started_at": "2025-08-06T01:12:03.031744",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T01:12:03.032760",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T01:14:14.735012",
+          "command_path": "session_error",
+          "metadata": {
+            "error_type": "FileNotFoundError"
+          }
+        }
+      ],
+      "completed_at": "2025-08-06T01:14:14.737659"
+    },
+    {
+      "session_id": "session_1754461136",
+      "started_at": "2025-08-06T01:18:56.126422",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T01:18:56.127528",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T01:21:28.967198",
+          "command_path": "main->exit",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T01:21:28.968972"
+    },
+    {
+      "session_id": "session_1754461308",
+      "started_at": "2025-08-06T01:21:48.696365",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T01:21:48.697823",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T01:25:35.147578",
+          "command_path": "main->exit",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T01:25:35.159065"
+    },
+    {
+      "session_id": "session_1754461536",
+      "started_at": "2025-08-06T01:25:36.904856",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T01:25:36.906070",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T01:27:05.408850",
+          "command_path": "main->dev->quality->full_check",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T01:27:16.869753",
+          "command_path": "main->dev->quality->view_coverage",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T01:28:27.096047",
+          "command_path": "main->exit",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T01:28:27.098109"
+    },
+    {
+      "session_id": "session_1754461708",
+      "started_at": "2025-08-06T01:28:28.614681",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T01:28:28.615922",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T01:32:16.999419",
+          "command_path": "main->exit",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T01:32:17.001242"
+    },
+    {
+      "session_id": "session_1754461944",
+      "started_at": "2025-08-06T01:32:24.062476",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T01:32:24.063638",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T01:32:25.719245",
+          "command_path": "main->exit",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T01:32:25.721133"
+    },
+    {
+      "session_id": "session_1754461961",
+      "started_at": "2025-08-06T01:32:41.621428",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T01:32:41.622884",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T01:32:42.457989",
+          "command_path": "main->projects",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T01:33:12.503138",
+          "command_path": "main->projects->add_photos",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T01:33:47.098119",
+          "command_path": "main->projects->start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T01:34:02.433220",
+          "command_path": "main->projects->back",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T01:34:03.392363",
+          "command_path": "main->exit",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T01:34:03.394306"
+    },
+    {
+      "session_id": "session_1754462059",
+      "started_at": "2025-08-06T01:34:19.646413",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T01:34:19.647645",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T01:34:21.046879",
+          "command_path": "main->projects",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T01:34:23.369202",
+          "command_path": "main->projects->back",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T01:36:07.105592",
+          "command_path": "main->exit",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T01:36:07.107750"
+    },
+    {
+      "session_id": "session_1754462169",
+      "started_at": "2025-08-06T01:36:09.676653",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T01:36:09.677978",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T01:38:08.065053",
+          "command_path": "main->exit",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T01:38:08.067150"
+    },
+    {
+      "session_id": "session_1754462321",
+      "started_at": "2025-08-06T01:38:41.951514",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T01:38:41.952789",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T01:40:48.572529",
+          "command_path": "main->projects",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T01:40:50.620948",
+          "command_path": "main->projects->back",
+          "metadata": {}
+        }
+      ],
+      "completed_at": null
+    },
+    {
+      "session_id": "session_1754462598",
+      "started_at": "2025-08-06T01:43:18.695854",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T01:43:18.697198",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T01:44:35.145779",
+          "command_path": "main->system->test_connection",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T01:45:03.391542",
+          "command_path": "main->system->cloudinary_projects",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T01:49:31.104707",
+          "command_path": "main->projects",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T01:49:33.404075",
+          "command_path": "main->projects->back",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T01:49:33.791690",
+          "command_path": "main->exit",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T01:49:33.794151"
+    },
+    {
+      "session_id": "session_1754462976",
+      "started_at": "2025-08-06T01:49:36.237321",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T01:49:36.238789",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T01:49:39.168960",
+          "command_path": "main->projects",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T01:49:43.986218",
+          "command_path": "main->projects->back",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T01:49:50.382493",
+          "command_path": "main->dev->quality->full_check",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T01:50:11.932621",
+          "command_path": "main->cloud->test_connection",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T01:55:43.234005",
+          "command_path": "main->exit",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T01:55:43.236232"
+    },
+    {
+      "session_id": "session_1754463367",
+      "started_at": "2025-08-06T01:56:07.850646",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T01:56:07.852111",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T01:56:13.720740",
+          "command_path": "main->dev->quality->test_coverage",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T01:57:23.738041",
+          "command_path": "main->exit",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T01:57:23.740340"
+    },
+    {
+      "session_id": "session_1754493072",
+      "started_at": "2025-08-06T10:11:12.028032",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T10:11:12.029691",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T10:11:18.193382",
+          "command_path": "main->dev->quality->full_check",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T10:14:00.920183",
+          "command_path": "main->exit",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T10:14:00.922515"
+    },
+    {
+      "session_id": "session_1754495023",
+      "started_at": "2025-08-06T10:43:43.699851",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T10:43:43.702353",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T10:43:46.514094",
+          "command_path": "main->dev->quality->full_check",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T10:43:59.127080",
+          "command_path": "main->exit",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T10:43:59.129855"
+    },
+    {
+      "session_id": "session_1754495044",
+      "started_at": "2025-08-06T10:44:04.054332",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T10:44:04.056876",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T22:29:55.566128",
+          "command_path": "main->exit",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T22:29:55.568662"
+    },
+    {
+      "session_id": "session_1754495353",
+      "started_at": "2025-08-06T08:49:13.455366",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T08:49:13.456364",
+          "command_path": "keyword_debug_mode",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T08:49:13.539428"
+    },
+    {
+      "session_id": "session_1754537397",
+      "started_at": "2025-08-06T22:29:57.899796",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T22:29:57.902821",
+          "command_path": "keyword_check",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T22:30:00.382694"
+    },
+    {
+      "session_id": "session_1754537408",
+      "started_at": "2025-08-06T22:30:08.064661",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T22:30:08.067757",
+          "command_path": "keyword_lint",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T22:30:08.119802"
+    },
+    {
+      "session_id": "session_1754537412",
+      "started_at": "2025-08-06T22:30:12.147327",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T22:30:12.149863",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T22:30:23.902389",
+          "command_path": "main->dev->quality->advanced->lint_fix",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T22:58:38.302069",
+          "command_path": "main->exit",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T22:58:38.304586"
+    },
+    {
+      "session_id": "session_1754537805",
+      "started_at": "2025-08-06T20:36:45.889263",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T20:36:45.890347",
+          "command_path": "keyword_help",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T20:36:45.903650",
+          "command_path": "keyword_error",
+          "metadata": {
+            "error_type": "TypeError",
+            "keyword": "help"
+          }
+        }
+      ],
+      "completed_at": "2025-08-06T20:36:45.905226"
+    },
+    {
+      "session_id": "session_1754537848",
+      "started_at": "2025-08-06T20:37:28.573676",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T20:37:28.574699",
+          "command_path": "test->command",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T20:37:28.575591"
+    },
+    {
+      "session_id": "session_1754539124",
+      "started_at": "2025-08-06T22:58:44.492974",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T22:58:44.494577",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T22:58:52.678567",
+          "command_path": "main->dev->quality->full_check",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T22:58:58.910713",
+          "command_path": "main->dev->quality->advanced->lint_fix",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T23:01:53.300300",
+          "command_path": "main->exit",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T23:01:53.309976"
+    },
+    {
+      "session_id": "session_1754539426",
+      "started_at": "2025-08-06T21:03:46.586494",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T21:03:46.587643",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T21:03:46.602934",
+          "command_path": "session_error",
+          "metadata": {
+            "error_type": "error"
+          }
+        }
+      ],
+      "completed_at": "2025-08-06T21:03:46.606083"
+    },
+    {
+      "session_id": "session_1754539472",
+      "started_at": "2025-08-06T23:04:32.388321",
+      "commands": [
+        {
+          "timestamp": "2025-08-06T23:04:32.390054",
+          "command_path": "session_start",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T23:04:44.227921",
+          "command_path": "main->dev->quality->full_check",
+          "metadata": {}
+        },
+        {
+          "timestamp": "2025-08-06T23:07:06.878717",
+          "command_path": "main->exit",
+          "metadata": {}
+        }
+      ],
+      "completed_at": "2025-08-06T23:07:06.881844"
+    }
+  ]
+}

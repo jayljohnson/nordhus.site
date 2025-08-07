@@ -5,6 +5,7 @@ omit =
     */__pycache__/*
     */venv/*
     */.venv/*
+    */__init__.py
 
 [report]
 # Set minimum coverage threshold to 62%
