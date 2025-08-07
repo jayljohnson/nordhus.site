@@ -5,17 +5,42 @@ Tests photo client selection, environment validation, and main workflow orchestr
 """
 
 import os
+import socket
 import sys
 import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+import requests
+
 # Add scripts directory to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "scripts"))
 
+from scripts.workflows.construction_monitor import _handle_project_issue
+from scripts.workflows.construction_monitor import _setup_github_manager
+from scripts.workflows.construction_monitor import _sync_project_photos
 from scripts.workflows.construction_monitor import get_photo_client
 from scripts.workflows.construction_monitor import main
+from scripts.workflows.construction_monitor import scan_and_sync_projects
+
+
+# Network isolation - prevent any live API calls during testing
+def _mock_socket(*args, **kwargs):
+    raise RuntimeError("Network calls are not allowed in tests. Mock your API calls!")
+
+
+def _mock_requests(*args, **kwargs):
+    raise RuntimeError("HTTP requests are not allowed in tests. Use @patch decorators!")
+
+
+# Patch networking to prevent accidental live calls
+socket.socket = _mock_socket
+requests.get = _mock_requests
+requests.post = _mock_requests
+requests.put = _mock_requests
+requests.delete = _mock_requests
+requests.request = _mock_requests
 
 
 class TestGetPhotoClient(unittest.TestCase):
@@ -170,6 +195,215 @@ class TestEnvironmentVariableHandling(unittest.TestCase):
         """Test photo monitoring disabled by default"""
         result = main()
         self.assertTrue(result)  # Returns True when disabled
+
+
+class TestSetupGitHubManager(unittest.TestCase):
+    """Test GitHub manager setup function"""
+
+    @patch.dict(os.environ, {}, clear=True)
+    def test_setup_github_manager_no_token(self):
+        """Test GitHub manager setup with no token"""
+        result = _setup_github_manager()
+        self.assertIsNone(result)
+
+    @patch.dict(os.environ, {"GITHUB_TOKEN": "test-token"})
+    @patch("scripts.workflows.construction_monitor.GitHubManager")
+    def test_setup_github_manager_success(self, mock_github_manager):
+        """Test successful GitHub manager setup"""
+        mock_instance = mock_github_manager.return_value
+
+        result = _setup_github_manager()
+
+        self.assertEqual(result, mock_instance)
+        mock_github_manager.assert_called_once_with("test-token", "jayljohnson", "nordhus.site")
+
+    @patch.dict(os.environ, {"GITHUB_TOKEN": "test-token"})
+    @patch("scripts.workflows.construction_monitor.GitHubManager")
+    def test_setup_github_manager_exception(self, mock_github_manager):
+        """Test GitHub manager setup with exception"""
+        mock_github_manager.side_effect = Exception("GitHub API error")
+
+        result = _setup_github_manager()
+
+        self.assertIsNone(result)
+
+
+class TestHandleProjectIssue(unittest.TestCase):
+    """Test project issue handling function"""
+
+    def test_handle_project_issue_no_manager(self):
+        """Test issue handling with no GitHub manager"""
+        result = _handle_project_issue(None, "test-project", "Test Project", "http://example.com")
+        self.assertEqual(result, 0)
+
+    @patch("scripts.workflows.construction_monitor.logger")
+    def test_handle_project_issue_existing_issue(self, mock_logger):
+        """Test finding existing GitHub issue"""
+        mock_github_manager = unittest.mock.Mock()
+        mock_github_manager.find_existing_issue.return_value = {"number": 123}
+
+        result = _handle_project_issue(mock_github_manager, "test-project", "Test Project", "http://example.com")
+
+        self.assertEqual(result, 123)
+        mock_github_manager.find_existing_issue.assert_called_once_with("test-project")
+        mock_logger.info.assert_called_with("Found existing issue #123: Construction Project: Test Project")
+
+    @patch("scripts.workflows.construction_monitor.logger")
+    def test_handle_project_issue_create_new(self, mock_logger):
+        """Test creating new GitHub issue"""
+        mock_github_manager = unittest.mock.Mock()
+        mock_github_manager.find_existing_issue.return_value = None
+        mock_github_manager.create_issue.return_value = {"number": 456}
+
+        result = _handle_project_issue(mock_github_manager, "test-project", "Test Project", "http://example.com")
+
+        self.assertEqual(result, 456)
+        mock_github_manager.find_existing_issue.assert_called_once_with("test-project")
+        mock_github_manager.create_issue.assert_called_once_with("test-project", "Test Project", "http://example.com")
+        mock_logger.info.assert_called_with("Created GitHub issue #456")
+
+    @patch("scripts.workflows.construction_monitor.logger")
+    def test_handle_project_issue_create_failed(self, mock_logger):
+        """Test failed GitHub issue creation"""
+        mock_github_manager = unittest.mock.Mock()
+        mock_github_manager.find_existing_issue.return_value = None
+        mock_github_manager.create_issue.return_value = None
+
+        result = _handle_project_issue(mock_github_manager, "test-project", "Test Project", "http://example.com")
+
+        self.assertEqual(result, 0)
+
+    @patch("scripts.workflows.construction_monitor.logger")
+    def test_handle_project_issue_exception(self, mock_logger):
+        """Test exception during issue handling"""
+        mock_github_manager = unittest.mock.Mock()
+        mock_github_manager.find_existing_issue.side_effect = Exception("API error")
+
+        result = _handle_project_issue(mock_github_manager, "test-project", "Test Project", "http://example.com")
+
+        self.assertEqual(result, 0)
+        mock_logger.error.assert_called_with("GitHub issue management failed: API error")
+
+
+class TestSyncProjectPhotos(unittest.TestCase):
+    """Test project photo sync function"""
+
+    @patch("scripts.workflows.construction_monitor.logger")
+    def test_sync_project_photos_success_with_github(self, mock_logger):
+        """Test successful photo sync with GitHub update"""
+        mock_manager = unittest.mock.Mock()
+        mock_manager.sync_photos_from_cloudinary.return_value = 3
+
+        mock_github_manager = unittest.mock.Mock()
+
+        result = _sync_project_photos(mock_manager, mock_github_manager, "test-project", 123)
+
+        self.assertTrue(result)
+        mock_manager.sync_photos_from_cloudinary.assert_called_once()
+        mock_github_manager.add_issue_comment.assert_called_once_with(123, "test-project", 0, 3)
+        mock_logger.success.assert_called_with("Synced 3 new photos for project: test-project")
+
+    @patch("scripts.workflows.construction_monitor.logger")
+    def test_sync_project_photos_success_no_github(self, mock_logger):
+        """Test successful photo sync without GitHub manager"""
+        mock_manager = unittest.mock.Mock()
+        mock_manager.sync_photos_from_cloudinary.return_value = 2
+
+        result = _sync_project_photos(mock_manager, None, "test-project", 0)
+
+        self.assertTrue(result)
+        mock_manager.sync_photos_from_cloudinary.assert_called_once()
+        mock_logger.success.assert_called_with("Synced 2 new photos for project: test-project")
+
+    @patch("scripts.workflows.construction_monitor.logger")
+    def test_sync_project_photos_no_new_photos(self, mock_logger):
+        """Test photo sync with no new photos"""
+        mock_manager = unittest.mock.Mock()
+        mock_manager.sync_photos_from_cloudinary.return_value = 0
+
+        result = _sync_project_photos(mock_manager, None, "test-project", 0)
+
+        self.assertFalse(result)
+        mock_logger.info.assert_called_with("No new photos for project: test-project")
+
+    @patch("scripts.workflows.construction_monitor.logger")
+    def test_sync_project_photos_github_update_failed(self, mock_logger):
+        """Test photo sync with failed GitHub update"""
+        mock_manager = unittest.mock.Mock()
+        mock_manager.sync_photos_from_cloudinary.return_value = 1
+
+        mock_github_manager = unittest.mock.Mock()
+        mock_github_manager.add_issue_comment.side_effect = Exception("GitHub API error")
+
+        result = _sync_project_photos(mock_manager, mock_github_manager, "test-project", 123)
+
+        self.assertTrue(result)  # Still returns True even if GitHub update fails
+        mock_logger.warning.assert_called_with("Failed to update GitHub issue: GitHub API error")
+
+
+class TestScanAndSyncProjects(unittest.TestCase):
+    """Test main scan and sync function"""
+
+    @patch("scripts.workflows.construction_monitor.CloudinaryClient")
+    def test_scan_and_sync_cloudinary_auth_failure(self, mock_client_class):
+        """Test scan with Cloudinary authentication failure"""
+        mock_client = mock_client_class.return_value
+        mock_client.authenticate.return_value = False
+
+        result = scan_and_sync_projects()
+
+        self.assertFalse(result)
+
+    @patch("scripts.workflows.construction_monitor.CloudinaryClient")
+    @patch("scripts.workflows.construction_monitor._setup_github_manager")
+    def test_scan_and_sync_no_projects(self, mock_setup_github, mock_client_class):
+        """Test scan with no projects found"""
+        mock_client = mock_client_class.return_value
+        mock_client.authenticate.return_value = True
+        mock_client.get_construction_projects.return_value = []
+        mock_setup_github.return_value = None
+
+        result = scan_and_sync_projects()
+
+        self.assertTrue(result)
+
+    @patch("scripts.workflows.construction_monitor.CloudinaryClient")
+    @patch("scripts.workflows.construction_monitor._setup_github_manager")
+    @patch("scripts.workflows.construction_monitor._handle_project_issue")
+    @patch("scripts.workflows.construction_monitor._sync_project_photos")
+    @patch("scripts.workflows.construction_monitor.logger")
+    def test_scan_and_sync_with_projects(self, mock_logger, mock_sync_photos, mock_handle_issue, mock_setup_github, mock_client_class):
+        """Test scan with projects found"""
+        # Setup mocks
+        mock_client = mock_client_class.return_value
+        mock_client.authenticate.return_value = True
+        mock_client.get_construction_projects.return_value = [{"project_name": "test-project", "title": "Test Project", "url": "http://example.com"}]
+
+        mock_github_manager = unittest.mock.Mock()
+        mock_setup_github.return_value = mock_github_manager
+        mock_handle_issue.return_value = 123
+        mock_sync_photos.return_value = True
+
+        # Mock SimpleProjectManager directly in the function
+        with patch("scripts.workflows.construction_monitor.SimpleProjectManager") as mock_manager_class:
+            mock_manager = mock_manager_class.return_value
+            mock_manager.project_directory.exists.return_value = False
+            mock_manager.create_project_branch.return_value = True
+
+            result = scan_and_sync_projects()
+
+            self.assertTrue(result)
+            mock_logger.info.assert_any_call("Found 1 construction projects")
+            mock_logger.info.assert_any_call("🆕 New project detected: test-project")
+
+    @patch("scripts.workflows.construction_monitor.CloudinaryClient")
+    def test_scan_and_sync_exception_handling(self, mock_client_class):
+        """Test scan with exception handling"""
+        mock_client_class.side_effect = Exception("Unexpected error")
+
+        result = scan_and_sync_projects()
+
+        self.assertFalse(result)
 
 
 if __name__ == "__main__":
