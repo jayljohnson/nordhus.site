@@ -9,7 +9,6 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
-from unittest.mock import Mock
 from unittest.mock import patch
 
 # Add scripts directory to path for imports
@@ -59,7 +58,7 @@ class TestGetPhotoClient(unittest.TestCase):
         with self.assertRaises(ValueError) as cm:
             get_photo_client()
 
-        self.assertIn("Cloudinary credentials not found", str(cm.exception))
+        self.assertIn("Missing Cloudinary credentials", str(cm.exception))
         self.assertIn("CLOUDINARY_URL=cloudinary://", str(cm.exception))
 
     @patch.dict(os.environ, {"CLOUDINARY_CLOUD_NAME": "test-cloud"})
@@ -68,7 +67,7 @@ class TestGetPhotoClient(unittest.TestCase):
         with self.assertRaises(ValueError) as cm:
             get_photo_client()
 
-        self.assertIn("Cloudinary credentials not found", str(cm.exception))
+        self.assertIn("Missing Cloudinary credentials", str(cm.exception))
 
 
 class TestMainFunction(unittest.TestCase):
@@ -91,69 +90,43 @@ class TestMainFunction(unittest.TestCase):
     @patch.dict(os.environ, {"ENABLE_PHOTO_MONITORING": "false"})
     def test_main_photo_monitoring_disabled(self):
         """Test main function when photo monitoring is disabled"""
-        with patch("builtins.print") as mock_print:
-            result = main()
-
-            self.assertIsNone(result)
-            mock_print.assert_any_call("Photo monitoring is disabled via ENABLE_PHOTO_MONITORING environment variable")
-            mock_print.assert_any_call("Set ENABLE_PHOTO_MONITORING=true to enable photo album integration")
+        result = main()
+        self.assertTrue(result)  # Should return True when disabled
 
     @patch.dict(os.environ, {"ENABLE_PHOTO_MONITORING": "True"})  # Test case insensitive
-    def test_main_missing_github_token(self):
-        """Test main function with missing GitHub token"""
-        with self.assertRaises(Exception) as cm:
-            main()
+    def test_main_missing_cloudinary_credentials(self):
+        """Test main function with missing Cloudinary credentials"""
+        result = main()
+        self.assertFalse(result)  # Should return False when Cloudinary auth fails
 
-        self.assertIn("GITHUB_TOKEN environment variable required", str(cm.exception))
-
-    @patch.dict(os.environ, {"ENABLE_PHOTO_MONITORING": "true", "GITHUB_TOKEN": "test-token"})
-    @patch("scripts.workflows.construction_monitor.get_photo_client")
-    def test_main_photo_client_error(self, mock_get_client):
-        """Test main function when photo client configuration fails"""
-        mock_get_client.side_effect = ValueError("Test photo client error")
-
-        with patch("builtins.print") as mock_print:
-            result = main()
-
-            self.assertFalse(result)
-            mock_print.assert_called_with("❌ Photo service configuration error: Test photo client error")
-
-    @patch.dict(os.environ, {"ENABLE_PHOTO_MONITORING": "true", "GITHUB_TOKEN": "test-token"})
-    @patch("scripts.workflows.construction_monitor.get_photo_client")
-    def test_main_workflow_initialization(self, mock_get_client):
-        """Test that main function initializes workflow components correctly"""
-        # Mock photo client
-        mock_client = Mock()
-        mock_hasher = Mock()
-        mock_get_client.return_value = (mock_client, mock_hasher)
-
-        # We expect this to fail when trying to run the workflow, but we want to test
-        # that we get to the point of creating the workflow
-        import contextlib
-
-        with contextlib.suppress(Exception):
-            main()  # Expected to fail at workflow.run()
-
-        # Verify get_photo_client was called
-        mock_get_client.assert_called_once()
-
-    @patch.dict(os.environ, {"ENABLE_PHOTO_MONITORING": "true", "GITHUB_TOKEN": "test-token"})
-    @patch("scripts.workflows.construction_monitor.get_photo_client")
-    @patch("scripts.workflows.construction_workflow.ConstructionWorkflow")
-    def test_main_workflow_failure(self, mock_workflow_class, mock_get_client):
-        """Test main function when workflow fails"""
-        # Mock photo client
-        mock_client = Mock()
-        mock_hasher = Mock()
-        mock_get_client.return_value = (mock_client, mock_hasher)
-
-        # Mock workflow failure
-        mock_workflow = Mock()
-        mock_workflow.run.return_value = False
-        mock_workflow_class.return_value = mock_workflow
+    @patch.dict(os.environ, {"ENABLE_PHOTO_MONITORING": "true", "CLOUDINARY_URL": "cloudinary://key:secret@cloud"})
+    @patch("scripts.clients.cloudinary_client.CloudinaryClient.authenticate")
+    def test_main_cloudinary_auth_failure(self, mock_auth):
+        """Test main function when Cloudinary authentication fails"""
+        mock_auth.return_value = False
 
         result = main()
+        self.assertFalse(result)
 
+    @patch.dict(os.environ, {"ENABLE_PHOTO_MONITORING": "true", "CLOUDINARY_URL": "cloudinary://key:secret@cloud"})
+    @patch("scripts.workflows.construction_monitor.CloudinaryClient")
+    def test_main_successful_scan(self, mock_client_class):
+        """Test that main function successfully scans projects"""
+        # Mock the CloudinaryClient instance
+        mock_client = mock_client_class.return_value
+        mock_client.authenticate.return_value = True
+        mock_client.get_construction_projects.return_value = []  # No projects found
+
+        result = main()
+        self.assertTrue(result)  # Should succeed with no projects
+
+    @patch.dict(os.environ, {"ENABLE_PHOTO_MONITORING": "true", "CLOUDINARY_URL": "cloudinary://key:secret@cloud"})
+    @patch("scripts.workflows.construction_monitor.scan_and_sync_projects")
+    def test_main_workflow_failure(self, mock_scan):
+        """Test main function when scan fails"""
+        mock_scan.return_value = False
+
+        result = main()
         self.assertFalse(result)
 
 
@@ -177,27 +150,26 @@ class TestEnvironmentVariableHandling(unittest.TestCase):
     @patch.dict(os.environ, {"ENABLE_PHOTO_MONITORING": "TRUE"})
     def test_enable_photo_monitoring_case_variations(self):
         """Test that photo monitoring flag is case insensitive"""
-        with self.assertRaises(ValueError):  # Will fail on missing GITHUB_TOKEN
-            main()
-        # If we get to the point of checking GITHUB_TOKEN, photo monitoring was enabled
+        result = main()
+        self.assertFalse(result)  # Will fail on missing Cloudinary credentials
 
     @patch.dict(os.environ, {"ENABLE_PHOTO_MONITORING": "False"})
     def test_disable_photo_monitoring_false_value(self):
         """Test photo monitoring disabled with 'False' value"""
         result = main()
-        self.assertIsNone(result)
+        self.assertTrue(result)  # Returns True when disabled
 
     @patch.dict(os.environ, {"ENABLE_PHOTO_MONITORING": "0"})
     def test_disable_photo_monitoring_zero_value(self):
         """Test photo monitoring disabled with '0' value"""
         result = main()
-        self.assertIsNone(result)
+        self.assertTrue(result)  # Returns True when disabled
 
     @patch.dict(os.environ, {}, clear=True)  # Remove all env vars
     def test_enable_photo_monitoring_default_value(self):
         """Test photo monitoring disabled by default"""
         result = main()
-        self.assertIsNone(result)
+        self.assertTrue(result)  # Returns True when disabled
 
 
 if __name__ == "__main__":

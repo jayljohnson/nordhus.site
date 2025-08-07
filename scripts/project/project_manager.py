@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
 """
-Mobile Construction Project Manager
-Handles photo organization, branch creation, and blog post generation for
-construction projects.
+Simplified Construction Project Manager
+Maps Cloudinary folder names directly to project names and feature branches.
 """
 
 import json
 import re
-import shutil
-import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
+from typing import List
 from typing import Optional
 
 from clients.cloudinary_client import CloudinaryClient
@@ -20,457 +18,282 @@ from utils.git_operations import GitOperations
 from utils.logging import logger
 
 
-class ProjectManager:
-    """Domain object for managing construction project lifecycle and paths"""
+class SimpleProjectManager:
+    """Simplified project manager focused on core workflow"""
 
-    def __init__(self, project_name: str, date_prefix: Optional[str] = None):
+    def __init__(self, project_name: str):
         self.project_name = project_name
-        self.date_prefix = date_prefix or datetime.now().strftime("%Y-%m-%d")
+        self.date_prefix = datetime.now().strftime("%Y-%m-%d")
 
     @property
     def project_directory(self) -> Path:
-        """Project domain: Where project images and metadata live"""
+        """Project assets directory: assets/images/YYYY-MM-DD-project-name/"""
         return Path(f"assets/images/{self.date_prefix}-{self.project_name}")
 
     @property
-    def metadata_file(self) -> Path:
-        """Project domain: Project metadata location"""
-        return self.project_directory / "project.json"
-
-    @property
     def blog_post_path(self) -> Path:
-        """Project domain: Generated blog post location"""
+        """Blog post path: _posts/YYYY-MM-DD-project-name.md"""
         return Path(f"_posts/{self.date_prefix}-{self.project_name.replace('_', '-')}.md")
 
     @property
-    def git_branch(self) -> str:
-        """Delegate to git domain for branch naming"""
-        return GitOperations.get_project_branch(self.project_name, self.date_prefix)
+    def feature_branch(self) -> str:
+        """Feature branch: project/YYYY-MM-DD-project-name"""
+        return f"project/{self.date_prefix}-{self.project_name}"
 
+    def create_project_branch(self) -> bool:
+        """Create and switch to project feature branch"""
+        return GitOperations.create_or_switch_branch(self.feature_branch)
 
-# Legacy functions for backward compatibility
-def get_project_dir(project_name):
-    """Legacy function - use ProjectManager.project_directory instead"""
-    return ProjectManager(project_name).project_directory
+    def sync_photos_from_cloudinary(self) -> int:
+        """
+        Sync photos from Cloudinary folder to project directory.
+        Returns number of new photos downloaded.
+        Uses Cloudinary tags to track download state.
+        """
+        if not Config.is_photo_monitoring_enabled():
+            logger.info("Photo monitoring disabled")
+            return 0
 
-
-def get_project_branch(project_name):
-    """Legacy function - use ProjectManager.git_branch instead"""
-    return ProjectManager(project_name).git_branch
-
-
-def create_project_branch(project_name):
-    """Create and switch to project branch"""
-    project = ProjectManager(project_name)
-    if GitOperations.create_or_switch_branch(project.git_branch):
-        return project.git_branch
-    return None
-
-
-def setup_project_directory(project_name):
-    """Create project directory structure"""
-    project = ProjectManager(project_name)
-    project.project_directory.mkdir(parents=True, exist_ok=True)
-
-    # Create project metadata file
-    metadata = {
-        "project_name": project_name,
-        "start_date": datetime.now().isoformat(),
-        "photos": [],
-        "status": "active",
-    }
-
-    with open(project.metadata_file, "w") as f:
-        json.dump(metadata, f, indent=2)
-
-    logger.info(f"Created project directory: {project.project_directory}")
-    return project.project_directory
-
-
-def start_project(project_name):
-    """Start a new construction project"""
-    logger.info(f"Starting project: {project_name}")
-
-    # Validate project name
-    if not re.match(r"^[a-zA-Z0-9-_]+$", project_name):
-        logger.error("Project name can only contain letters, numbers, hyphens, and underscores")
-        return False
-
-    # Create branch
-    branch = create_project_branch(project_name)
-    if not branch:
-        return False
-
-    # Setup directory
-    project_dir = setup_project_directory(project_name)
-
-    # Create photo album (if enabled)
-    if Config.is_photo_monitoring_enabled():
-        formatted_name = project_name.replace("-", " ").replace("_", " ").title()
-        album_title = f"Construction: {formatted_name}"
         try:
-            photos_client = CloudinaryClient()
-            album = photos_client.create_album(album_title)
+            client = CloudinaryClient()
 
-            if album:
-                # Save album info to project metadata
-                metadata_file = project_dir / "project.json"
-                with open(metadata_file) as f:
-                    metadata = json.load(f)
+            # Cloudinary folder name becomes the project name
+            folder_name = self.project_name
 
-                album_url = album.get("productUrl", "")
-                metadata["cloudinary_album"] = {
-                    "id": album["id"],
-                    "title": album["title"],
-                    "url": album_url,
-                }
+            logger.info(f"Syncing photos from Cloudinary folder: {folder_name}")
 
-                with open(metadata_file, "w") as f:
-                    json.dump(metadata, f, indent=2)
+            # Download photos, marking them as downloaded with tags
+            downloaded_files = client.download_folder_photos(
+                folder_name,
+                str(self.project_directory),
+                tag_downloaded=True,  # Tag photos as downloaded in Cloudinary
+            )
 
-                logger.info(f"Created cloud photo album: {album_title}")
-                if album.get("productUrl"):
-                    logger.info(f"Album URL: {album['productUrl']}")
+            new_photo_count = len(downloaded_files)
+
+            if new_photo_count > 0:
+                logger.info(f"Downloaded {new_photo_count} new photos")
+
+                # Create simple project metadata
+                self._update_project_metadata(new_photo_count)
+
+                # Commit new photos
+                commit_msg = f"Sync {new_photo_count} new photos: {self.project_name}"
+                if not GitOperations.commit_changes(self.project_directory, commit_msg):
+                    logger.error("Failed to commit new photos")
+                    return 0
+
+                logger.success(f"Committed {new_photo_count} new photos to {self.feature_branch}")
             else:
-                logger.warning("Could not create cloud photo album. You can create it manually.")
+                logger.info("No new photos to sync")
+
+            return new_photo_count
 
         except Exception as e:
-            logger.handle_exception(e, "cloud photo integration")
-            logger.info("You can still use the project without cloud photo integration.")
-    else:
-        logger.info("Photo album integration is disabled (ENABLE_PHOTO_MONITORING = false)")
-        logger.info("Project created without photo album integration")
+            logger.error(f"Photo sync failed: {e}")
+            return 0
 
-    # Create initial commit
-    if not GitOperations.commit_changes(project_dir, f"Start project: {project_name}"):
-        return False
+    def _update_project_metadata(self, new_photo_count: int):
+        """Update simple project metadata"""
+        self.project_directory.mkdir(parents=True, exist_ok=True)
 
-    logger.success("Project setup complete!")
-    logger.info(f"""
-Next steps:
-1. Take photos on your mobile device
-2. Add them to cloud photo album: {album_title}
-3. When ready to sync photos, run: make add-photos PROJECT={project_name}
-4. When project is complete, run: make finish-project PROJECT={project_name}
+        metadata_file = self.project_directory / "project.json"
 
-Note: Photos will be downloaded from cloud service and organized locally.
-""")
-    return True
-
-
-def add_photos(project_name):
-    """Add photos to existing project from cloud photo service or local sources"""
-    project = ProjectManager(project_name)
-
-    if not project.project_directory.exists():
-        logger.error(f"Project {project_name} not found. Run 'make start-project PROJECT={project_name}' first.")
-        return False
-
-    # Switch to project branch
-    if not GitOperations.checkout_branch(project.git_branch):
-        logger.error(f"Could not switch to branch {project.git_branch}")
-        return False
-
-    # Try cloud photo service first, fall back to local if needed
-    if _try_cloud_photo_sync(project_name, project.project_directory):
-        return True
-
-    # Cloud sync failed or unavailable, use local photo discovery
-    logger.info("Falling back to local photo discovery...")
-    return _add_photos_from_local_sources(project_name, project.project_directory)
-
-
-def _try_cloud_photo_sync(project_name, project_dir):
-    """Attempt to sync photos from cloud photo service. Returns True if successful, False to fall back."""
-    # Get project metadata to find cloud photo album
-    metadata_file = project_dir / "project.json"
-    metadata = {}
-    if metadata_file.exists():
-        with open(metadata_file) as f:
-            metadata = json.load(f)
-
-    # Check for legacy google_photos_album or cloudinary album info
-    album_info = metadata.get("google_photos_album") or metadata.get("cloudinary_album")
-    if not album_info:
-        print("No cloud photo album found for this project.")
-        return False
-
-    # Download photos from cloud photo service
-    try:
-        photos_client = CloudinaryClient()
-        album_title = album_info["title"]
-
-        print(f"Downloading photos from cloud album: {album_title}")
-        downloaded_files = photos_client.download_album_photos(album_title, str(project_dir))
-
-        if downloaded_files:
-            print(f"Downloaded {len(downloaded_files)} photos from cloud service")
-
-            # Update project metadata
-            existing_photos = set(metadata.get("photos", []))
-            new_photos = [f.name for f in downloaded_files if f.name not in existing_photos]
-
-            metadata["photos"] = list(existing_photos) + new_photos
-            metadata["last_updated"] = datetime.now().isoformat()
-            metadata["last_sync"] = {
-                "date": datetime.now().isoformat(),
-                "photos_downloaded": len(downloaded_files),
-                "new_photos": len(new_photos),
-            }
-
-            with open(metadata_file, "w") as f:
-                json.dump(metadata, f, indent=2)
-
-            # Commit changes
-            if new_photos:
-                commit_message = f"Sync {len(new_photos)} new photos from cloud service: {project_name}"
-                if GitOperations.commit_changes(project_dir, commit_message, ensure_config=False):
-                    print("New photos committed to git")
-                else:
-                    print("Warning: Could not commit photos")
-            else:
-                print("No new photos to commit")
-            return True
+        # Load existing or create new metadata
+        if metadata_file.exists():
+            with open(metadata_file) as f:
+                metadata = json.load(f)
         else:
-            print("No photos found in cloud album")
-            return False
+            metadata = {"project_name": self.project_name, "created_date": self.date_prefix, "total_photos": 0}
 
-    except Exception as e:
-        print(f"Error downloading from cloud service: {e}")
-        return False
+        # Update with sync info
+        metadata["total_photos"] = metadata.get("total_photos", 0) + new_photo_count
+        metadata["last_sync"] = datetime.now().isoformat()
 
+        with open(metadata_file, "w") as f:
+            json.dump(metadata, f, indent=2)
 
-def _find_local_photos():
-    """Find photos in common local directories"""
-    photo_sources = [
-        Path.home() / "Downloads",
-        Path.home() / "Pictures",
-        Path("/tmp"),
-        Path.cwd() / "tmp",
-    ]
+    def generate_blog_post(self) -> Optional[Path]:
+        """Generate blog post from project photos"""
+        if not self.project_directory.exists():
+            logger.error(f"Project directory not found: {self.project_directory}")
+            return None
 
-    photos_found = []
-    photo_extensions = ["*.jpg", "*.jpeg", "*.png", "*.JPG", "*.JPEG", "*.PNG"]
+        # Count photos
+        photo_files = self._get_photo_files()
+        if not photo_files:
+            logger.warning("No photos found for blog post")
 
-    for source in photo_sources:
-        if source.exists():
-            for ext in photo_extensions:
-                photos_found.extend(list(source.glob(ext)))
-
-    return photos_found
-
-
-def _display_photos_preview(photos_found):
-    """Display a preview of found photos"""
-    logger.info(f"Found {len(photos_found)} potential photos:")
-    for i, photo in enumerate(photos_found[:10]):
-        size_kb = photo.stat().st_size // 1024
-        logger.info(f"  {i + 1}. {photo.name} ({size_kb}KB)")
-
-    if len(photos_found) > 10:
-        logger.info(f"  ... and {len(photos_found) - 10} more")
-
-
-def _copy_photos_to_project(photos_found, project_dir):
-    """Copy photos to project directory and return count"""
-    copied_count = 0
-    for photo in photos_found:
-        try:
-            dest = project_dir / photo.name
-            if not dest.exists():
-                shutil.copy2(photo, dest)
-                copied_count += 1
-        except Exception as e:
-            logger.warning(f"Could not copy {photo.name}: {e}")
-
-    return copied_count
-
-
-def _commit_copied_photos(project_dir, project_name, copied_count):
-    """Commit copied photos to git"""
-    if copied_count > 0:
-        logger.info(f"Copied {copied_count} photos to project directory")
-
-        commit_message = f"Add {copied_count} photos to {project_name}"
-        if GitOperations.commit_changes(project_dir, commit_message, ensure_config=False):
-            logger.info("Photos committed to git")
-        else:
-            logger.warning("Could not commit photos")
-
-
-def _add_photos_from_local_sources(project_name, project_dir):
-    """Add photos from local file system sources"""
-    photos_found = _find_local_photos()
-
-    if not photos_found:
-        logger.info("No photos found in common locations.")
-        logger.info(f"Manual option: Copy photos directly to {project_dir}/")
-        return True
-
-    _display_photos_preview(photos_found)
-
-    response = input(f"Copy all photos to {project_name}? (y/n): ")
-    if response.lower() != "y":
-        return True
-
-    copied_count = _copy_photos_to_project(photos_found, project_dir)
-    _commit_copied_photos(project_dir, project_name, copied_count)
-
-    return True
-
-
-def generate_blog_post(project_name):
-    """Generate blog post using Claude analysis"""
-    project_dir = get_project_dir(project_name)
-
-    if not project_dir.exists():
-        print(f"Error: Project {project_name} not found")
-        return None
-
-    # Get project metadata
-    metadata_file = project_dir / "project.json"
-    metadata = {}
-    if metadata_file.exists():
-        with open(metadata_file) as f:
-            metadata = json.load(f)
-
-    # Count photos
-    photo_files = []
-    for ext in ["*.jpg", "*.jpeg", "*.png", "*.JPG", "*.JPEG", "*.PNG"]:
-        photo_files.extend(list(project_dir.glob(ext)))
-
-    # Create blog post filename
-    today = datetime.now()
-    post_filename = f"{today.strftime('%Y-%m-%d')}-{project_name.replace('_', '-')}.md"
-    post_path = Path("_posts") / post_filename
-
-    # Generate blog post content using Claude
-    claude_prompt = f"""
-
-
-Create a blog post for a construction project documentation.
-
-Project: {project_name}
-Photos: {len(photo_files)} images in {project_dir}
-Start date: {metadata.get("start_date", "Unknown")}
-
-Write a Jekyll blog post with:
-1. Proper front matter (title, date, categories)
-2. Introduction explaining the project
-3. Photo gallery section with markdown image references
-4. Conclusion with lessons learned or next steps
-
-Use this format for images: ![Description](/{project_dir}/filename.jpg)
-
-Make it personal and conversational, as this is for a personal blog.
-Focus on the project process, challenges, and outcomes.
-"""
-
-    try:
-        # Use Claude CLI to generate blog post
-        result = subprocess.run(["claude", claude_prompt], capture_output=True, text=True, check=True)
-        blog_content = result.stdout
+        # Generate blog post content
+        blog_content = self._create_blog_content(photo_files)
 
         # Write blog post
-        with open(post_path, "w") as f:
+        self.blog_post_path.parent.mkdir(exist_ok=True)
+        with open(self.blog_post_path, "w") as f:
             f.write(blog_content)
 
-        print(f"Generated blog post: {post_path}")
-        return post_path
+        logger.success(f"Generated blog post: {self.blog_post_path}")
+        return self.blog_post_path
 
-    except subprocess.CalledProcessError as e:
-        print(f"Error generating blog post with Claude: {e}")
-        # Fallback: create basic blog post template
-        fallback_content = f"""---
-title: "{project_name.replace("-", " ").replace("_", " ").title()}"
-date: {today.strftime("%Y-%m-%d")}
+    def _get_photo_files(self) -> List[Path]:
+        """Get all photo files in project directory"""
+        photo_files = []
+        if self.project_directory.exists():
+            for ext in ["*.jpg", "*.jpeg", "*.png", "*.JPG", "*.JPEG", "*.PNG"]:
+                photo_files.extend(list(self.project_directory.glob(ext)))
+        return sorted(photo_files)
+
+    def _create_blog_content(self, photo_files: List[Path]) -> str:
+        """Create blog post content"""
+        title = self.project_name.replace("-", " ").replace("_", " ").title()
+
+        content = f"""---
+title: "{title}"
+date: {self.date_prefix}
 categories: [construction, projects]
 ---
 
-# {project_name.replace("-", " ").replace("_", " ").title()}
+# {title}
 
-Project started on {metadata.get("start_date", "recently")} with {len(photo_files)} photos documented.
+Construction project documented with {len(photo_files)} photos.
 
 ## Photos
 
 """
 
         # Add photo references
-        for photo in sorted(photo_files):
-            fallback_content += f"![{photo.stem}](/{project_dir}/{photo.name})\n\n"
+        for photo in photo_files:
+            content += f"![{photo.stem}](/{self.project_directory}/{photo.name})\n\n"
 
-        fallback_content += """
-## Summary
+        content += """## Summary
 
-Project documentation and photos captured above.
+Project documentation generated automatically from field photos.
 
-*Blog post generated automatically by project management system.*
+*Generated by Simple Project Manager*
 """
 
-        with open(post_path, "w") as f:
-            f.write(fallback_content)
-
-        print(f"Generated basic blog post: {post_path}")
-        return post_path
+        return content
 
 
-def finish_project(project_name):
-    """Finish project and create PR"""
-    project_dir = get_project_dir(project_name)
+# Legacy API for backward compatibility
+def get_project_dir(project_name: str) -> Path:
+    """Legacy function - get project directory"""
+    return SimpleProjectManager(project_name).project_directory
 
-    if not project_dir.exists():
-        print(f"Error: Project {project_name} not found")
+
+def get_project_branch(project_name: str) -> str:
+    """Legacy function - get project branch"""
+    return SimpleProjectManager(project_name).feature_branch
+
+
+def create_project_branch(project_name: str) -> str:
+    """Legacy function - create project branch"""
+    manager = SimpleProjectManager(project_name)
+    if manager.create_project_branch():
+        return manager.feature_branch
+    return None
+
+
+def setup_project_directory(project_name: str) -> Path:
+    """Legacy function - setup project directory"""
+    manager = SimpleProjectManager(project_name)
+    manager.project_directory.mkdir(parents=True, exist_ok=True)
+    manager._update_project_metadata(0)
+    return manager.project_directory
+
+
+def start_project(project_name: str) -> bool:
+    """Start new project with feature branch and directory setup"""
+    if not re.match(r"^[a-zA-Z0-9-_]+$", project_name):
+        logger.error("Project name can only contain letters, numbers, hyphens, and underscores")
+        return False
+
+    manager = SimpleProjectManager(project_name)
+
+    # Create feature branch
+    if not manager.create_project_branch():
+        logger.error("Failed to create project branch")
+        return False
+
+    # Create project directory with initial metadata
+    manager.project_directory.mkdir(parents=True, exist_ok=True)
+    manager._update_project_metadata(0)
+
+    # Initial commit
+    commit_msg = f"Start project: {project_name}"
+    if not GitOperations.commit_changes(manager.project_directory, commit_msg):
+        logger.error("Failed to commit initial project setup")
+        return False
+
+    logger.success(f"Project started: {project_name}")
+    logger.info(f"Branch: {manager.feature_branch}")
+    logger.info(f"Directory: {manager.project_directory}")
+    logger.info(f"Add photos to Cloudinary folder: {project_name}")
+
+    return True
+
+
+def add_photos(project_name: str) -> bool:
+    """Sync photos from Cloudinary for existing project"""
+    manager = SimpleProjectManager(project_name)
+
+    if not manager.project_directory.exists():
+        logger.error(f"Project {project_name} not found. Run 'make start-project PROJECT={project_name}' first.")
         return False
 
     # Switch to project branch
-    branch = get_project_branch(project_name)
-    if not GitOperations.checkout_branch(branch):
-        print(f"Error: Could not switch to branch {branch}")
+    if not GitOperations.checkout_branch(manager.feature_branch):
+        logger.error(f"Could not switch to branch {manager.feature_branch}")
+        return False
+
+    # Sync photos
+    new_count = manager.sync_photos_from_cloudinary()
+
+    if new_count > 0:
+        logger.success(f"Synced {new_count} new photos for {project_name}")
+    else:
+        logger.info(f"No new photos found for {project_name}")
+
+    return True
+
+
+def finish_project(project_name: str) -> bool:
+    """Generate blog post and prepare for PR"""
+    manager = SimpleProjectManager(project_name)
+
+    if not manager.project_directory.exists():
+        logger.error(f"Project {project_name} not found")
+        return False
+
+    # Switch to project branch
+    if not GitOperations.checkout_branch(manager.feature_branch):
+        logger.error(f"Could not switch to branch {manager.feature_branch}")
         return False
 
     # Generate blog post
-    blog_post = generate_blog_post(project_name)
+    blog_post = manager.generate_blog_post()
     if not blog_post:
+        logger.error("Failed to generate blog post")
         return False
-
-    # Update project metadata
-    metadata_file = project_dir / "project.json"
-    if metadata_file.exists():
-        with open(metadata_file) as f:
-            metadata = json.load(f)
-
-        metadata["status"] = "completed"
-        metadata["completion_date"] = datetime.now().isoformat()
-        metadata["blog_post"] = str(blog_post)
-
-        with open(metadata_file, "w") as f:
-            json.dump(metadata, f, indent=2)
 
     # Commit blog post
-    commit_message = f"Complete project: {project_name} - add blog post"
-    if not GitOperations.add_and_commit_files([blog_post, project_dir], commit_message, ensure_config=False):
-        print("Error committing blog post")
-        return False
-    print("Blog post committed")
+    commit_msg = f"Complete project: {project_name} - add blog post"
+    files_to_commit = [blog_post, manager.project_directory]
 
-    # Generate and create PR
-    print("Creating pull request...")
-    try:
-        subprocess.run(["make", "generate-pr-content"], check=True)
-        subprocess.run(["make", "create-pr"], check=True)
-        print("Pull request created successfully!")
-    except subprocess.CalledProcessError as e:
-        print(f"Error creating PR: {e}")
-        print("You can manually create a PR with:")
-        print(f"  git push origin {branch}")
-        print(f"  gh pr create --title 'Project: {project_name}' --body 'Construction project documentation'")
+    if not GitOperations.add_and_commit_files(files_to_commit, commit_msg):
+        logger.error("Failed to commit blog post")
+        return False
+
+    logger.success("Project completed! Blog post generated and committed.")
+    logger.info(f"Create PR to merge {manager.feature_branch} to main")
 
     return True
 
 
 def main():
+    """CLI entry point"""
     if len(sys.argv) < 3:
-        print("Usage: python3 project-manager.py {start|add-photos|finish} <project-name>")
+        print("Usage: python3 project_manager.py {start|add-photos|finish} <project-name>")
         sys.exit(1)
 
     command = sys.argv[1]

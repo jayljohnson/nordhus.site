@@ -1,0 +1,18 @@
+{
+  "project_name": "deck-repair",
+  "project_id": "project123",
+  "project_title": "Deck Repair Project",
+  "total_photos": 1,
+  "last_sync": "2025-08-07T04:15:55.441474",
+  "project_url": "",
+  "images": [
+    {
+      "id": "img1",
+      "title": "Before photo",
+      "filename": "before.jpg",
+      "metadata": {
+        "date": "2025-08-07"
+      }
+    }
+  ]
+}

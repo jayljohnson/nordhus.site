@@ -230,6 +230,83 @@ class CloudinaryClient(PhotoClient):
         print(f"Downloaded {len(downloaded_files)} images to {download_dir}")
         return downloaded_files
 
+    def download_folder_photos(self, folder_name: str, download_dir: str, tag_downloaded: bool = False) -> List[Path]:
+        """
+        Download photos from Cloudinary folder, optionally tagging as downloaded.
+        Only downloads photos not already tagged as downloaded.
+        """
+        try:
+            # Get all resources in the folder
+            result = cloudinary.api.resources(
+                type="upload",
+                prefix=folder_name,
+                max_results=500,
+                tags=False if not tag_downloaded else None,  # Don't filter by tags initially
+            )
+
+            resources = result.get("resources", [])
+            downloaded_files = []
+
+            os.makedirs(download_dir, exist_ok=True)
+
+            for i, resource in enumerate(resources):
+                # Skip if already tagged as downloaded (when tag_downloaded is True)
+                resource_tags = resource.get("tags", [])
+                if tag_downloaded and "downloaded" in resource_tags:
+                    continue
+
+                # Extract filename from public_id
+                public_id = resource.get("public_id", "")
+                filename_parts = public_id.split("/")[-1]  # Get last part after folder
+
+                # Generate clean filename
+                if not filename_parts:
+                    filename_parts = f"image_{i + 1}"
+
+                # Get file extension from format
+                file_format = resource.get("format", "jpg")
+                filename = f"{filename_parts}.{file_format}"
+
+                # Ensure no duplicate filename in download directory
+                file_path = Path(download_dir) / filename
+                counter = 1
+                while file_path.exists():
+                    stem = Path(filename).stem
+                    ext = Path(filename).suffix
+                    filename = f"{stem}_{counter}{ext}"
+                    file_path = Path(download_dir) / filename
+                    counter += 1
+
+                # Download the image
+                secure_url = resource.get("secure_url", "")
+                if secure_url:
+                    try:
+                        response = requests.get(secure_url)
+                        response.raise_for_status()
+
+                        with open(file_path, "wb") as f:
+                            f.write(response.content)
+
+                        downloaded_files.append(file_path)
+                        print(f"Downloaded: {filename}")
+
+                        # Tag as downloaded in Cloudinary if requested
+                        if tag_downloaded:
+                            try:
+                                cloudinary.uploader.add_tag("downloaded", public_id)
+                            except Exception as tag_error:
+                                print(f"Warning: Could not tag {filename} as downloaded: {tag_error}")
+
+                    except Exception as download_error:
+                        print(f"Failed to download {filename}: {download_error}")
+
+            print(f"Downloaded {len(downloaded_files)} new photos from folder '{folder_name}' to {download_dir}")
+            return downloaded_files
+
+        except Exception as e:
+            print(f"Failed to download photos from folder '{folder_name}': {e}")
+            return []
+
     def upload_image(self, image_path, folder=None, title=None):
         """Upload an image to Cloudinary folder"""
         if not Path(image_path).exists():

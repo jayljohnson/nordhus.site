@@ -102,12 +102,10 @@ test: lint-fix
 	@echo "Cleaning up test artifacts..."
 	@rm -rf ./assets/images/*test-project* ./_posts/*test-project* 2>/dev/null || true
 
-test-coverage: lint
-	@echo "Running tests with coverage via CLI..."
+test-coverage:
+	@echo "Running tests with coverage..."
 	$(call run_in_container,python3 scripts/cli.py dev test --coverage)
-	@echo "Cleaning up test artifacts..."
 	@rm -rf ./assets/images/*test-project* ./_posts/*test-project* 2>/dev/null || true
-	@echo "Coverage report generated in htmlcov/index.html"
 
 # Install test dependencies (now handled in Docker container)
 install-test-deps:
@@ -116,16 +114,16 @@ install-test-deps:
 
 # Python code quality
 lint:
-	@echo "Running ruff formatter and linter..."
+	@echo "Checking code format and style..."
 	$(call run_in_container,ruff format --check scripts/ tests/)
 	$(call run_in_container,ruff check scripts/ tests/)
 
 lint-fix:
-	@echo "Running ruff formatter and linter..."
-	$(call run_in_container,ruff format scripts/ tests/)
+	@echo "Formatting and fixing code..."
+	$(call run_in_container,ruff format --quiet scripts/ tests/)
 	$(call run_in_container,ruff check --fix scripts/ tests/)
 
-check: lint test-coverage
+check: lint-fix test-coverage
 	@echo "All quality checks passed!"
 
 
@@ -157,10 +155,8 @@ container-exec:
 # Helper function to run commands in container (hot or cold)
 define run_in_container
 	@if docker ps --format "table {{.Names}}" | grep -q "^$(CONTAINER_NAME)$$"; then \
-		echo "Using running container $(CONTAINER_NAME)..."; \
 		docker exec $(CONTAINER_NAME) $(1); \
 	else \
-		echo "Starting one-shot container..."; \
 		docker run --rm -v "$(PWD)":/srv/jekyll:cached \
 			-v /srv/jekyll/vendor \
 			-v /srv/jekyll/.bundle \
